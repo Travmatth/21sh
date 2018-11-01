@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/30 20:49:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/01 16:20:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int		execute_commands(char *command)
 	int		parsed;
 
 	i = -1;
+	argv = NULL;
 	commands = ft_strsplit(command, ';');
 	while (commands[++i])
 	{
