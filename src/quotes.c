@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/30 19:48:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/01 16:30:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,8 @@ char	**remove_quotations(char *command, int ac)
 		next = 0;
 		while (IS_SEP(*command) && IS_SEP(command[1]))
 			command += 1;
+		if (IS_SEP(*command) && !command[1])
+			break ;
 		tmp = closing_char(&command, &next, 1);
 		if (!tmp)
 			tmp = ft_strchr(command, '\0');
