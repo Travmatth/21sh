@@ -6,7 +6,7 @@
 #    By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/19 20:05:48 by tmatthew          #+#    #+#              #
-#    Updated: 2018/10/29 15:36:48 by tmatthew         ###   ########.fr        #
+#    Updated: 2018/10/30 20:42:50 by tmatthew         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,7 +50,7 @@ FT_STR	:=  ft_count_by_delim ft_isalpha ft_isascii ft_isprint ft_itoa \
 		get_next_line ft_itoa_base ft_swap ft_swap_all ft_strfoldl \
 		ft_uintmaxtoa_base ft_strinsert ft_strndup ft_intmaxtoa_base \
 		ft_count_char ft_wstrlen ft_wchrlen ft_str_to_unicode ft_wstr_to_str\
-		ft_uint32_to_chr ft_str_from_fd ft_strfilter
+		ft_uint32_to_chr ft_str_from_fd ft_strfilter ft_freearr
 
 FILES	:=	$(addprefix arr/, $(FT_ARR)) \
 		$(addprefix io/, $(FT_IO)) \

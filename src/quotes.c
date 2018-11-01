@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/29 18:33:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/10/30 19:48:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int		count_params(char *command)
 	return ((next == '\'' || next == '\"') ? -1 : current);
 }
 
-char	*closing_char(char **command, char *next)
+char	*closing_char(char **command, char *next, int outside)
 {
 	char	*tmp;
 	char	*first;
@@ -82,7 +82,7 @@ char	*closing_char(char **command, char *next)
 		*next = (**command == '\'') ? '\'' : *next;
 		*next = !*next ? ' ' : *next;
 	}
-	if (IS_SEP(**command))
+	if (outside && IS_SEP(**command))
 		*command += 1;
 	tmp = ft_strchr(*command, *next);
 	if (*next == ' ' && (first = ft_strchr(*command, '\t')))
@@ -93,7 +93,7 @@ char	*closing_char(char **command, char *next)
 	if (tmp && tmp != *command && *(tmp - 1) == '\\')
 	{
 		tmp += 1;
-		tmp = closing_char(&tmp, next);
+		tmp = closing_char(&tmp, next, 0);
 	}
 	return (tmp);
 }
@@ -113,7 +113,7 @@ char	**remove_quotations(char *command, int ac)
 		next = 0;
 		while (IS_SEP(*command) && IS_SEP(command[1]))
 			command += 1;
-		tmp = closing_char(&command, &next);
+		tmp = closing_char(&command, &next, 1);
 		if (!tmp)
 			tmp = ft_strchr(command, '\0');
 		len = (tmp ? tmp : command) - command;

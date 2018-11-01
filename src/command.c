@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/25 13:36:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/10/30 20:49:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,7 @@ void	execute_cmd(char **command)
 		execute_command(command);
 	else
 		ft_printf("sh: command not found: %s\n", command[0]);
-	while (--j >= 0)
-		free(paths[j]);
-	free(paths);
+	ft_freearr(paths);
 }
 
 int		execute_commands(char *command)
@@ -114,10 +112,9 @@ int		execute_commands(char *command)
 			;
 		else if (parsed)
 			execute_cmd(argv);
+		ft_freearr(argv);
 		g_processes -= 1;
 	}
-	while (i >= 0)
-		free(commands[i--]);
-	free(commands);
+	ft_freearr(commands);
 	return (1);
 }

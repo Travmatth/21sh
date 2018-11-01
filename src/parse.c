@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/29 19:12:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/10/30 20:48:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,9 +86,6 @@ int		builtin_command(char **argv)
 				ac += 1;
 			i = g_builtins[i].f(ac, argv);
 			ac -= 1;
-			while (ac >= 0 && argv[ac])
-				free(argv[ac--]);
-			free(argv);
 			return (i);
 		}
 		i += 1;

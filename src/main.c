@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/25 13:40:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/10/30 20:56:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,5 @@ int		main(int argc, char **argv, char **environ)
 		else
 			break ;
 	}
-	if (get_env_var("MINISHELL_LEAKS"))
-		while (1)
-			;
 	return (0);
 }
