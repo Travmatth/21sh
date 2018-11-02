@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/01 16:20:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/01 17:00:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ int		execute_commands(char *command)
 		parsed = prepare_command(commands, &argv, i);
 		if (ERR(parsed))
 			ft_putstr("sh: please balance parentheses\n");
-		if (parsed && ft_strequ("exit", argv[0]))
+		else if (parsed && ft_strequ("exit", argv[0]))
 			return (0);
 		else if (parsed && builtin_command(argv))
 			;
