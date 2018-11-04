@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 12:34:43 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/30 20:26:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/02 19:06:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@
 # define LEN(x, default) (x && *x ? ft_strlen(x) : default)
 # define EOL '\n'
 # define ERR(x) (x == -1)
+# define NONE(x) (x == 0)
+# define OK(x) (x > 0)
 # define TRUE 1
 # define FALSE 0
 # define BUFF_SIZE 32

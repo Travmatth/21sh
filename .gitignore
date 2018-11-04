@@ -4,3 +4,5 @@
 .nfs*
 ft_ls
 test
+minishell
+in_test.txt

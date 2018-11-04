@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/01 17:00:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/02 19:11:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,14 @@
 int		find_exec(char *command)
 {
 	int			result;
+	int			status;
 	struct stat	attribs;
 
+	status = stat(command, &attribs);
 	result = access(command, X_OK);
-	if (!result)
+	if (!result && S_ISREG(attribs.st_mode))
 		return (1);
-	if (!stat(command, &attribs))
+	if (!status && S_ISREG(attribs.st_mode))
 	{
 		if (~(attribs.st_mode & S_IXUSR))
 			return (-1);
@@ -61,12 +63,16 @@ void	execute_command(char **av)
 {
 	pid_t	pid;
 
-	if (!(pid = fork()))
+	if (NONE((pid = fork())))
+	{
 		execve(av[0], av, g_environ);
-	else if (pid > 0)
+		ft_printf("fork error: %s", av[0]);
+		_exit(1);
+	}
+	else if (OK(pid))
 		waitpid(pid, NULL, 0);
-	else if (pid < 0)
-		ft_printf("fork error");
+	else if (ERR(pid))
+		ft_printf("fork error: %s", av[0]);
 }
 
 void	execute_cmd(char **command)
@@ -82,9 +88,9 @@ void	execute_cmd(char **command)
 	while (paths && paths[j])
 		j += 1;
 	result = find_command(&command[0], paths, j, found);
-	if (result == -1)
+	if (ERR(result))
 		ft_printf("sh: permission denied: %s\n", command[0]);
-	else if (result)
+	else if (OK(result))
 		execute_command(command);
 	else
 		ft_printf("sh: command not found: %s\n", command[0]);
@@ -107,11 +113,11 @@ int		execute_commands(char *command)
 		parsed = prepare_command(commands, &argv, i);
 		if (ERR(parsed))
 			ft_putstr("sh: please balance parentheses\n");
-		else if (parsed && ft_strequ("exit", argv[0]))
+		else if (OK(parsed) && ft_strequ("exit", argv[0]))
 			return (0);
-		else if (parsed && builtin_command(argv))
+		else if (OK(parsed) && builtin_command(argv))
 			;
-		else if (parsed)
+		else if (OK(parsed))
 			execute_cmd(argv);
 		ft_freearr(argv);
 		g_processes -= 1;
