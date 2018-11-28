@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/01 16:30:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/27 17:28:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ char	**remove_quotations(char *command, int ac)
 	int		len;
 
 	i = 0;
-	av = (char**)ft_memalloc(sizeof(char*) * (ac + 1));
+	av = (char**)ft_memalloc(sizeof(char*) * (ac + 2));
 	while (command && *command)
 	{
 		next = 0;
@@ -124,5 +124,6 @@ char	**remove_quotations(char *command, int ac)
 		av[i++] = ft_strfilter(remove_slash, tmp);
 		free(tmp);
 	}
+	av[i] = NULL;
 	return (av);
 }
