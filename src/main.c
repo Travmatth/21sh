@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/30 20:56:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 13:17:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../includes/shell.h"
 
 void	init_environ(int argc, char **argv, char **environ)
 {
@@ -35,7 +35,7 @@ int		main(int argc, char **argv, char **environ)
 	char	*command;
 
 	init_environ(argc, argv, environ);
-	while (1)
+	while (42)
 	{
 		signal(SIGINT, sig_handler);
 		write(STDOUT, "$> ", 3);

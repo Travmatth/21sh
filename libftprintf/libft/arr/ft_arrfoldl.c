@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 13:09:32 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/06/24 21:12:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/19 14:37:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	*ft_arrfoldl(void *(*f)(void *final, void *elem, size_t i, int *stop)
 	i = 0;
 	stop = 0;
 	final = NULL;
-	while (!stop && i < len - 1)
+	while (!stop && i < len)
 	{
 		final = f(final, (void*)&(((char*)arr)[i * step]), i, &stop);
 		i += 1;

@@ -7,7 +7,7 @@
 		"ft_ssl.h": "c",
 		"pbkdf2.h": "c",
 		"ft_ls.h": "c",
-		"minishell.h": "c"
+		"shell.h": "c"
 	},
     "vim.visualModeKeyBindings": [
         {

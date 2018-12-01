@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/25 19:36:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/07/21 18:41:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/05 15:41:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,23 @@ size_t	ftprintf_format_str(t_fmt *fmt)
 	size[0] = LEN(fmt->type.str, 0);
 	size[1] = size[0] > 0 && fmt->precision != I_MIN
 		&& fmt->precision > 0 ? fmt->precision : size[0];
+	size[1] = fmt->precision == I_MIN ? 0 : size[1];
 	size[2] = (fmt->width != I_MIN && fmt->width > 0)
 		? fmt->width - size[1] : 0;
-	if ((size[0] == size[1] + size[2]) || !(tmp = ft_strnew(size[2] + size[1])))
+	if (!(size[1] + size[2]) || !(tmp = ft_strnew(size[2] + size[0])))
 		return (fmt_str_unchanged(fmt, size[0]));
-	write_position = tmp + size[2];
+	write_position = tmp + size[0];
 	pad_position = tmp;
 	if (GET(fmt->flags, '-'))
 	{
 		write_position = tmp;
-		pad_position = tmp + size[1];
+		pad_position = tmp + size[0];
 	}
 	ft_czero(pad_position, ' ', size[2]);
-	ft_memcpy(write_position, fmt->type.str, size[1]);
+	ft_memcpy(write_position, fmt->type.str, size[0]);
 	ft_strdel(&(fmt->type.str));
 	fmt->out = tmp;
-	return ((fmt->len.out = size[1] + size[2]));
+	return ((fmt->len.out = size[0] + size[2]));
 }
 
 void	write_number_left(t_fmt *fmt

@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/02 19:11:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 14:49:33 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../includes/shell.h"
 
 int		find_exec(char *command)
 {
@@ -59,6 +59,11 @@ int		find_command(char **command, char **paths, int i, int found)
 	return (result);
 }
 
+/*
+** need to write a wrapper function that deals with translating jobs
+** into series of commands to fork/execve/waitpid
+*/
+
 void	execute_command(char **av)
 {
 	pid_t	pid;
@@ -97,29 +102,24 @@ void	execute_cmd(char **command)
 	ft_freearr(paths);
 }
 
+/*
+** 6: execute function
+** 7: optionally wait for command to complete and collect exit status
+*/
+
 int		execute_commands(char *command)
 {
 	char	**commands;
-	char	**argv;
 	int		i;
 	int		parsed;
+	t_job	job;
 
 	i = -1;
-	argv = NULL;
 	commands = ft_strsplit(command, ';');
 	while (commands[++i])
 	{
 		g_processes += 1;
-		parsed = prepare_command(commands, &argv, i);
-		if (ERR(parsed))
-			ft_putstr("sh: please balance parentheses\n");
-		else if (OK(parsed) && ft_strequ("exit", argv[0]))
-			return (0);
-		else if (OK(parsed) && builtin_command(argv))
-			;
-		else if (OK(parsed))
-			execute_cmd(argv);
-		ft_freearr(argv);
+		parsed = prepare_job(commands[i], &job, i);
 		g_processes -= 1;
 	}
 	ft_freearr(commands);

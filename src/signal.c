@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 19:33:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/29 19:38:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../includes/shell.h"
 
 void	child_sig_handler(int sig)
 {

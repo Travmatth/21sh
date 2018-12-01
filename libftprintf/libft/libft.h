@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 12:34:43 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/02 19:06:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 18:07:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@
 # define ERR(x) (x == -1)
 # define NONE(x) (x == 0)
 # define OK(x) (x > 0)
+# define NIL 0
+# define ERROR -1
+# define SUCCESS 1
 # define TRUE 1
 # define FALSE 0
 # define BUFF_SIZE 32

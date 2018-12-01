@@ -4,5 +4,5 @@
 .nfs*
 ft_ls
 test
-minishell
+21sh
 in_test.txt

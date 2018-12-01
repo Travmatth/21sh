@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   shell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,19 +10,39 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef SHELL_H
+# define SHELL_H
 
 # include "../libftprintf/srcs/includes/ft_printf.h"
 # include <unistd.h>
 # include <signal.h>
 # include <sys/stat.h>
 
-# define IS_SEP(x) (x == ' ' || x == '\'' || x == '\t' || x== '"')
+# define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
+# define IS_QTE(x) (x == '\'' || x== '"')
+# define IS_SEP(x) (IS_WS(x) || IS_QTE(x))
 
 char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
+
+typedef struct	s_command
+{
+	char		**simple_commands;
+	int			*io_channels;
+	char		*flags;
+}				t_command;
+
+typedef struct	s_pipeline
+{
+	t_command	*commands;
+}				t_pipeline;
+
+typedef struct	s_job
+{
+	t_pipeline	*pipeline;
+}				t_job;
+
 typedef struct	s_builtin
 {
 	char		*cmd;
@@ -31,15 +51,15 @@ typedef struct	s_builtin
 }				t_builtin;
 
 /*
-** parse.c
+** parse/parse.c
 */
 
 int				remove_slash(char elem, size_t i, char *str, int *stop);
 int				builtin_command(char **command);
-int				prepare_command(char **commands, char ***command, int i);
+int				prepare_job(char *commands, t_job *job, int i);
 
 /*
-** quotes.c
+** parse/quotes.c
 */
 
 char			**remove_quotations(char *command, int ac);
@@ -75,4 +95,5 @@ char			*get_env_var(char *var);
 
 void			child_sig_handler(int sig);
 void			sig_handler(int sig);
+
 #endif

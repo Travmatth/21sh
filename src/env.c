@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:43:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/19 14:44:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../includes/shell.h"
 
 char	*get_env_var(char *var)
 {

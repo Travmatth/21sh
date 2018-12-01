@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:10:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/24 15:43:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "../../includes/shell.h"
 
 int		builtin_echo(int argc, char **argv)
 {

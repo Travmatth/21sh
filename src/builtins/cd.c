@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:09:37 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/10/29 12:30:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "../../includes/shell.h"
 
 char	*save_cwd(char *target_dir, char **path, char ***dirs)
 {
