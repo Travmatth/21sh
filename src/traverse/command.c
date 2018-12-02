@@ -6,11 +6,20 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 14:49:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/01 16:16:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/shell.h"
+#include "../../includes/shell.h"
+
+t_builtin	g_builtins[] =
+{
+	{"echo", builtin_echo, 4},
+	{"cd", builtin_cd, 2},
+	{"setenv", builtin_setenv, 6},
+	{"unsetenv", builtin_unsetenv, 8},
+	{"env", builtin_env, 3},
+};
 
 int		find_exec(char *command)
 {
@@ -103,25 +112,59 @@ void	execute_cmd(char **command)
 }
 
 /*
+** Shell grammar parsing steps
+** 2: break input into tokens: words and operators
+** 3: parse input into simple commands and compound commands
+** 4: perform expansions
+** 5: register redirections and removes operators from parameter list
+*/
+
+int		builtin_command(char **argv)
+{
+	int		i;
+	int		ac;
+
+	i = 0;
+	while (i < 5)
+	{
+		if (ft_strnequ(g_builtins[i].cmd, argv[0], g_builtins[i].len))
+		{
+			ac = 0;
+			while (argv[ac])
+				ac += 1;
+			i = g_builtins[i].f(ac, argv);
+			ac -= 1;
+			return (i);
+		}
+		i += 1;
+	}
+	return (0);
+}
+
+/*
 ** 6: execute function
 ** 7: optionally wait for command to complete and collect exit status
 */
 
-int		execute_commands(char *command)
+int		execute_commands(char *complete_cmd)
 {
-	char	**commands;
 	int		i;
-	int		parsed;
-	t_job	job;
+	int		status;
+	t_ast	ast;
 
 	i = -1;
-	commands = ft_strsplit(command, ';');
-	while (commands[++i])
+	ft_bzero(&ast, sizeof(t_ast));
+	if (!OK(status = prepare_ast(complete_cmd, &ast, i)))
 	{
-		g_processes += 1;
-		parsed = prepare_job(commands[i], &job, i);
-		g_processes -= 1;
+		if (ERR(status))
+			return (ERROR);
+		return (NIL);
 	}
-	ft_freearr(commands);
-	return (1);
+	if (!ERR(status = traverse_ast(&ast)))
+	{
+		if (ERR(status))
+			return (ERROR);
+		return (NIL);
+	}
+	return (SUCCESS);
 }

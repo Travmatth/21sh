@@ -12,12 +12,16 @@ NAME = 21sh
 LIBFT = libftprintf/libftprintf.a
 CFLAGS += -Wall -Wextra -Werror -Wpedantic
 LDFLAGS := -Llibftprintf -lftprintf -I./includes
-CORE := main command signal env
-PARSE := parse quotes
+CORE := main signal 
 BUILTINS := cd echo env setenv unsetenv 
+LEXER := lexer quotes
+PARSER := parse
+TRAVERSE := traverse command
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
-		$(addprefix src/builtins/, $(PARSE))
+		$(addprefix src/lexer/, $(LEXER)) \
+		$(addprefix src/parser/, $(PARSER)) \
+		$(addprefix src/traverse/, $(TRAVERSE))
 SRC := $(addsuffix .c, $(FILES))
 OBJ := $(SRC:.c=.o)
 

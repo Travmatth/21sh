@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 13:17:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/11/30 20:34:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,13 @@ void	init_environ(int argc, char **argv, char **environ)
 	while (--argc)
 		g_environ[(total ? total - 1 : total) + i++] = ft_strdup(argv[argc]);
 }
+
+/*
+** http://pubs.opengroup.org/onlinepubs/009695399
+** /utilities/xcu_chap02.html#tag_02_03
+** Shell grammar parsing steps
+** 1: read from input
+*/
 
 int		main(int argc, char **argv, char **environ)
 {
