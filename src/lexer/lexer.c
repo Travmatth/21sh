@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 16:07:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/01 19:27:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,6 @@ int		normalize_tokens(char **args)
 }
 
 /*
-** if open quote is detected
-** prompt user for more input that will close the quote
-*/
-
-int		close_quote_prompt(char *complete_cmd)
-{
-	(void)complete_cmd;
-	return (NIL);
-}
-
-/*
 ** find next whitespace in complete_command not preceded by a backslash
 */
 
@@ -108,21 +97,21 @@ int		find_next(char c, char *complete_cmd, size_t *offset)
 	i = 1;
 	while (complete_cmd && complete_cmd[i])
 	{
-		if (*complete_cmd == c && i == 1)
+		if (*complete_cmd == '\\' && complete_cmd[i + 1] == c)
 		{
+			if (NONE(find_next(c, &complete_cmd[i + 2], offset)))
+				return (NIL);
 			*offset += i;
 			return (SUCCESS);
 		}
-		else if (*complete_cmd == c && complete_cmd[i - 1] == '\\')
+		else if (*complete_cmd == c && i == 1)
 		{
-			if (ERR(find_next(c, &complete_cmd[i], offset)))
-				return (ERROR);
 			*offset += i;
 			return (SUCCESS);
 		}
 		complete_cmd += 1;
 	}
-	return (ERROR);
+	return (NIL);
 }
 
 /*
@@ -166,7 +155,6 @@ int		tokenize_switch(char *complete_cmd, int i, int n, size_t *offset)
 int		tokenize(char *complete_cmd, int arg_count, size_t len, char **args)
 {
 	size_t	offset;
-	int		status;
 	int		i;
 	size_t	n;
 
@@ -180,25 +168,42 @@ int		tokenize(char *complete_cmd, int arg_count, size_t len, char **args)
 	{
 		while (IS_WS(complete_cmd[n]))
 			complete_cmd += 1;
-		if (NONE((status = tokenize_switch(complete_cmd, i, n, &offset))))
+		if (NONE(tokenize_switch(complete_cmd, i, n, &offset)))
 			break ;
-		else if (ERR(status) && ERR(close_quote_prompt(&complete_cmd[n])))
+		if (!(args[i] = ft_strsub(complete_cmd, n, offset)))
 			return (ERROR);
-		args[i] = ft_strsub(complete_cmd, n, offset);
 		n += offset;
 	}
 	return (SUCCESS);
 }
 
+/*
+** if open quote is detected
+** prompt user for more input that will close the quote
+*/
+
+int		close_quote_prompt(char *complete_cmd, size_t i, size_t *tok_count)
+{
+	(void)complete_cmd;
+	(void)i;
+	(void)tok_count;
+	return (SUCCESS);
+}
+
 int		lexer(char *complete_cmd, char ***tokens)
 {
-	int		tok_count;
+	size_t	i;
+	size_t	tok_count;
 	char	**toks;
 
-	tok_count = count_params(complete_cmd);
+	if (ERR(count_params(complete_cmd, &i, &tok_count)))
+	{
+		if (ERR((i = close_quote_prompt(complete_cmd, i, &tok_count))))
+			return (ERROR);
+	}
 	if (!OK(tok_count))
-		return (ERR(tok_count) ? ERROR : NIL);
-	else if (!(toks = (char**)ft_memalloc(sizeof(char*) * (tok_count + 1))))
+		return (NIL);
+	else if (!(toks = (char**)ft_memalloc(sizeof(char*) * (tok_count))))
 		return (ERROR);
 	else if (NONE(tokenize(complete_cmd, tok_count, LEN(complete_cmd, 0), toks))
 		|| ERR(normalize_tokens(toks)))

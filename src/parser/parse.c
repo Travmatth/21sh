@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 16:29:41 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/01 19:20:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,11 @@ int		parse_commands(char **tokens, t_ast *ast)
 	return (ERROR);
 }
 
-int		prepare_ast(char *complete_cmd, t_ast *ast, int i)
+int		prepare_ast(char *complete_cmd, t_ast *ast)
 {
 	int		status;
 	char	**tokens;
 
-	(void)i;
 	ft_bzero(ast, sizeof(t_ast));
 	if (!OK((status = lexer(complete_cmd, &tokens)))
 		|| !OK((status = parse_commands(tokens, ast))))

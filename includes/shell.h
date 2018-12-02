@@ -23,6 +23,7 @@
 # define IS_SEP(x) (IS_WS(x) || IS_QTE(x))
 # define IS_SNGL(x, s, n, o) (*x == '\'' && (s = find_next('\'', n, o)))
 # define IS_DBL(x, s, n, o) (*x == '"' && (s = find_next('\'', n, o)))
+# define ESCAPABLE_CHAR(x) ()
 
 char			**g_environ;
 int				g_processes;
@@ -95,6 +96,7 @@ char			*get_env_var(char *var);
 */
 
 int				lexer(char *complete_cmd, char ***tokens);
+int				find_next(char c, char *complete_cmd, size_t *offset);
 
 /*
 ** parse/parse.c
@@ -102,14 +104,14 @@ int				lexer(char *complete_cmd, char ***tokens);
 
 int				remove_slash(char elem, size_t i, char *str, int *stop);
 int				parse_commands(char **tokens, t_ast *ast);
-int				prepare_ast(char *complete_cmd, t_ast *ast, int i);
+int				prepare_ast(char *complete_cmd, t_ast *ast);
 
 /*
 ** parse/quotes.c
 */
 
 char			**remove_quotations(char *command, int ac);
-int				count_params(char *command);
+int				count_params(char *command, size_t *i, size_t *tok_count);
 
 /*
 ** parse/command.c

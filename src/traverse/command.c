@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 16:16:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/01 19:40:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,13 +148,11 @@ int		builtin_command(char **argv)
 
 int		execute_commands(char *complete_cmd)
 {
-	int		i;
 	int		status;
 	t_ast	ast;
 
-	i = -1;
 	ft_bzero(&ast, sizeof(t_ast));
-	if (!OK(status = prepare_ast(complete_cmd, &ast, i)))
+	if (!OK(status = prepare_ast(complete_cmd, &ast)))
 	{
 		if (ERR(status))
 			return (ERROR);

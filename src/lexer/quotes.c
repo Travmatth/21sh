@@ -6,67 +6,103 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 16:22:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/01 19:39:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void	set_outside_word(char **str, char *next, int *inside_word, int *current)
+# define END 1
+# define BEGIN 0
+
+// if we encounter another opening candidate
+// we need to restart search w/ that sequence
+
+int		find_sub_end(char c, char *complete_cmd, size_t *j)
 {
-	if (**str == ' ' || **str == '\t')
-		*next = 0;
-	else if (**str == '\'')
-	{
-		*next = '\'';
-		*current += 1;
-		*inside_word = 1;
-	}
-	else if (**str == '"')
-	{
-		*next = '"';
-		*current += 1;
-		*inside_word = 1;
-	}
-	else
-	{
-		*next = ' ';
-		*current += 1;
-		*inside_word = 1;
-	}
+	(void)c;
+	(void)complete_cmd;
+	(void)j;
+	return (SUCCESS);
 }
 
-void	set_inside_word(char **str, char *next, int *inside_word)
+int		escaped(char *complete_cmd, size_t i)
 {
-	if (**str == *next || (*next == ' ' && **str == '\t'))
-	{
-		*next = 0;
-		*inside_word = 0;
-	}
-	else
-		*inside_word = 1;
+	if (i == 0)
+		return (FALSE);
+	else if (complete_cmd[i - 1] == '\\')
+		return (TRUE);
+	return (FALSE);
 }
 
-int		count_params(char *command)
-{
-	char	*str;
-	char	next;
-	int		inside_word;
-	int		current;
+/*
+** given compete_cmd with op starting at i, determine whether operator is valid
+*/
 
-	str = command;
-	next = 0;
-	current = 0;
-	inside_word = 0;
-	while ((str && *str))
+int		can_form_op(char *complete_cmd, int in_op, size_t *i, int position)
+{
+	(void)complete_cmd;
+	(void)in_op;
+	(void)i;
+	(void)position;
+	return (NIL);
+}
+
+int		count_params(char *complete_cmd, size_t *i, size_t *tok_count)
+{
+	size_t	j;
+	int		count;
+	int		in_op;
+	int		in_word;
+
+	if (!complete_cmd)
+		return (NIL);
+	count = 0;
+	in_op = 0;
+	in_word = FALSE;
+	while (!NONE(complete_cmd[*i]))
 	{
-		if (*str == '\\')
-			str += 1;
-		else if (inside_word)
-			set_inside_word(&str, &next, &inside_word);
+		if (in_op && !escaped(complete_cmd, *i) && can_form_op(complete_cmd, in_op, i, END))
+			*i += 1;
+		else if (in_op && !can_form_op(complete_cmd, in_op, i, END))
+			in_op = 0;
+		else if (!escaped(complete_cmd, *i) && (*complete_cmd == '\\'
+			|| *complete_cmd == '\''
+			|| *complete_cmd == '"'))
+		{
+			if (NONE((j = find_next(*complete_cmd, &complete_cmd[1], &j))))
+				return (ERROR);
+			*i += j;
+		}
+		else if (!escaped(complete_cmd, *i) && (*complete_cmd == '$' || *complete_cmd == '`'))
+		{
+			if (NONE((j = find_sub_end(*complete_cmd, &complete_cmd[1], &j))))
+				return (ERROR);
+			*i += j;
+		}
+		else if (can_form_op(complete_cmd, in_op, i, BEGIN))
+		{
+			i += 1;
+			in_op += 1;
+		}
+		else if (*complete_cmd == ' ' || *complete_cmd == '\n')
+		{
+			i += 1;
+			in_word = FALSE;
+		}
+		else if (in_word)
+			i += 1;
+		else if (*complete_cmd == '#')
+		{
+			if (NONE((j = find_sub_end(*complete_cmd, &complete_cmd[1], &j))))
+				return (ERROR);
+			*i += j;
+		}
 		else
-			set_outside_word(&str, &next, &inside_word, &current);
-		str += 1;
+			count += 1;
 	}
-	return ((next == '\'' || next == '\"') ? -1 : current);
+	if (NONE(complete_cmd))
+		count += 1;
+	*tok_count = count;
+	return (SUCCESS);
 }
