@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <signal.h>
 # include <sys/stat.h>
+# include "grammar.h"
 
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
@@ -24,10 +25,23 @@
 # define IS_SNGL(x, s, n, o) (*x == '\'' && (s = find_next('\'', n, o)))
 # define IS_DBL(x, s, n, o) (*x == '"' && (s = find_next('\'', n, o)))
 # define ESCAPABLE_CHAR(x) ()
+# define END 1
+# define BEGIN 0
 
 char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
+
+typedef struct	s_lexctx
+{
+	size_t		j;
+	size_t		i;
+	size_t		in_op;
+	size_t		in_word;
+	int			count;
+	int			err;
+}				t_lexctx;
+
 
 typedef struct	s_pipeline
 {
@@ -92,11 +106,46 @@ int				builtin_env(int argc, char **argv);
 char			*get_env_var(char *var);
 
 /*
-** builtins/lexer.c
+** lexer/lexer.c
 */
 
 int				lexer(char *complete_cmd, char ***tokens);
-int				find_next(char c, char *complete_cmd, size_t *offset);
+
+/*
+** lexer/lexer_count.c
+*/
+
+int				find_sub_end(char c, char *complete_cmd, size_t *j);
+int				escaped(char *complete_cmd, size_t i);
+int				can_form_op(char *complete_cmd, int in_op, size_t *i, int position);
+
+/*
+** lexer/lexer_delimiters.c
+*/
+
+void			delimit_op_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_param_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_comment_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+
+/*
+** lexer/lexer_funcs.c
+*/
+
+void			form_quoted_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			form_op_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			continue_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			form_token(t_lexctx *ctx, char **tokens, char *cmd);
+
+/*
+** lexer/lexer_utils.c
+*/
+
+int				remove_slash(char elem, size_t i, char *str, int *stop);
+void			expand_command(char **command);
+int				normalize_tokens(char **args);
+int				find_ws(char *cmd, size_t *offset);
+int				find_next(char c, char *cmd, size_t *offset);
 
 /*
 ** parse/parse.c
@@ -111,7 +160,14 @@ int				prepare_ast(char *complete_cmd, t_ast *ast);
 */
 
 char			**remove_quotations(char *command, int ac);
+int				find_sub_end(char c, char *complete_cmd, size_t *j);
+int				escaped(char *complete_cmd, size_t i);
 int				count_params(char *command, size_t *i, size_t *tok_count);
+/*
+** given compete_cmd with op starting at i, determine whether operator is valid
+*/
+
+int				can_form_op(char *complete_cmd, int in_op, size_t *i, int position);
 
 /*
 ** parse/command.c

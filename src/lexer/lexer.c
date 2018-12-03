@@ -6,174 +6,61 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 19:27:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/02 23:47:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		remove_slash(char elem, size_t i, char *str, int *stop)
+/*
+** call the appropriate lexing step within given state and lexing ctx
+*/
+
+void	tokenize_switch(t_lexctx *ctx, char **tokens, char *cmd, int record)
 {
-	int		out;
-
-	(void)stop;
-	out = 1;
-	if (elem == '\\')
-		out = IS_SEP(str[i + 1]) ? 0 : 1;
-	return (out);
-}
-
-char	**tokenize_commands(char **complete_cmd)
-{
-	(void)complete_cmd;
-	return (NULL);
-}
-
-void	expand_command(char **command)
-{
-	char	*var;
-	char	*tmp;
-	char	*cmd;
-
-	while (ft_strchr(*command, '~'))
-	{
-		var = get_env_var("HOME");
-		tmp = ft_swap(*command, "~", var);
-		free(*command);
-		*command = tmp;
-	}
-	while ((tmp = ft_strchr(*command, '$')))
-	{
-		cmd = ft_strchr(tmp, ' ') ? ft_strchr(tmp, ' ') : ft_strchr(tmp, '\0');
-		tmp = ft_strsub(tmp, 0, cmd - tmp);
-		var = get_env_var(tmp + 1);
-		cmd = ft_swap(*command, tmp, var ? var : "");
-		free(*command);
-		free(tmp);
-		*command = cmd;
-	}
+	if (ctx->in_op && !escaped(cmd, ctx->i)
+		&& can_form_op(cmd, ctx->in_op, &ctx->i, END)) ctx->i += 1;
+	else if (ctx->in_op && !can_form_op(cmd, ctx->in_op, &ctx->i, END))
+		delimit_op_token(ctx, tokens, cmd, record);
+	else if (!escaped(cmd, ctx->i) && (cmd[ctx->i] == '\\'
+		|| cmd[ctx->i] == '\''
+		|| cmd[ctx->i] == '"'))
+		form_quoted_token(ctx, tokens, cmd, record);
+	else if (!escaped(cmd, ctx->i) && (cmd[ctx->i] == '$'
+		|| cmd[ctx->i] == '`'))
+		delimit_param_token(ctx, tokens, cmd, record);
+	else if (can_form_op(cmd, ctx->in_op, &ctx->i, BEGIN))
+		form_op_token(ctx, tokens, cmd, record);
+	else if (IS_WS(cmd[ctx->i]))
+		delimit_token(ctx, tokens, cmd, record);
+	else if (ctx->in_word)
+		continue_token(ctx, tokens, cmd, record);
+	else if (cmd[ctx->i] == '#')
+		delimit_comment_token(ctx, tokens, cmd, record);
+	else
+		form_token(ctx, tokens, cmd);
 }
 
 /*
-** manage escaped characters in given arg
-** turn \n && \t -> <newline> && <tab> and strip other leading \
+** iterate through char *command, allocate into a series of char **tokens
 */
 
-int		normalize_tokens(char **args)
+int		tokenize(char *cmd, char **tokens, int record, size_t *tok_count)
 {
-	(void)args;
-	return (NIL);
-}
+	t_lexctx	ctx;
 
-/*
-** find next whitespace in complete_command not preceded by a backslash
-*/
-
-int		find_ws(char *complete_cmd, size_t *offset)
-{
-	size_t	i;
-
-	i = 1;
-	while (complete_cmd[i])
-	{
-		if (IS_WS(complete_cmd[i]))
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
-		i += 1;
-	}
-	return (ERROR);
-}
-
-/*
-** find next character c in complete_command not preceded by a backslash
-*/
-
-int		find_next(char c, char *complete_cmd, size_t *offset)
-{
-	size_t	i;
-
-	i = 1;
-	while (complete_cmd && complete_cmd[i])
-	{
-		if (*complete_cmd == '\\' && complete_cmd[i + 1] == c)
-		{
-			if (NONE(find_next(c, &complete_cmd[i + 2], offset)))
-				return (NIL);
-			*offset += i;
-			return (SUCCESS);
-		}
-		else if (*complete_cmd == c && i == 1)
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
-		complete_cmd += 1;
-	}
-	return (NIL);
-}
-
-/*
-** determine whether character c in complete_command
-** is quote not preceded by a backslash
-*/
-
-int		is_quote(char *complete_cmd, size_t n)
-{
-	if (n == 0 && IS_WS(*complete_cmd))
-		return (SUCCESS);
-	else if (n > 0 && *(complete_cmd - 1) != '\\' && IS_WS(*complete_cmd))
-		return (SUCCESS);
-	return (NIL);
-}
-
-/*
-** find the next token in the complete_command
-*/
-
-int		tokenize_switch(char *complete_cmd, int i, int n, size_t *offset)
-{
-	int		s;
-
-	if (!complete_cmd[1])
+	if (!cmd)
 		return (NIL);
-	s = 0;
-	if ((!is_quote(&complete_cmd[n], i) && (s = find_ws(complete_cmd, offset)))
-		|| IS_SNGL(complete_cmd, s, &complete_cmd[n], offset)
-		|| IS_DBL(complete_cmd, s, &complete_cmd[n], offset))
-		return (SUCCESS);
-	if (s)
+	ft_bzero(&ctx, sizeof(t_lexctx));
+	while (!NONE(cmd[ctx.i]) && !ctx.err)
+		tokenize_switch(&ctx, tokens, cmd, record);
+	if (record && ctx.in_word && !(tokens[ctx.count - 1] =
+		ft_strsub(cmd, ctx.i - ctx.in_word, ctx.in_word + 1)))
 		return (ERROR);
-	return (NIL);
-}
-
-/*
-** transform a given complete_command into an array of tokens to be parsed
-*/
-
-int		tokenize(char *complete_cmd, int arg_count, size_t len, char **args)
-{
-	size_t	offset;
-	int		i;
-	size_t	n;
-
-	(void)len;
-	n = 0;
-	i = -1;
-	offset = 0;
-	if (!complete_cmd)
-		return (NIL);
-	while (complete_cmd[n] && ++i < arg_count)
-	{
-		while (IS_WS(complete_cmd[n]))
-			complete_cmd += 1;
-		if (NONE(tokenize_switch(complete_cmd, i, n, &offset)))
-			break ;
-		if (!(args[i] = ft_strsub(complete_cmd, n, offset)))
-			return (ERROR);
-		n += offset;
-	}
+	else if (record && ctx.in_op && !(tokens[ctx.count - 1] =
+		ft_strsub(cmd, ctx.i - ctx.in_op, ctx.in_op + 1)))
+		return (ERROR);
+	*tok_count = ctx.count;
 	return (SUCCESS);
 }
 
@@ -182,30 +69,37 @@ int		tokenize(char *complete_cmd, int arg_count, size_t len, char **args)
 ** prompt user for more input that will close the quote
 */
 
-int		close_quote_prompt(char *complete_cmd, size_t i, size_t *tok_count)
+int		close_quote_prompt(char *cmd, size_t i, size_t *tok_count)
 {
-	(void)complete_cmd;
+	(void)cmd;
 	(void)i;
 	(void)tok_count;
 	return (SUCCESS);
 }
 
-int		lexer(char *complete_cmd, char ***tokens)
+/*
+** break a char *command into a series of char **tokens to be parsed
+*/
+
+int		lexer(char *cmd, char ***tokens)
 {
 	size_t	i;
 	size_t	tok_count;
 	char	**toks;
 
-	if (ERR(count_params(complete_cmd, &i, &tok_count)))
+	i = 0;
+	toks = NULL;
+	tok_count = 0;
+	if (NONE(tokenize(cmd, toks, FALSE, &tok_count)))
 	{
-		if (ERR((i = close_quote_prompt(complete_cmd, i, &tok_count))))
+		if (ERR((i = close_quote_prompt(cmd, i, &tok_count))))
 			return (ERROR);
 	}
 	if (!OK(tok_count))
 		return (NIL);
-	else if (!(toks = (char**)ft_memalloc(sizeof(char*) * (tok_count))))
+	else if (!(toks = (char**)ft_memalloc(sizeof(char*) * (tok_count + 1))))
 		return (ERROR);
-	else if (NONE(tokenize(complete_cmd, tok_count, LEN(complete_cmd, 0), toks))
+	else if (NONE(tokenize(cmd, toks, TRUE, &tok_count))
 		|| ERR(normalize_tokens(toks)))
 		return (NIL);
 	*tokens = toks;

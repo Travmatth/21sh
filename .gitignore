@@ -3,6 +3,4 @@
 *.o
 .nfs*
 ft_ls
-test
 21sh
-in_test.txt
