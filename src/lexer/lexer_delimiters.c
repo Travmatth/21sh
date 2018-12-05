@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/03 01:11:41 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/04 15:30:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** end op token context and record token
 */
 
-void	delimit_op_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
+void	delimit_op_token(t_lctx *ctx, char **tokens, char *cmd, int record)
 {
 	char	*tmp;
 
@@ -34,7 +34,7 @@ void	delimit_op_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
 ** end param token, record token
 */
 
-void	delimit_param_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
+void	delimit_param_token(t_lctx *ctx, char **tokens, char *cmd, int record)
 {
 	if (NONE((ctx->j = find_sub_end(cmd[ctx->i], &cmd[1], &ctx->j))))
 		ctx->err = TRUE;
@@ -51,7 +51,7 @@ void	delimit_param_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
 ** end and record token
 */
 
-void	delimit_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
+void	delimit_token(t_lctx *ctx, char **tokens, char *cmd, int record)
 {
 	if (record)
 	{
@@ -77,7 +77,7 @@ void	delimit_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
 ** end and record comment token
 */
 
-void	delimit_comment_token(t_lexctx *ctx, char **tokens, char *cmd, int record)
+void	delimit_comment_token(t_lctx *ctx, char **tokens, char *cmd, int record)
 {
 	(void)tokens;
 	(void)cmd;

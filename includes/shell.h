@@ -32,7 +32,7 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-typedef struct	s_lexctx
+typedef struct	s_lctx
 {
 	size_t		j;
 	size_t		i;
@@ -40,7 +40,7 @@ typedef struct	s_lexctx
 	size_t		in_word;
 	int			count;
 	int			err;
-}				t_lexctx;
+}				t_lctx;
 
 
 typedef struct	s_pipeline
@@ -123,19 +123,19 @@ int				can_form_op(char *complete_cmd, int in_op, size_t *i, int position);
 ** lexer/lexer_delimiters.c
 */
 
-void			delimit_op_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
-void			delimit_param_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
-void			delimit_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
-void			delimit_comment_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_op_token(t_lctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_param_token(t_lctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_token(t_lctx *ctx, char **tokens, char *cmd, int record);
+void			delimit_comment_token(t_lctx *ctx, char **tokens, char *cmd, int record);
 
 /*
 ** lexer/lexer_funcs.c
 */
 
-void			form_quoted_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
-void			form_op_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
-void			continue_token(t_lexctx *ctx, char **tokens, char *cmd, int record);
-void			form_token(t_lexctx *ctx, char **tokens, char *cmd);
+void			form_quoted_token(t_lctx *ctx, char **tokens, char *cmd, int record);
+void			form_op_token(t_lctx *ctx, char **tokens, char *cmd, int record);
+void			continue_token(t_lctx *ctx, char **tokens, char *cmd, int record);
+void			form_token(t_lctx *ctx, char **tokens, char *cmd);
 
 /*
 ** lexer/lexer_utils.c

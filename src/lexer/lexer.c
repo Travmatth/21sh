@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/02 23:47:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/04 15:30:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** call the appropriate lexing step within given state and lexing ctx
 */
 
-void	tokenize_switch(t_lexctx *ctx, char **tokens, char *cmd, int record)
+void	tokenize_switch(t_lctx *ctx, char **tokens, char *cmd, int record)
 {
 	if (ctx->in_op && !escaped(cmd, ctx->i)
 		&& can_form_op(cmd, ctx->in_op, &ctx->i, END)) ctx->i += 1;
@@ -47,11 +47,11 @@ void	tokenize_switch(t_lexctx *ctx, char **tokens, char *cmd, int record)
 
 int		tokenize(char *cmd, char **tokens, int record, size_t *tok_count)
 {
-	t_lexctx	ctx;
+	t_lctx	ctx;
 
 	if (!cmd)
 		return (NIL);
-	ft_bzero(&ctx, sizeof(t_lexctx));
+	ft_bzero(&ctx, sizeof(t_lctx));
 	while (!NONE(cmd[ctx.i]) && !ctx.err)
 		tokenize_switch(&ctx, tokens, cmd, record);
 	if (record && ctx.in_word && !(tokens[ctx.count - 1] =

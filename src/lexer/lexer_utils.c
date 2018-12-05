@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/03 01:27:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/04 12:52:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int		find_next(char c, char *cmd, size_t *offset)
 		}
 		else if (*cmd == c && i != 0)
 		{
-			*offset += i + 1;
+			*offset += i;
 			return (SUCCESS);
 		}
 		i += 1;
