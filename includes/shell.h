@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <signal.h>
 # include <sys/stat.h>
+# include "grammar.h"
 
 /*
 ** Operator DFA definitions
@@ -42,6 +43,8 @@
 # define IS_SNGL(x, s, n, o) (*x == '\'' && (s = find_next('\'', n, o)))
 # define IS_DBL(x, s, n, o) (*x == '"' && (s = find_next('\'', n, o)))
 # define ESCAPABLE_CHAR(x) ()
+# define END 1
+# define BEGIN 0
 
 char			**g_environ;
 int				g_processes;
@@ -108,7 +111,14 @@ int				prepare_ast(char *complete_cmd, t_ast *ast);
 */
 
 char			**remove_quotations(char *command, int ac);
+int				find_sub_end(char c, char *complete_cmd, size_t *j);
+int				escaped(char *complete_cmd, size_t i);
 int				count_params(char *command, size_t *i, size_t *tok_count);
+/*
+** given compete_cmd with op starting at i, determine whether operator is valid
+*/
+
+int				can_form_op(char *complete_cmd, int in_op, size_t *i, int position);
 
 /*
 ** parse/command.c

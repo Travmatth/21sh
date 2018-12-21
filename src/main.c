@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 20:34:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/02 23:30:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int		main(int argc, char **argv, char **environ)
 		write(STDOUT, "$> ", 3);
 		if (get_next_line(STDIN, &command) > 0)
 		{
-			if (execute_commands(command) == 0)
+			if (ERR(execute_commands(command)))
 				break ;
 			free(command);
 		}
