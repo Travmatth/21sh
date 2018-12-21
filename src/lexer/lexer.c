@@ -6,208 +6,201 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 19:27:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/20 16:28:59 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		remove_slash(char elem, size_t i, char *str, int *stop)
-{
-	int		out;
+# define END 1
+# define BEGIN 0
 
-	(void)stop;
-	out = 1;
-	if (elem == '\\')
-		out = IS_SEP(str[i + 1]) ? 0 : 1;
-	return (out);
-}
-
-char	**tokenize_commands(char **complete_cmd)
-{
-	(void)complete_cmd;
-	return (NULL);
-}
-
-void	expand_command(char **command)
-{
-	char	*var;
-	char	*tmp;
-	char	*cmd;
-
-	while (ft_strchr(*command, '~'))
-	{
-		var = get_env_var("HOME");
-		tmp = ft_swap(*command, "~", var);
-		free(*command);
-		*command = tmp;
-	}
-	while ((tmp = ft_strchr(*command, '$')))
-	{
-		cmd = ft_strchr(tmp, ' ') ? ft_strchr(tmp, ' ') : ft_strchr(tmp, '\0');
-		tmp = ft_strsub(tmp, 0, cmd - tmp);
-		var = get_env_var(tmp + 1);
-		cmd = ft_swap(*command, tmp, var ? var : "");
-		free(*command);
-		free(tmp);
-		*command = cmd;
-	}
-}
-
-/*
-** manage escaped characters in given arg
-** turn \n && \t -> <newline> && <tab> and strip other leading \
-*/
-
-int		normalize_tokens(char **args)
-{
-	(void)args;
-	return (NIL);
-}
-
-/*
-** find next whitespace in complete_command not preceded by a backslash
-*/
-
-int		find_ws(char *complete_cmd, size_t *offset)
-{
-	size_t	i;
-
-	i = 1;
-	while (complete_cmd[i])
-	{
-		if (IS_WS(complete_cmd[i]))
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
-		i += 1;
-	}
-	return (ERROR);
-}
-
-/*
-** find next character c in complete_command not preceded by a backslash
-*/
-
-int		find_next(char c, char *complete_cmd, size_t *offset)
-{
-	size_t	i;
-
-	i = 1;
-	while (complete_cmd && complete_cmd[i])
-	{
-		if (*complete_cmd == '\\' && complete_cmd[i + 1] == c)
-		{
-			if (NONE(find_next(c, &complete_cmd[i + 2], offset)))
-				return (NIL);
-			*offset += i;
-			return (SUCCESS);
-		}
-		else if (*complete_cmd == c && i == 1)
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
-		complete_cmd += 1;
-	}
-	return (NIL);
-}
-
-/*
-** determine whether character c in complete_command
-** is quote not preceded by a backslash
-*/
-
-int		is_quote(char *complete_cmd, size_t n)
-{
-	if (n == 0 && IS_WS(*complete_cmd))
-		return (SUCCESS);
-	else if (n > 0 && *(complete_cmd - 1) != '\\' && IS_WS(*complete_cmd))
-		return (SUCCESS);
-	return (NIL);
-}
+// if we encounter another opening candidate
+// we need to restart search w/ that sequence
 
 /*
 ** find the next token in the complete_command
 */
 
-int		tokenize_switch(char *complete_cmd, int i, int n, size_t *offset)
+int		tokenize_switch(char *input, int i, int n, size_t *offset)
 {
 	int		s;
 
-	if (!complete_cmd[1])
+	if (!input[1])
 		return (NIL);
 	s = 0;
-	if ((!is_quote(&complete_cmd[n], i) && (s = find_ws(complete_cmd, offset)))
-		|| IS_SNGL(complete_cmd, s, &complete_cmd[n], offset)
-		|| IS_DBL(complete_cmd, s, &complete_cmd[n], offset))
+	if ((!is_quote(&input[n], i) && (s = find_ws(input, offset)))
+		|| IS_SNGL(input, s, &input[n], offset)
+		|| IS_DBL(input, s, &input[n], offset))
 		return (SUCCESS);
 	if (s)
 		return (ERROR);
 	return (NIL);
 }
 
-/*
-** transform a given complete_command into an array of tokens to be parsed
-*/
-
-int		tokenize(char *complete_cmd, int arg_count, size_t len, char **args)
+int		find_sub_end(char c, char *input, size_t *j)
 {
-	size_t	offset;
-	int		i;
-	size_t	n;
-
-	(void)len;
-	n = 0;
-	i = -1;
-	offset = 0;
-	if (!complete_cmd)
-		return (NIL);
-	while (complete_cmd[n] && ++i < arg_count)
-	{
-		while (IS_WS(complete_cmd[n]))
-			complete_cmd += 1;
-		if (NONE(tokenize_switch(complete_cmd, i, n, &offset)))
-			break ;
-		if (!(args[i] = ft_strsub(complete_cmd, n, offset)))
-			return (ERROR);
-		n += offset;
-	}
+	(void)c;
+	(void)input;
+	(void)j;
 	return (SUCCESS);
 }
 
-/*
-** if open quote is detected
-** prompt user for more input that will close the quote
-*/
-
-int		close_quote_prompt(char *complete_cmd, size_t i, size_t *tok_count)
+int		escaped(char *input, size_t i)
 {
-	(void)complete_cmd;
-	(void)i;
-	(void)tok_count;
-	return (SUCCESS);
+	if (i == 0)
+		return (FALSE);
+	else if (input[i - 1] == '\\')
+		return (TRUE);
+	return (FALSE);
 }
 
-int		lexer(char *complete_cmd, char ***tokens)
-{
-	size_t	i;
-	size_t	tok_count;
-	char	**toks;
+/*
+** given compete_cmd with op starting at i, determine whether operator is valid
+*/
 
-	if (ERR(count_params(complete_cmd, &i, &tok_count)))
+int		can_form_op(char *input, t_lctx *ctx, int position)
+{
+	(void)input;
+	(void)ctx;
+	(void)position;
+	return (NIL);
+}
+
+void	init_lexer_ctx(t_lctx *ctx)
+{
+	ctx->i = 0;
+	ctx->j = 0;
+	ctx->stop = 0;
+	ctx->in_op = 0;
+	ctx->in_word = 0;
+}
+
+/*
+** 1. If the end of input is recognized
+** the current token shall be delimited.
+** If there is no current token, the end-of-input
+** indicator shall be returned as the token.
+**
+** 4. If the current character is backslash, single-quote,
+** or double-quote ( '\', '", or ' )' and it is not quoted,
+** it shall affect quoting for subsequent characters up to
+** the end of the quoted text. The rules for quoting are as
+** described in Quoting. During token recognition no substitutions
+** shall be actually performed, and the result token shall
+** contain exactly the characters that appear in the input
+** (except for <newline> joining), unmodified, including any
+** embedded or enclosing quotes or substitution operators,
+** between the quote mark and the end of the quoted text.
+** The token shall not be delimited by the end of the quoted field.
+**
+** 5: If the current character is an unquoted '$' or '`',
+** the shell shall identify the start of any candidates for
+** parameter expansion ( Parameter Expansion),
+** command substitution ( Command Substitution),
+** or arithmetic expansion ( Arithmetic Expansion)
+** from their introductory unquoted character sequences:
+** '$' or "${", "$(" or '`', and "$((", respectively.
+** The shell shall read sufficient input to determine the end
+** of the unit to be expanded (as explained in the cited sections).
+** While processing the characters, if instances of expansions or
+** quoting are found nested within the substitution, the shell
+** shall recursively process them in the manner specified for the
+** construct that is found. The characters found from the beginning
+** of the substitution to its end, allowing for any recursion
+** necessary to recognize embedded constructs, shall be included
+** unmodified in the result token, including any embedded or
+** enclosing substitution operators or quotes. The token shall not
+** be delimited by the end of the substitution.
+**
+** 7. If the current character is an unquoted <newline>,
+** the current token shall be delimited.
+**
+** 8. If the current character is an unquoted <blank>,
+** any token containing the previous character is delimited
+** and the current character shall be discarded.
+**
+** 9. If the previous character was part of a word,
+** the current character shall be appended to that word.
+**
+** 10. If the current character is a '#', it and all subsequent
+** characters up to, but excluding, the next <newline> shall be
+** discarded as a comment. The <newline> that ends the line is
+** not considered part of the comment.
+**
+** 11. The current character is used as the start of a new word.
+*/
+
+int		lexical_analysis(char *input, t_list *tokens)
+{
+	t_lctx	ctx;
+	t_list	*node;
+	t_token	token;
+	char	c;
+
+	if (!input)
+		return (NIL);
+	init_lexer_ctx(&ctx);
+	while (!ctx.stop)
 	{
-		if (ERR((i = close_quote_prompt(complete_cmd, i, &tok_count))))
+		c = input[ctx.i];
+		// rule 1
+		if (!c)
+		{
+			if (!token.type)
+			{
+				token.type = EOI;
+				token.value = NULL;
+			}
+			ctx.stop = TRUE;
+		}
+		else if (ctx.in_op)
+			process_operator(c, token, node, tokens, ctx);
+		// rule 4
+		else if (!escaped(input, ctx.i) && (c == '\\' || c == '\'' || c == '"'))
+		{
+			if (NONE((ctx.j = find_next(c, &input[1], &ctx.j))))
+				return (ERROR);
+			ctx.i += ctx.j;
+		}
+		// rule 5
+		else if (!escaped(input, ctx.i) && (c == '$' || c == '`'))
+		{
+			if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
+				return (ERROR);
+			ctx.i += ctx.j;
+		}
+		else if (can_form_op(input, &ctx, BEGIN))
+		{
+			ctx.i += 1;
+			ctx.in_op += 1;
+		}
+		// rule 7
+		else if (c == '\n' && !espaced(input, ctx.i))
+		{
+			ctx.i += 1;
+			ctx.in_word = FALSE;
+		}
+		// rule 8
+		else if (c == ' ' && !espaced(input, ctx.i))
+		{
+			ctx.i += 1;
+			ctx.in_word = FALSE;
+		}
+		// rule 9
+		else if (ctx.in_word)
+			ctx.i += 1;
+		// rule 10
+		else if (c == '#')
+		{
+			if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
+				return (ERROR);
+			ctx.i += ctx.j;
+		}
+		// rule 11
+		if (!ft_lstnew(&token, sizeof(t_token)))
 			return (ERROR);
+		ft_lstpushback(&tokens, node);
 	}
-	if (!OK(tok_count))
-		return (NIL);
-	else if (!(toks = (char**)ft_memalloc(sizeof(char*) * (tok_count))))
-		return (ERROR);
-	else if (NONE(tokenize(complete_cmd, tok_count, LEN(complete_cmd, 0), toks))
-		|| ERR(normalize_tokens(toks)))
-		return (NIL);
-	*tokens = toks;
 	return (SUCCESS);
 }

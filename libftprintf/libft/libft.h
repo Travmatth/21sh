@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 12:34:43 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 18:07:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/19 15:23:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@
 # define LITTLEBLOCKSIZE (sizeof (long))
 
 /*
-** Threshhold for punting to the byte copier.
+** Threshold for punting to the byte copier.
 */
 
 # define TOO_SMALL(LEN) ((LEN) < BIGBLOCKSIZE)

@@ -18,6 +18,24 @@
 # include <signal.h>
 # include <sys/stat.h>
 
+/*
+** Operator DFA definitions
+*/
+
+# define AND_IF 2
+# define OR_IF 4
+# define DSEMI 6
+# define DLESS 8
+# define DGREAT 10
+# define LESSAND 11
+# define GREATAND 12
+# define LESSGREAT 13
+# define DLESSDASH 14
+# define CLOBBER 15
+# define ACCEPTING(x) ((x >= 2 || x <= 10) && !(x % 2) || (x >= 11) || x <= 15)
+# define NOT_ERR_STATE(x) (x != 15)
+
+# define EOI 1
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
 # define IS_SEP(x) (IS_WS(x) || IS_QTE(x))
@@ -29,41 +47,20 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-typedef struct	s_pipeline
+typedef struct	s_lctx
 {
-	char		***simple_commands;
-	int			*io_channels;
-	char		*flags;
-}				t_pipeline;
+	short		i;
+	short		j;
+	short		stop;
+	short		op_state;
+	short		in_word;
+}				t_lctx;
 
-typedef struct	s_job
+typedef struct	s_token
 {
-	t_pipeline	*pipeline;
-}				t_job;
-
-typedef struct	s_ast_node
-{
-	t_pipeline	*pipeline;
-}				t_ast_node;
-
-typedef struct	s_ast_leaf
-{
-	t_ast_node	*left;
-	t_ast_node	*right;
-	char		flags[BITNSLOTS(8)];
-}				t_ast_leaf;
-
-typedef union	u_ast_elem
-{
-	t_ast_leaf	*leaf;
-	t_ast_node	*node;
-}				t_ast_elem;
-
-typedef struct	s_ast
-{
-	t_ast_elem	*root;
-	char		flags[BITNSLOTS(1)];
-}				t_ast;
+	int			type;
+	char		*value;
+}				t_token;
 
 typedef struct	s_builtin
 {
@@ -92,10 +89,10 @@ int				builtin_env(int argc, char **argv);
 char			*get_env_var(char *var);
 
 /*
-** builtins/lexer.c
+** builtins/lexical_analysis.c
 */
 
-int				lexer(char *complete_cmd, char ***tokens);
+int				lexical_analysis(char *complete_cmd, t_list *tokens);
 int				find_next(char c, char *complete_cmd, size_t *offset);
 
 /*

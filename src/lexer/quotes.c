@@ -6,103 +6,71 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 19:39:09 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/19 15:58:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-# define END 1
-# define BEGIN 0
+/*
+** find next whitespace in complete_command not preceded by a backslash
+*/
 
-// if we encounter another opening candidate
-// we need to restart search w/ that sequence
-
-int		find_sub_end(char c, char *complete_cmd, size_t *j)
+int		find_ws(char *complete_cmd, size_t *offset)
 {
-	(void)c;
-	(void)complete_cmd;
-	(void)j;
-	return (SUCCESS);
-}
+	size_t	i;
 
-int		escaped(char *complete_cmd, size_t i)
-{
-	if (i == 0)
-		return (FALSE);
-	else if (complete_cmd[i - 1] == '\\')
-		return (TRUE);
-	return (FALSE);
+	i = 1;
+	while (complete_cmd[i])
+	{
+		if (IS_WS(complete_cmd[i]))
+		{
+			*offset += i;
+			return (SUCCESS);
+		}
+		i += 1;
+	}
+	return (ERROR);
 }
 
 /*
-** given compete_cmd with op starting at i, determine whether operator is valid
+** find next character c in complete_command not preceded by a backslash
 */
 
-int		can_form_op(char *complete_cmd, int in_op, size_t *i, int position)
+int		find_next(char c, char *complete_cmd, size_t *offset)
 {
-	(void)complete_cmd;
-	(void)in_op;
-	(void)i;
-	(void)position;
+	size_t	i;
+
+	i = 1;
+	while (complete_cmd && complete_cmd[i])
+	{
+		if (*complete_cmd == '\\' && complete_cmd[i + 1] == c)
+		{
+			if (NONE(find_next(c, &complete_cmd[i + 2], offset)))
+				return (NIL);
+			*offset += i;
+			return (SUCCESS);
+		}
+		else if (*complete_cmd == c && i == 1)
+		{
+			*offset += i;
+			return (SUCCESS);
+		}
+		complete_cmd += 1;
+	}
 	return (NIL);
 }
 
-int		count_params(char *complete_cmd, size_t *i, size_t *tok_count)
-{
-	size_t	j;
-	int		count;
-	int		in_op;
-	int		in_word;
+/*
+** determine whether character c in complete_command
+** is quote not preceded by a backslash
+*/
 
-	if (!complete_cmd)
-		return (NIL);
-	count = 0;
-	in_op = 0;
-	in_word = FALSE;
-	while (!NONE(complete_cmd[*i]))
-	{
-		if (in_op && !escaped(complete_cmd, *i) && can_form_op(complete_cmd, in_op, i, END))
-			*i += 1;
-		else if (in_op && !can_form_op(complete_cmd, in_op, i, END))
-			in_op = 0;
-		else if (!escaped(complete_cmd, *i) && (*complete_cmd == '\\'
-			|| *complete_cmd == '\''
-			|| *complete_cmd == '"'))
-		{
-			if (NONE((j = find_next(*complete_cmd, &complete_cmd[1], &j))))
-				return (ERROR);
-			*i += j;
-		}
-		else if (!escaped(complete_cmd, *i) && (*complete_cmd == '$' || *complete_cmd == '`'))
-		{
-			if (NONE((j = find_sub_end(*complete_cmd, &complete_cmd[1], &j))))
-				return (ERROR);
-			*i += j;
-		}
-		else if (can_form_op(complete_cmd, in_op, i, BEGIN))
-		{
-			i += 1;
-			in_op += 1;
-		}
-		else if (*complete_cmd == ' ' || *complete_cmd == '\n')
-		{
-			i += 1;
-			in_word = FALSE;
-		}
-		else if (in_word)
-			i += 1;
-		else if (*complete_cmd == '#')
-		{
-			if (NONE((j = find_sub_end(*complete_cmd, &complete_cmd[1], &j))))
-				return (ERROR);
-			*i += j;
-		}
-		else
-			count += 1;
-	}
-	if (NONE(complete_cmd))
-		count += 1;
-	*tok_count = count;
-	return (SUCCESS);
+int		is_quote(char *complete_cmd, size_t n)
+{
+	if (n == 0 && IS_WS(*complete_cmd))
+		return (SUCCESS);
+	else if (n > 0 && *(complete_cmd - 1) != '\\' && IS_WS(*complete_cmd))
+		return (SUCCESS);
+	return (NIL);
 }
