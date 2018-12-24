@@ -19,23 +19,6 @@
 # include <sys/stat.h>
 # include "grammar.h"
 
-/*
-** Operator DFA definitions
-*/
-
-# define AND_IF 2
-# define OR_IF 4
-# define DSEMI 6
-# define DLESS 8
-# define DGREAT 10
-# define LESSAND 11
-# define GREATAND 12
-# define LESSGREAT 13
-# define DLESSDASH 14
-# define CLOBBER 15
-# define ACCEPTING(x) ((x >= 2 || x <= 10) && !(x % 2) || (x >= 11) || x <= 15)
-# define NOT_ERR_STATE(x) (x != 15)
-
 # define EOI 1
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
@@ -62,8 +45,13 @@ typedef struct	s_lctx
 typedef struct	s_token
 {
 	int			type;
-	char		*value;
+	t_buf		*value;
 }				t_token;
+
+typedef struct s_ast
+{
+	int			type;
+}				t_ast;
 
 typedef struct	s_builtin
 {
@@ -103,7 +91,7 @@ int				find_next(char c, char *complete_cmd, size_t *offset);
 */
 
 int				remove_slash(char elem, size_t i, char *str, int *stop);
-int				parse_commands(char **tokens, t_ast *ast);
+int				parse_commands(t_list *tokens, t_ast *ast);
 int				prepare_ast(char *complete_cmd, t_ast *ast);
 
 /*
@@ -118,7 +106,7 @@ int				count_params(char *command, size_t *i, size_t *tok_count);
 ** given compete_cmd with op starting at i, determine whether operator is valid
 */
 
-int				can_form_op(char *complete_cmd, int in_op, size_t *i, int position);
+int				can_form_op(char *input, t_lctx *ctx, int position);
 
 /*
 ** parse/command.c

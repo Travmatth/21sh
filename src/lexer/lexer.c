@@ -6,13 +6,12 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/20 16:38:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/23 17:52:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-<<<<<<< HEAD
 # define END 1
 # define BEGIN 0
 
@@ -22,30 +21,6 @@
 /*
 ** find the next token in the complete_command
 */
-
-int		tokenize_switch(char *input, int i, int n, size_t *offset)
-{
-	int		s;
-
-	if (!input[1])
-		return (NIL);
-	s = 0;
-	if ((!is_quote(&input[n], i) && (s = find_ws(input, offset)))
-		|| IS_SNGL(input, s, &input[n], offset)
-		|| IS_DBL(input, s, &input[n], offset))
-		return (SUCCESS);
-	if (s)
-		return (ERROR);
-	return (NIL);
-}
-
-int		find_sub_end(char c, char *input, size_t *j)
-{
-	(void)c;
-	(void)input;
-	(void)j;
-	return (SUCCESS);
-}
 
 int		escaped(char *input, size_t i)
 {
@@ -60,20 +35,12 @@ int		escaped(char *input, size_t i)
 ** given compete_cmd with op starting at i, determine whether operator is valid
 */
 
-int		can_form_op(char *input, t_lctx *ctx, int position)
-{
-	(void)input;
-	(void)ctx;
-	(void)position;
-	return (NIL);
-}
-
 void	init_lexer_ctx(t_lctx *ctx)
 {
 	ctx->i = 0;
 	ctx->j = 0;
 	ctx->stop = 0;
-	ctx->in_op = 0;
+	ctx->op_state = 0;
 	ctx->in_word = 0;
 }
 
@@ -82,7 +49,55 @@ void	init_lexer_ctx(t_lctx *ctx)
 ** the current token shall be delimited.
 ** If there is no current token, the end-of-input
 ** indicator shall be returned as the token.
-**
+*/
+
+void	rule_1(t_token *token, t_lctx *ctx, t_list *tokens)
+{
+	(void)tokens;
+	if (!token->type)
+	{
+		token->type = EOI;
+		token->value = NULL;
+	}
+	ctx->stop = TRUE;
+}
+
+/*
+** 2. If the previous character was used as part of
+** an operator and the current character is not
+** quoted and can be used with the current
+** characters to form an operator,
+** it shall be used as part of that (operator) token.
+*/
+
+int		rule_2(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)node;
+	(void)token;
+	(void)tokens;
+	(void)ctx;
+	return (SUCCESS);
+}
+
+/*
+** 3. If the previous character was used as part of an
+** operator and the current character cannot be used
+** with the current characters to form an operator, the
+** operator containing the previous character shall be delimited.
+*/
+
+int		rule_3(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+	return (SUCCESS);
+}
+
+/*
 ** 4. If the current character is backslash, single-quote,
 ** or double-quote ( '\', '", or ' )' and it is not quoted,
 ** it shall affect quoting for subsequent characters up to
@@ -94,7 +109,25 @@ void	init_lexer_ctx(t_lctx *ctx)
 ** embedded or enclosing quotes or substitution operators,
 ** between the quote mark and the end of the quoted text.
 ** The token shall not be delimited by the end of the quoted field.
-**
+*/
+
+int		rule_4(char c, char *input, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	size_t	end;
+
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+	end = 0;
+	if (c == '\\')
+		end = 2;
+	ft_bufappend(token->value, &input[ctx->i], end);
+	ctx->i += end;
+	return (SUCCESS);
+}
+
+/*
 ** 5: If the current character is an unquoted '$' or '`',
 ** the shell shall identify the start of any candidates for
 ** parameter expansion ( Parameter Expansion),
@@ -113,24 +146,167 @@ void	init_lexer_ctx(t_lctx *ctx)
 ** unmodified in the result token, including any embedded or
 ** enclosing substitution operators or quotes. The token shall not
 ** be delimited by the end of the substitution.
-**
+*/
+
+int		rule_5(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+		// {
+		// 	if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
+		// 		return (ERROR);
+		// 	ctx.i += ctx.j;
+		// }
+	return (SUCCESS);
+}
+
+/*
+** 6: If the current character is not quoted and can be used as the
+** first character of a new operator, the current token (if any)
+** shall be delimited. The current character shall be used as the
+** beginning of the next (operator) token.
+*/
+
+int		rule_6(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+		// {
+		// 	ctx.i += 1;
+		// 	ctx.op_state += 1;
+		// }
+	return (SUCCESS);
+}
+
+/*
 ** 7. If the current character is an unquoted <newline>,
 ** the current token shall be delimited.
-**
+*/
+int		rule_7(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+	// {
+	// 	ctx.i += 1;
+	// 	ctx.in_word = FALSE;
+	// }
+	return (SUCCESS);
+}
+
+/*
 ** 8. If the current character is an unquoted <blank>,
 ** any token containing the previous character is delimited
 ** and the current character shall be discarded.
-**
+*/
+
+int		rule_8(t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	int		io_here;
+	size_t	i;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+	ctx->i += 1;
+	if (token->type == WORD)
+	{
+		i = 0;
+		io_here = TRUE;
+		while ((io_here == TRUE) && i < token->value->current)
+		{
+			if (!ft_isdigit(((char*)token->value->buf)[i]))
+				io_here = FALSE;
+		}
+		if (io_here == TRUE)
+			token->type = IO_HERE;
+		ctx->in_word = FALSE;
+	}
+	if (!(node = ft_lstnew(token, sizeof(t_token))))
+		return (ERROR);
+	ft_lstpushback(&tokens, node);
+	return (SUCCESS);
+}
+
+/*
 ** 9. If the previous character was part of a word,
 ** the current character shall be appended to that word.
-**
+*/
+
+int		rule_9(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+	ctx->i += 1;
+	if (!(ft_bufappend(token->value, &c, sizeof(char))))
+		return (ERROR);
+	return (SUCCESS);
+}
+
+/*
 ** 10. If the current character is a '#', it and all subsequent
 ** characters up to, but excluding, the next <newline> shall be
 ** discarded as a comment. The <newline> that ends the line is
 ** not considered part of the comment.
-**
+*/
+
+int		rule_10(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	(void)c;
+	(void)token;
+	(void)node;
+	(void)tokens;
+	(void)ctx;
+	// {
+		// if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
+			// return (ERROR);
+		// ctx.i += ctx.j;
+	// }
+	return (SUCCESS);
+}
+
+/*
 ** 11. The current character is used as the start of a new word.
 */
+
+// TODO: define at exit funcs to clean up any state
+
+int		rule_11(char c, t_token *token, t_list *node, t_list *tokens, t_lctx *ctx)
+{
+	char	*buf;
+
+	(void)c;
+	(void)node;
+	(void)tokens;
+	ctx->i += 1;
+	token->type = WORD;
+	ctx->in_word = TRUE;
+	if (!(buf = ft_memalloc(sizeof(char) * 10)))
+		return (ERROR);
+	ft_memcpy(buf, &c, sizeof(char));
+	if (!(token->value = ft_bufnew(buf, sizeof(char), sizeof(char) * 10)))
+		return (ERROR);
+	return (SUCCESS);
+}
+
+int		can_form_op(char *input, t_lctx *ctx, int position)
+{
+	(void)input;
+	(void)ctx;
+	(void)position;
+	return (NIL);
+}
 
 int		lexical_analysis(char *input, t_list *tokens)
 {
@@ -138,164 +314,39 @@ int		lexical_analysis(char *input, t_list *tokens)
 	t_list	*node;
 	t_token	token;
 	char	c;
+	int		status;
 
 	if (!input)
 		return (NIL);
+	node = NULL;
 	init_lexer_ctx(&ctx);
 	while (!ctx.stop)
 	{
 		c = input[ctx.i];
-		// rule 1
 		if (!c)
-		{
-			if (!token.type)
-			{
-				token.type = EOI;
-				token.value = NULL;
-			}
-			ctx.stop = TRUE;
-		}
-		else if (ctx.in_op)
-			process_operator(c, token, node, tokens, ctx);
-		// rule 4
+			rule_1(&token, &ctx, tokens);
+		else if (ctx.op_state && rule_2(c, &token, node, tokens, &ctx))
+			ctx.i += 1;
+		else if (ctx.op_state)
+			status = rule_3(c, &token, node, tokens, &ctx);
 		else if (!escaped(input, ctx.i) && (c == '\\' || c == '\'' || c == '"'))
-		{
-			if (NONE((ctx.j = find_next(c, &input[1], &ctx.j))))
-				return (ERROR);
-			ctx.i += ctx.j;
-		}
-		// rule 5
+			status = rule_4(c, input, &token, node, tokens, &ctx);
 		else if (!escaped(input, ctx.i) && (c == '$' || c == '`'))
-		{
-			if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
-				return (ERROR);
-			ctx.i += ctx.j;
-		}
+			status = rule_5(c, &token, node, tokens, &ctx);
 		else if (can_form_op(input, &ctx, BEGIN))
-		{
-			ctx.i += 1;
-			ctx.in_op += 1;
-		}
-		// rule 7
-		else if (c == '\n' && !espaced(input, ctx.i))
-		{
-			ctx.i += 1;
-			ctx.in_word = FALSE;
-		}
-		// rule 8
-		else if (c == ' ' && !espaced(input, ctx.i))
-		{
-			ctx.i += 1;
-			ctx.in_word = FALSE;
-		}
-		// rule 9
+			status = rule_6(c, &token, node, tokens, &ctx);
+		else if (c == '\n' && !escaped(input, ctx.i))
+			status = rule_7(c, &token, node, tokens, &ctx);
+		else if (c == ' ' && !escaped(input, ctx.i))
+			status = rule_8(&token, node, tokens, &ctx);
 		else if (ctx.in_word)
-			ctx.i += 1;
-		// rule 10
+			status = rule_9(c, &token, node, tokens, &ctx);
 		else if (c == '#')
-		{
-			if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
-				return (ERROR);
-			ctx.i += ctx.j;
-		}
-		// rule 11
-		if (!ft_lstnew(&token, sizeof(t_token)))
-=======
-/*
-** call the appropriate lexing step within given state and lexing ctx
-*/
-
-void	tokenize_switch(t_lctx *ctx, char **tokens, char *cmd, int record)
-{
-	if (ctx->in_op && !escaped(cmd, ctx->i)
-		&& can_form_op(cmd, ctx->in_op, &ctx->i, END)) ctx->i += 1;
-	else if (ctx->in_op && !can_form_op(cmd, ctx->in_op, &ctx->i, END))
-		delimit_op_token(ctx, tokens, cmd, record);
-	else if (!escaped(cmd, ctx->i) && (cmd[ctx->i] == '\\'
-		|| cmd[ctx->i] == '\''
-		|| cmd[ctx->i] == '"'))
-		form_quoted_token(ctx, tokens, cmd, record);
-	else if (!escaped(cmd, ctx->i) && (cmd[ctx->i] == '$'
-		|| cmd[ctx->i] == '`'))
-		delimit_param_token(ctx, tokens, cmd, record);
-	else if (can_form_op(cmd, ctx->in_op, &ctx->i, BEGIN))
-		form_op_token(ctx, tokens, cmd, record);
-	else if (IS_WS(cmd[ctx->i]))
-		delimit_token(ctx, tokens, cmd, record);
-	else if (ctx->in_word)
-		continue_token(ctx, tokens, cmd, record);
-	else if (cmd[ctx->i] == '#')
-		delimit_comment_token(ctx, tokens, cmd, record);
-	else
-		form_token(ctx, tokens, cmd);
-}
-
-/*
-** iterate through char *command, allocate into a series of char **tokens
-*/
-
-int		tokenize(char *cmd, char **tokens, int record, size_t *tok_count)
-{
-	t_lctx	ctx;
-
-	if (!cmd)
-		return (NIL);
-	ft_bzero(&ctx, sizeof(t_lctx));
-	while (!NONE(cmd[ctx.i]) && !ctx.err)
-		tokenize_switch(&ctx, tokens, cmd, record);
-	if (record && ctx.in_word && !(tokens[ctx.count - 1] =
-		ft_strsub(cmd, ctx.i - ctx.in_word, ctx.in_word + 1)))
-		return (ERROR);
-	else if (record && ctx.in_op && !(tokens[ctx.count - 1] =
-		ft_strsub(cmd, ctx.i - ctx.in_op, ctx.in_op + 1)))
-		return (ERROR);
-	*tok_count = ctx.count;
-	return (SUCCESS);
-}
-
-/*
-** if open quote is detected
-** prompt user for more input that will close the quote
-*/
-
-int		close_quote_prompt(char *cmd, size_t i, size_t *tok_count)
-{
-	(void)cmd;
-	(void)i;
-	(void)tok_count;
-	return (SUCCESS);
-}
-
-/*
-** break a char *command into a series of char **tokens to be parsed
-*/
-
-int		lexer(char *cmd, char ***tokens)
-{
-	size_t	i;
-	size_t	tok_count;
-	char	**toks;
-
-	i = 0;
-	toks = NULL;
-	tok_count = 0;
-	if (NONE(tokenize(cmd, toks, FALSE, &tok_count)))
-	{
-		if (ERR((i = close_quote_prompt(cmd, i, &tok_count))))
->>>>>>> 63308bedfda2b6a102f208830e7218dcf2762c3a
+			status = rule_10(c, &token, node, tokens, &ctx);
+		else
+			status = rule_11(c, &token, node, tokens, &ctx);
+		if (ERR(status))
 			return (ERROR);
-		ft_lstpushback(&tokens, node);
 	}
-<<<<<<< HEAD
-=======
-	if (!OK(tok_count))
-		return (NIL);
-	else if (!(toks = (char**)ft_memalloc(sizeof(char*) * (tok_count + 1))))
-		return (ERROR);
-	else if (NONE(tokenize(cmd, toks, TRUE, &tok_count))
-		|| ERR(normalize_tokens(toks)))
-		return (NIL);
-	*tokens = toks;
->>>>>>> 63308bedfda2b6a102f208830e7218dcf2762c3a
 	return (SUCCESS);
 }
