@@ -33,21 +33,6 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-typedef struct	s_lctx
-{
-	short		i;
-	short		j;
-	short		stop;
-	short		op_state;
-	short		in_word;
-}				t_lctx;
-
-typedef struct	s_token
-{
-	int			type;
-	t_buf		*value;
-}				t_token;
-
 typedef struct s_ast
 {
 	int			type;
@@ -80,10 +65,10 @@ int				builtin_env(int argc, char **argv);
 char			*get_env_var(char *var);
 
 /*
-** builtins/lexical_analysis.c
+** lexer/lexer.c
 */
 
-int				lexical_analysis(char *complete_cmd, t_list *tokens);
+int				lexical_analysis(char *complete_cmd, t_list **tokens);
 int				find_next(char c, char *complete_cmd, size_t *offset);
 
 /*
@@ -102,11 +87,6 @@ char			**remove_quotations(char *command, int ac);
 int				find_sub_end(char c, char *complete_cmd, size_t *j);
 int				escaped(char *complete_cmd, size_t i);
 int				count_params(char *command, size_t *i, size_t *tok_count);
-/*
-** given compete_cmd with op starting at i, determine whether operator is valid
-*/
-
-int				can_form_op(char *input, t_lctx *ctx, int position);
 
 /*
 ** parse/command.c
