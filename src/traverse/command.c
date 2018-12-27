@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 19:40:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/27 10:59:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,17 +152,7 @@ int		execute_commands(char *complete_cmd)
 	t_ast	ast;
 
 	ft_bzero(&ast, sizeof(t_ast));
-	if (!OK(status = prepare_ast(complete_cmd, &ast)))
-	{
-		if (ERR(status))
-			return (ERROR);
-		return (NIL);
-	}
-	if (!ERR(status = traverse_ast(&ast)))
-	{
-		if (ERR(status))
-			return (ERROR);
-		return (NIL);
-	}
-	return (SUCCESS);
+	if (!OK((status = prepare_ast(complete_cmd, &ast))))
+		return (status);
+	return (traverse_ast(&ast));
 }

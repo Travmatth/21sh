@@ -19,7 +19,6 @@
 # include <sys/stat.h>
 # include "grammar.h"
 
-# define EOI 1
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
 # define IS_SEP(x) (IS_WS(x) || IS_QTE(x))
@@ -36,6 +35,7 @@ typedef int		(*t_builtinf)(int argc, char **argv);
 typedef struct s_ast
 {
 	int			type;
+	char		missing;
 }				t_ast;
 
 typedef struct	s_builtin
@@ -68,14 +68,12 @@ char			*get_env_var(char *var);
 ** lexer/lexer.c
 */
 
-int				lexical_analysis(char *complete_cmd, t_list **tokens);
-int				find_next(char c, char *complete_cmd, size_t *offset);
+int				lexical_analysis(char *complete_cmd, t_list **tokens, char *missing);
 
 /*
 ** parse/parse.c
 */
 
-int				remove_slash(char elem, size_t i, char *str, int *stop);
 int				parse_commands(t_list *tokens, t_ast *ast);
 int				prepare_ast(char *complete_cmd, t_ast *ast);
 
@@ -85,14 +83,11 @@ int				prepare_ast(char *complete_cmd, t_ast *ast);
 
 char			**remove_quotations(char *command, int ac);
 int				find_sub_end(char c, char *complete_cmd, size_t *j);
-int				escaped(char *complete_cmd, size_t i);
-int				count_params(char *command, size_t *i, size_t *tok_count);
 
 /*
 ** parse/command.c
 */
 
-void			expand_command(char **command);
 int				execute_commands(char *command);
 int				builtin_command(char **command);
 

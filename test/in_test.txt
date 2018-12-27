@@ -1,12 +1,14 @@
-echo \n; cat "foo";
-	 	echo 	 	 "\nthis should"	 	"work";
-	echo	"\"this should"		\"too		;
-ls -l -R | grep "\.txt$";
-echo "foo bar" > test/out_file;
-cat < test/in_file > test/out_file;
 	 	echo 	 	 "\nthis should not;
 echo 	 	 "\nthis should not" ';
 echo 	 	 "'\nthis should not';
 echo "this\n"	|| echo "	not this";
 echo "this\n"	&& echo "	not this";
 	echo "to stderr" 1>&2;
+
+// LEXES
+echo \n; cat "foo";
+	 	echo 	 	 "\nthis should"	 	"work";
+echo	"\"this should"		\"too		;
+ls -l -R | grep "\.txt$";
+echo "foo bar" > test/out_file;
+cat < test/in_file > test/out_file;
