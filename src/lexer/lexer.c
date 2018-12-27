@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/24 16:54:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/26 19:18:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,32 @@ void	init_lexer_ctx(t_lctx *ctx)
 	ctx->stop = 0;
 	ctx->op_state = 0;
 	ctx->in_word = 0;
+}
+
+int		create_new_tok(char c, t_token *token, t_lctx *ctx, int type)
+{
+	char	*buf;
+
+	token->type = type;
+	ctx->in_word = TRUE;
+	if (!(buf = ft_memalloc(sizeof(char) * 10)))
+		return (ERROR);
+	ft_memcpy(buf, &c, sizeof(char));
+	if (!(token->value = ft_bufnew(buf, sizeof(char), sizeof(char) * 10)))
+		return (ERROR);
+	return (SUCCESS);
+}
+
+int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
+{
+	if (!(node = ft_lstnew(token, sizeof(t_token))))
+		return (ERROR);
+	ft_lstpushback(tokens, node);
+	ctx->in_word = FALSE;
+	ctx->op_state = FALSE;
+	token->type = NIL;
+	token->value = NULL;
+	return (SUCCESS);
 }
 
 /*
@@ -119,6 +145,8 @@ int		rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 	size_t	end;
 
 	end = 0;
+	if (NONE(token->type) && ERR(create_new_tok(c, token, ctx, WORD)))
+		return (ERROR);
 	if (c == '\\')
 		end = 2;
 	else if (c == '"')
@@ -160,11 +188,11 @@ int		rule_5(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	(void)token;
 	(void)tokens;
 	(void)ctx;
-		// {
-		// 	if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
-		// 		return (ERROR);
-		// 	ctx.i += ctx.j;
-		// }
+	// {
+	// 	if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
+	// 		return (ERROR);
+	// 	ctx.i += ctx.j;
+	// }
 	return (SUCCESS);
 }
 
@@ -178,23 +206,14 @@ int		rule_5(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 int		rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 {
 	t_list	*node;
-	t_buf	*buf;
 
-	if (ctx->in_word)
-	{
-		if (!(node = ft_lstnew(token, sizeof(t_token))))
-			return (ERROR);
-		ft_lstpushback(tokens, node);
-		ctx->in_word = FALSE;
-	}
-	ctx->op_state = next_op_state(c, START);
-	if (!(buf = ft_memalloc(sizeof(char) * 4)))
-		return (ERROR);
-	ft_memcpy(buf, &c, sizeof(char));
-	if (!(token->value = ft_bufnew(buf, sizeof(char), sizeof(char) * 4)))
+	node = NULL;
+	if (ctx->in_word && ERR(push_token(token, node, tokens, ctx)))
 		return (ERROR);
 	ctx->i += 1;
-	token->type = ctx->op_state;
+	ctx->op_state = next_op_state(c, START);
+	if (ERR(create_new_tok(c, token, ctx, ctx->op_state)))
+		return (ERROR);
 	return (SUCCESS);
 }
 
@@ -228,6 +247,7 @@ int		rule_8(t_token *token, t_list **tokens, t_lctx *ctx)
 	t_list	*node;
 
 	ctx->i += 1;
+	node = NULL;
 	if (token->type == WORD)
 	{
 		i = 0;
@@ -239,10 +259,7 @@ int		rule_8(t_token *token, t_list **tokens, t_lctx *ctx)
 		}
 		if (io_here == TRUE)
 			token->type = IO_HERE;
-		ctx->in_word = FALSE;
-		if (!(node = ft_lstnew(token, sizeof(t_token))))
-			return (ERROR);
-		ft_lstpushback(tokens, node);
+		push_token(token, node, tokens, ctx);
 	}
 	return (SUCCESS);
 }
