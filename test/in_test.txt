@@ -1,4 +1,9 @@
-	 	echo 	 	 "\nthis should not;
+echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
+echo $FOO;
+echo ${echo foo};
+echo $(echo bar);
+echo $((1 + 1));
+echo 	 	 "\nthis should not;
 echo 	 	 "\nthis should not" ';
 echo 	 	 "'\nthis should not';
 echo "this\n"	|| echo "	not this";

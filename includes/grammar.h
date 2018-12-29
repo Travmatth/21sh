@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 13:20:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/27 14:38:49 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct	s_lctx
 	short		stop;
 	short		op_state;
 	short		in_word;
-	char		missing;
+	t_list		*missing;
 }				t_lctx;
 
 typedef struct	s_token

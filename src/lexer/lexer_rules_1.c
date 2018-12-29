@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 13:21:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/27 14:52:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,9 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 		if (NONE(find_next(c, &input[ctx->i], &end)))
 		{
 			ctx->stop = TRUE;
-			ctx->missing = c;
 			ctx->status = NIL;
+			if (ERR(push_nested_symbol(c, ctx)))
+				return (ERROR);
 		}
 		end += 1;
 		ctx->in_word = TRUE;
@@ -130,10 +131,5 @@ void	rule_5(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	(void)token;
 	(void)tokens;
 	(void)ctx;
-	// {
-	// 	if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
-	// 		return (ERROR);
-	// 	ctx.i += ctx.j;
-	// }
 	ctx->status = SUCCESS;
 }

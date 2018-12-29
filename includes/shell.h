@@ -35,7 +35,7 @@ typedef int		(*t_builtinf)(int argc, char **argv);
 typedef struct s_ast
 {
 	int			type;
-	char		missing;
+	t_list		*missing;
 }				t_ast;
 
 typedef struct	s_builtin

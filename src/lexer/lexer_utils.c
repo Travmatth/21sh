@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 13:06:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/27 14:53:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,4 +165,8 @@ int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 	token->type = NIL;
 	token->value = NULL;
 	return (SUCCESS);
+}
+
+int		push_nested_symbol(char c, t_lctx *ctx)
+{
 }
