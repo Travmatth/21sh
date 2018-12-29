@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 13:23:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/29 13:57:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 
 int		lexical_analysis(char *input, t_list **tokens, char *missing)
 {
+	char	c;
 	t_lctx	ctx;
 	t_token	token;
-	char	c;
 
 	if (!init_lexer_ctx(input, &ctx))
 		return (NIL);

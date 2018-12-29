@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 14:52:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/29 14:02:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int		rule_2(char c, t_token *token, t_lctx *ctx)
 	ctx->op_state = next;
 	token->type = next;
 	ctx->status = SUCCESS;
-	return (ctx->status);
+	return (SUCCESS);
 }
 
 /*
@@ -97,7 +97,7 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 		{
 			ctx->stop = TRUE;
 			ctx->status = NIL;
-			if (ERR(push_nested_symbol(c, ctx)))
+			if (ERR(push_missing_symbol(c, ctx)))
 				return (ERROR);
 		}
 		end += 1;
@@ -127,9 +127,5 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 
 void	rule_5(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 {
-	(void)c;
-	(void)token;
-	(void)tokens;
-	(void)ctx;
-	ctx->status = SUCCESS;
+	ctx->status = identify_substitutions(c, token, ctx);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 14:53:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/29 14:03:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,47 @@ int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 	return (SUCCESS);
 }
 
-int		push_nested_symbol(char c, t_lctx *ctx)
+int		push_missing_symbol(char c, t_lctx *ctx)
 {
+}
+
+int		find_closing_chars(t_list *missing, t_token *token, t_lctx *ctx)
+{
+}
+
+int		identify_substitutions(char c, t_token *token, t_lctx *ctx)
+{
+	t_list	*missing;
+	t_list	*node;
+	int		j;
+
+	missing = NULL;
+	if (c == '$')
+	{
+		if (ctx->input[ctx->i + 1] && ctx->input[ctx->i + 1] == '(')
+		{
+			if (!(node = ft_lstnew("cmdsubst", sizeof(char) * 8)))
+				ctx->status = ERROR;
+			ft_lstadd(&missing, node);
+			if (ctx->input[ctx->i + 2] && ctx->input[ctx->i + 2] == '(')
+			{
+				if (!(node = ft_lstnew("mathsubst", sizeof(char) * 9)))
+					ctx->status = ERROR;
+				ft_lstadd(&missing, node);
+			}
+		}
+		else if (ctx->input[ctx->i + 1] && ctx->input[ctx->i + 1] == '{')
+		{
+			if (!(node = ft_lstnew("braceparam", sizeof(char) * 10)))
+				ctx->status = ERROR;
+			ft_lstadd(&missing, node);
+		}
+	}
+	else if (c == '`')
+	{
+		if (!(node = ft_lstnew("bquote", sizeof(char) * 6)))
+			ctx->status = ERROR;
+		ft_lstadd(&missing, node);
+	}
+	find_closing_chars(missing, token, ctx);
 }
