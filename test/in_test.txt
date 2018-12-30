@@ -1,3 +1,5 @@
+echo $($(echo "foo"));
+echo $((1 + 1));
 echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
 echo $FOO;
 echo ${echo foo};
@@ -17,3 +19,5 @@ echo	"\"this should"		\"too		;
 ls -l -R | grep "\.txt$";
 echo "foo bar" > test/out_file;
 cat < test/in_file > test/out_file;
+echo ${ENV};
+echo $(echo foo);

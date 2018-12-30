@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/29 13:57:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/29 17:10:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,11 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	else if (!escaped(ctx->input, ctx->i)
 		&& (c == '\\' || c == '\'' || c == '"'))
 		rule_4(c, ctx->input, token, ctx);
-	else if (!escaped(ctx->input, ctx->i) && (c == '$' || c == '`'))
-		rule_5(c, token, tokens, ctx);
+	else if (!escaped(ctx->input, ctx->i) && (c == '$' || c == '`')
+		&& ctx->input[ctx->i + 1]
+		&& !(ctx->input[ctx->i + 1] == ' ' || ctx->input[ctx->i + 1] == '\t'
+			|| ctx->input[ctx->i + 1] == '\n'))
+		rule_5(c, token, ctx);
 	else if (can_form_op(c))
 		rule_6(c, token, tokens, ctx);
 	else if (c == '\n' && !escaped(ctx->input, ctx->i))
@@ -48,12 +51,13 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 ** -exec p (char*)((t_token*)(*tokens)->content)->value->buf
 */
 
-int		lexical_analysis(char *input, t_list **tokens, char *missing)
+int		lexical_analysis(char *input, t_list **tokens, t_list *missing)
 {
 	char	c;
 	t_lctx	ctx;
 	t_token	token;
 
+	(void)missing;
 	if (!init_lexer_ctx(input, &ctx))
 		return (NIL);
 	while (OK(ctx.status))
@@ -61,6 +65,5 @@ int		lexical_analysis(char *input, t_list **tokens, char *missing)
 		c = input[ctx.i];
 		lex_switch(c, &token, tokens, &ctx);
 	}
-	*missing = ctx.missing;
 	return (ctx.status);
 }

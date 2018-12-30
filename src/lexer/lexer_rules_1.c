@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/29 14:02:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/29 17:26:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,8 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 		{
 			ctx->stop = TRUE;
 			ctx->status = NIL;
-			if (ERR(push_missing_symbol(c, ctx)))
-				return (ERROR);
+			// if (ERR(push_missing_symbol(c, ctx)))
+			// 	return (ERROR);
 		}
 		end += 1;
 		ctx->in_word = TRUE;
@@ -125,7 +125,16 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 ** token shall not be delimited by the end of the substitution.
 */
 
-void	rule_5(char c, t_token *token, t_list **tokens, t_lctx *ctx)
+void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
-	ctx->status = identify_substitutions(c, token, ctx);
+	int		skip;
+
+	if (ERR((skip = identify_substitutions(c, token, ctx, &ctx->missing))))
+		ctx->status = ERROR;
+	if (!token->type && ERR(create_new_tok(c, token, ctx, WORD)))
+		ctx->status = ERROR;
+	if (!ft_bufappend(token->value, &ctx->input[ctx->i + 1], skip))
+		ctx->status = ERROR;
+	ctx->i += skip + 1;
+	ctx->status = SUCCESS;
 }
