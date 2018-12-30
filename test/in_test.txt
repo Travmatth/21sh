@@ -1,3 +1,5 @@
+echo "simple";
+echo "\"less simple";
 echo $($(echo "foo"));
 echo $((1 + 1));
 echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";

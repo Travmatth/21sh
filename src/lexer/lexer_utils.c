@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/29 17:36:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 13:57:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,61 +50,6 @@ void	expand_command(char **command)
 		free(tmp);
 		*command = cmd;
 	}
-}
-
-/*
-** find next whitespace in complete_command not preceded by a backslash
-*/
-
-int		find_ws(char *cmd, size_t *offset)
-{
-	size_t	i;
-
-	i = 1;
-	while (cmd[i])
-	{
-		if (IS_WS(cmd[i]))
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
-		i += 1;
-	}
-	return (ERROR);
-}
-
-/*
-** find next character c in complete_command not preceded by a backslash
-*/
-
-int		find_next(char c, char *cmd, size_t *offset)
-{
-	size_t	i;
-	char	t;
-
-	i = 0;
-	while (cmd && cmd[1])
-	{
-		t = *cmd;
-		if (*cmd == '\\' && cmd[1] == c)
-		{
-			i += 1;
-			cmd += 1;
-		}
-		else if (*cmd == c && i != 0)
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
-		i += 1;
-		cmd += 1;
-	}
-	if (cmd && *cmd == c && i != 0)
-	{
-		*offset += i;
-		return (SUCCESS);
-	}
-	return (NIL);
 }
 
 /*
@@ -162,102 +107,33 @@ int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 	return (SUCCESS);
 }
 
-int		push_missing_symbol(t_list *missing, t_lctx *ctx)
+int		next_missing_symbol(t_list *missing)
 {
-	(void)missing;
-	(void)ctx;
-	return (SUCCESS);
+	t_list	*node;
+	int		type;
+
+	if (!(node = ft_lstpeekhead(missing)))
+		return (NIL);
+	type = *(short*)node->content;
+	return (type);
 }
 
-int		pop_missing_symbol(t_list **missing, t_lctx *ctx)
+int		push_missing_symbol(int type, t_list **missing)
 {
 	t_list	*node;
 
-	(void)ctx;
+	if (!(node = ft_lstnew(&type, sizeof(short))))
+		return (ERROR);
+	ft_lstadd(missing, node);
+	return (SUCCESS);
+}
+
+int		pop_missing_symbol(t_list **missing)
+{
+	t_list	*node;
+
 	node = ft_lsthead(missing);
 	free(node->content);
 	free(node);
 	return (SUCCESS);
-}
-
-int		find_closing_chars(t_list **missing, t_token *token, t_lctx *ctx)
-{
-	int		i;
-	char	c;
-	short	type;
-	int		found;
-	t_list	*self_missing;
-
-	i = 0;
-	type = NIL;
-	found = FALSE;
-	self_missing = NULL;
-	while ((c = ctx->input[ctx->i + ctx->j + i]) && ft_lstpeekhead(*missing))
-	{
-		type = type ? type : *(short*)ft_lstpeekhead(*missing)->content;
-		if (c == '\\')
-			i += 2;
-		else if (c == '$')
-			i += identify_substitutions(c, token, ctx, &self_missing);
-		else if ((type == VAR_SUB && (c == ' ' || c == '\t' || c == '\n'))
-				|| ((type == MATH_SUB || type == CMD_SUB) && c == ')')
-				|| (type == BRACE_SUB && c == '}'))
-		{
-			pop_missing_symbol(missing, ctx);
-			type = NIL;
-			if (!ft_lstpeekhead(*missing))
-				continue ;
-		}
-		i += 1;
-	}
-	return (i + ctx->j);
-}
-
-int		identify_substitutions(char c, t_token *token, t_lctx *ctx, t_list **missing)
-{
-	t_list	*node;
-	short	type;
-
-	type = NIL;
-	if (c == '$' && ctx->input[ctx->i + 1] && ctx->input[ctx->i + 1] == '(')
-	{
-		type = CMD_SUB;
-		if (!(node = ft_lstnew(&type, sizeof(short))))
-			ctx->status = ERROR;
-		ft_lstadd(missing, node);
-		ctx->j += 2;
-		if (ctx->input[ctx->i + 2] && ctx->input[ctx->i + 2] == '(')
-		{
-			type = MATH_SUB;
-			if (!(node = ft_lstnew(&type, sizeof(short))))
-				ctx->status = ERROR;
-			ft_lstadd(missing, node);
-			ctx->j += 1;
-		}
-	}
-	else if (c == '$' && ctx->input[ctx->i + 1] && ctx->input[ctx->i + 1] == '{')
-	{
-		type = BRACE_SUB;
-		if (!(node = ft_lstnew(&type, sizeof(short))))
-			ctx->status = ERROR;
-		ft_lstadd(missing, node);
-		ctx->j += 2;
-	}
-	else if (c == '$' && ctx->input[ctx->i])
-	{
-		type = VAR_SUB;
-		if (!(node = ft_lstnew(&type, sizeof(short))))
-			ctx->status = ERROR;
-		ft_lstadd(missing, node);
-		ctx->j += 1;
-	}
-	else if (c == '`')
-	{
-		type = BQUOTE;
-		if (!(node = ft_lstnew(&type, sizeof(short))))
-			ctx->status = ERROR;
-		ft_lstadd(missing, node);
-		ctx->j += 1;
-	}
-	return (find_closing_chars(missing, token, ctx));
 }

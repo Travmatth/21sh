@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/29 17:35:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 13:59:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@
 # define BRACE_SUB 3
 # define VAR_SUB 4
 # define BQUOTE 5
+# define QUOTE 6
+# define DQUOTE 7
 
 typedef struct	s_lctx
 {
@@ -69,6 +71,15 @@ typedef struct	s_token
 }				t_token;
 
 /*
+** lexer/quotes.c
+*/
+
+int				find_subst(char *input, int x, t_lctx *ctx);
+int				find_quote(char *input, int x, t_lctx *ctx);
+int				find_dquote(char *input, int x, t_lctx *ctx);
+int				find_bquote(char *input, int x, t_lctx *ctx);
+
+/*
 ** lexer/operator_dfa.c
 */
 
@@ -78,16 +89,6 @@ int				next_op_state(char c, int current);
 /*
 ** lexer/operator_dfa.c
 */
-
-int				remove_slash(char elem, size_t i, char *str, int *stop);
-void			expand_command(char **command);
-int				find_ws(char *cmd, size_t *offset);
-int				find_next(char c, char *cmd, size_t *offset);
-int				escaped(char *input, size_t i);
-int				init_lexer_ctx(char *input, t_lctx *ctx);
-int				create_new_tok(char c, t_token *token, t_lctx *ctx, int type);
-int				push_token(t_token *token, t_list *node
-					, t_list **tokens, t_lctx *ctx);
 
 /*
 ** lexer/lexer_rules_1.c
@@ -113,17 +114,15 @@ void			rule_10(char c, t_token *token, t_list **tokens, t_lctx *ctx);
 ** lexer/lexer_utils.c
 */
 
-int				remove_slash(char elem, size_t i, char *str, int *stop);
+int				next_missing_symbol(t_list *missing);
+int				push_missing_symbol(int type, t_list **missing);
+int				pop_missing_symbol(t_list **missing);
 void			expand_command(char **command);
-int				find_ws(char *cmd, size_t *offset);
-int				find_next(char c, char *cmd, size_t *offset);
 int				escaped(char *input, size_t i);
 int				init_lexer_ctx(char *input, t_lctx *ctx);
 int				create_new_tok(char c, t_token *token, t_lctx *ctx, int type);
 int				push_token(t_token *token
 					, t_list *node, t_list **tokens, t_lctx *ctx);
-int				push_missing_symbol(t_list *missing, t_lctx *ctx);
-int				pop_missing_symbol(t_list **missing, t_lctx *ctx);
 int				find_closing_chars(t_list **missing
 					, t_token *token, t_lctx *ctx);
 int				identify_substitutions(char c, t_token *token, t_lctx *ctx, t_list **missing);

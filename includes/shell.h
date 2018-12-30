@@ -22,8 +22,6 @@
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
 # define IS_SEP(x) (IS_WS(x) || IS_QTE(x))
-# define IS_SNGL(x, s, n, o) (*x == '\'' && (s = find_next('\'', n, o)))
-# define IS_DBL(x, s, n, o) (*x == '"' && (s = find_next('\'', n, o)))
 # define ESCAPABLE_CHAR(x) ()
 # define END 1
 # define BEGIN 0
@@ -76,13 +74,6 @@ int				lexical_analysis(char *complete_cmd, t_list **tokens, t_list *missing);
 
 int				parse_commands(t_list *tokens, t_ast *ast);
 int				prepare_ast(char *complete_cmd, t_ast *ast);
-
-/*
-** parse/quotes.c
-*/
-
-char			**remove_quotations(char *command, int ac);
-int				find_sub_end(char c, char *complete_cmd, size_t *j);
 
 /*
 ** parse/command.c

@@ -6,71 +6,158 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/19 15:58:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 14:01:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-/*
-** find next whitespace in complete_command not preceded by a backslash
-*/
-
-int		find_ws(char *complete_cmd, size_t *offset)
+int		find_subst(char *input, int x, t_lctx *ctx)
 {
-	size_t	i;
+	int		i;
+	int		j;
+	int		next;
 
 	i = 1;
-	while (complete_cmd[i])
+	if (input[x + i] == '(')
 	{
-		if (IS_WS(complete_cmd[i]))
-		{
-			*offset += i;
-			return (SUCCESS);
-		}
+		push_missing_symbol(CMD_SUB, &ctx->missing);
 		i += 1;
 	}
-	return (ERROR);
+	else if (input[x + i] == '{')
+	{
+		push_missing_symbol(BRACE_SUB, &ctx->missing);
+		i += 1;
+	}
+	if (input[x + i] == '(' && input[x + i + 1] && input[x + i + 1] == '(')
+	{
+		push_missing_symbol(MATH_SUB, &ctx->missing);
+		i += 1;
+	}
+	while ((next = next_missing_symbol(ctx->missing)) && input[x + i])
+	{
+		if (input[x + i] == '\\')
+			i += 2;
+		else if (input[x + i] == '$' && (
+			input[x + i + 1] == '(' || input[x + i + 1] == '{'))
+		{
+			if (!OK((j = find_subst(input, x + i, ctx))))
+				return (j);
+			i += j;
+		}
+		else if (next == BRACE_SUB && input[x + i] == '}')
+			pop_missing_symbol(&ctx->missing);
+		else if ((next = CMD_SUB || next == MATH_SUB) && input[x + i] == ')')
+			pop_missing_symbol(&ctx->missing);
+		else if (input[x + i] == '`')
+		{
+			if (!OK((j = find_bquote(input, x + i, ctx))))
+				return (j);
+			i += j;
+		}
+		else if (input[x + i] == '\'')
+		{
+			if (!OK((j = find_quote(input, x + i, ctx))))
+				return (j);
+			i += j;
+		}
+		else if (input[x + i] == '"')
+		{
+			if (!OK((j = find_dquote(input, x + i, ctx))))
+				return (j);
+			i += j;
+		}
+		else
+			i += 1;
+	}
+	if (next && !input[x + i])
+		return (ERROR);
+	return (i);
 }
 
-/*
-** find next character c in complete_command not preceded by a backslash
-*/
-
-int		find_next(char c, char *complete_cmd, size_t *offset)
+int		find_quote(char *input, int x, t_lctx *ctx)
 {
-	size_t	i;
+	int		i;
+	int		j;
 
 	i = 1;
-	while (complete_cmd && complete_cmd[i])
+	push_missing_symbol(QUOTE, &ctx->missing);
+	while (input[x + i])
 	{
-		if (*complete_cmd == '\\' && complete_cmd[i + 1] == c)
+		if (input[x + i] == '\\')
+			i += 2;
+		else if (input[x + i] == '\'')
 		{
-			if (NONE(find_next(c, &complete_cmd[i + 2], offset)))
-				return (NIL);
-			*offset += i;
-			return (SUCCESS);
+			pop_missing_symbol(&ctx->missing);
+			break ;
 		}
-		else if (*complete_cmd == c && i == 1)
+		else if (input[x + i] == '$' && (
+			input[x + i + 1] == '(' || input[x + i + 1] == '{'))
 		{
-			*offset += i;
-			return (SUCCESS);
+			if (!OK((j = find_subst(input, x + i, ctx))))
+				return (j);
+			i += j;
 		}
-		complete_cmd += 1;
+		else
+			i += 1;
 	}
-	return (NIL);
+	return (i);
 }
 
-/*
-** determine whether character c in complete_command
-** is quote not preceded by a backslash
-*/
-
-int		is_quote(char *complete_cmd, size_t n)
+int		find_dquote(char *input, int x, t_lctx *ctx)
 {
-	if (n == 0 && IS_WS(*complete_cmd))
-		return (SUCCESS);
-	else if (n > 0 && *(complete_cmd - 1) != '\\' && IS_WS(*complete_cmd))
-		return (SUCCESS);
-	return (NIL);
+	int		i;
+	int		j;
+
+	i = 1;
+	push_missing_symbol(DQUOTE, &ctx->missing);
+	while (input[x + i])
+	{
+		if (input[x + i] == '\\')
+			i += 2;
+		else if (input[x + i] == '"')
+		{
+			pop_missing_symbol(&ctx->missing);
+			break ;
+		}
+		else if (input[x + i] == '$' && (
+			input[x + i + 1] == '(' || input[x + i + 1] == '{'))
+		{
+			if (!OK((j = find_subst(input, x + i, ctx))))
+				return (j);
+			i += j;
+		}
+		else
+			i += 1;
+	}
+	return (i);
+}
+
+int		find_bquote(char *input, int x, t_lctx *ctx)
+{
+	int		i;
+	int		j;
+
+	i = 1;
+	push_missing_symbol(BQUOTE, &ctx->missing);
+	while (input[x + i])
+	{
+		if (input[x + i] == '\\')
+			i += 2;
+		else if (input[x + i] == '`')
+		{
+			pop_missing_symbol(&ctx->missing);
+			break ;
+		}
+		else if (input[x + i] == '$' && (
+			input[x + i + 1] == '(' || input[x + i + 1] == '{'))
+		{
+			if (!OK((j = find_subst(input, x + i, ctx))))
+				return (j);
+			i += j;
+		}
+		else
+			i += 1;
+	}
+	return (i);
 }

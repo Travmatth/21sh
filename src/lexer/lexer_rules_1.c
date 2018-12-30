@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/29 17:26:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 14:04:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,20 +91,20 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 		ctx->status = ERROR;
 	if (c == '\\')
 		end = 2;
-	else if (c == '"' || c == '\'')
+	else if (c == '"')
 	{
-		if (NONE(find_next(c, &input[ctx->i], &end)))
-		{
-			ctx->stop = TRUE;
-			ctx->status = NIL;
-			// if (ERR(push_missing_symbol(c, ctx)))
-			// 	return (ERROR);
-		}
-		end += 1;
+		if (!OK((end = find_dquote(input, ctx->i, ctx))))
+			ctx->status = end;
+		ctx->in_word = TRUE;
+	}
+	else if (c == '\'')
+	{
+		if (!OK((end = find_quote(input, ctx->i + 1, ctx))))
+			ctx->status = end;
 		ctx->in_word = TRUE;
 	}
 	ft_bufappend(token->value, &input[ctx->i], end);
-	ctx->i += end;
+	ctx->i += end + 1;
 	ctx->status = SUCCESS;
 }
 
@@ -129,7 +129,9 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
 	int		skip;
 
-	if (ERR((skip = identify_substitutions(c, token, ctx, &ctx->missing))))
+	if (c == '`' && ERR((skip = find_bquote(ctx->input, ctx->i, ctx))))
+		ctx->status = ERROR;
+	if (c == '$' && ERR((skip = find_subst(ctx->input, ctx->i, ctx))))
 		ctx->status = ERROR;
 	if (!token->type && ERR(create_new_tok(c, token, ctx, WORD)))
 		ctx->status = ERROR;
