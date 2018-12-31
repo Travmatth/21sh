@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 18:03:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/31 12:46:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ int		rule_2(char c, t_token *token, t_lctx *ctx)
 	int		next;
 
 	if (!ACCEPTING((next = next_op_state(c, ctx->op_state))))
-		ctx->status = NIL;
+		return (ctx->status = NIL);
 	if (!(ft_bufappend(token->value, &c, sizeof(char))))
-		ctx->status = ERROR;
+		return (ctx->status = ERROR);
 	ctx->i += 1;
 	ctx->op_state = next;
 	token->type = next;
@@ -136,7 +136,7 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 		return ;
 	}
 	if ((!token->type && ERR(create_new_tok(token, ctx, WORD)))
-		|| append_to_tok(c, token))
+		|| ERR(append_to_tok(c, token)))
 	{
 		ctx->status = ERROR;
 		return ;
@@ -146,6 +146,6 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 		ctx->status = ERROR;
 		return ;
 	}
-	ctx->i += skip + 1;
+	ctx->i += skip;
 	ctx->status = SUCCESS;
 }

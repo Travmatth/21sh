@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 21:44:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 18:27:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/31 12:29:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,8 @@ int		find_subst(char *input, int x, t_lctx *ctx)
 			pop_missing_symbol(&internal_missing);
 			i += 1;
 		}
-		else if (next == VAR_SUB && !ft_isalnum(input[x + i])
-		{
+		else if (next == VAR_SUB && !ft_isalnum(input[x + i]))
 			pop_missing_symbol(&internal_missing);
-			i += 1;
-		}
 		else if (input[x + i] == '`')
 		{
 			if (!OK((tmp = find_bquote(input, x + i, ctx))))

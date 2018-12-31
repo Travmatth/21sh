@@ -1,21 +1,10 @@
-echo ${echo foo};
-echo $FOO;
-echo $(echo bar);
-echo $((1 + 1));
-echo 	 	 "\nthis should not;
-echo 	 	 "\nthis should not" ';
-echo 	 	 "'\nthis should not';
-echo "this\n"	|| echo "	not this";
-echo "this\n"	&& echo "	not this";
-	echo "to stderr" 1>&2;
-
-// LEXES
+cat < test/in_file > test/out_file;
+# LEXES
 echo \n; cat "foo";
 	 	echo 	 	 "\nthis should"	 	"work";
 echo	"\"this should"		\"too		;
 ls -l -R | grep "\.txt$";
 echo "foo bar" > test/out_file;
-cat < test/in_file > test/out_file;
 echo ${ENV};
 echo $(echo foo);
 echo "simple";
@@ -23,3 +12,12 @@ echo "\"less\
 $($("foo"));
 $((1 + 1));
 echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
+echo ${echo foo};
+echo $FOO;
+echo $(echo bar);
+echo 	 	 "\nthis should not;
+echo 	 	 "\nthis should not" ';
+echo 	 	 "'\nthis should not';
+echo "this\n"	|| echo "	not this";
+echo "this\n"	&& echo "	not this";
+echo "to stderr" 1>&2;
