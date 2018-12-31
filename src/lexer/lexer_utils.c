@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 13:57:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 17:58:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int		escaped(char *input, size_t i)
 	return (FALSE);
 }
 
-int		init_lexer_ctx(char *input, t_lctx *ctx)
+int		init_lexer_ctx(char *input, t_lctx *ctx, t_token *token)
 {
 	if (!input)
 		return (ERROR);
@@ -76,11 +76,20 @@ int		init_lexer_ctx(char *input, t_lctx *ctx)
 	ctx->stop = 0;
 	ctx->op_state = 0;
 	ctx->in_word = 0;
-	ctx->missing = NIL;
+	ctx->missing = NULL;
+	token->type = NIL;
+	token->value = NULL;
 	return (SUCCESS);
 }
 
-int		create_new_tok(char c, t_token *token, t_lctx *ctx, int type)
+int		append_to_tok(char c, t_token *token)
+{
+	if (!ft_bufappend(token->value, &c, sizeof(char)))
+		return (ERROR);
+	return (SUCCESS);
+}
+
+int		create_new_tok(t_token *token, t_lctx *ctx, int type)
 {
 	char	*buf;
 
@@ -89,8 +98,7 @@ int		create_new_tok(char c, t_token *token, t_lctx *ctx, int type)
 		ctx->in_word = TRUE;
 	if (!(buf = ft_memalloc(sizeof(char) * (type == WORD ? 10 : 4))))
 		return (ERROR);
-	ft_memcpy(buf, &c, sizeof(char));
-	if (!(token->value = ft_bufnew(buf, sizeof(char), sizeof(char) * 10)))
+	if (!(token->value = ft_bufnew(buf, 0, sizeof(char) * 10)))
 		return (ERROR);
 	return (SUCCESS);
 }
@@ -118,7 +126,7 @@ int		next_missing_symbol(t_list *missing)
 	return (type);
 }
 
-int		push_missing_symbol(int type, t_list **missing)
+int		push_missing_symbol(short type, t_list **missing)
 {
 	t_list	*node;
 

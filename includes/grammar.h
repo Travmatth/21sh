@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 13:59:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 17:57:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,13 @@ void			rule_10(char c, t_token *token, t_list **tokens, t_lctx *ctx);
 */
 
 int				next_missing_symbol(t_list *missing);
-int				push_missing_symbol(int type, t_list **missing);
+int				push_missing_symbol(short type, t_list **missing);
 int				pop_missing_symbol(t_list **missing);
 void			expand_command(char **command);
 int				escaped(char *input, size_t i);
-int				init_lexer_ctx(char *input, t_lctx *ctx);
-int				create_new_tok(char c, t_token *token, t_lctx *ctx, int type);
+int				init_lexer_ctx(char *input, t_lctx *ctx, t_token *token);
+int				create_new_tok(t_token *token, t_lctx *ctx, int type);
+int				append_to_tok(char c, t_token *token);
 int				push_token(t_token *token
 					, t_list *node, t_list **tokens, t_lctx *ctx);
 int				find_closing_chars(t_list **missing

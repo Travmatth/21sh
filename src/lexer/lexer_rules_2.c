@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 13:19:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 18:09:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->op_state = next_op_state(c, START);
-	if (ERR(create_new_tok(c, token, ctx, ctx->op_state)))
+	if (ERR(create_new_tok(token, ctx, ctx->op_state))
+		|| ERR(append_to_tok(c, token)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;
 }

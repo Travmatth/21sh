@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 14:04:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 18:03:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ void	rule_1(t_token *token, t_lctx *ctx, t_list **tokens)
 
 	if (!token->type)
 	{
-		create_new_tok('\0', token, ctx, EOI);
+		create_new_tok(token, ctx, EOI);
+		append_to_tok('\0', token);
 		ctx->stop = TRUE;
 	}
 	node = NULL;
@@ -87,23 +88,22 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 	size_t	end;
 
 	end = 0;
-	if (NONE(token->type) && ERR(create_new_tok(c, token, ctx, WORD)))
+	if (NONE(token->type) && ERR(create_new_tok(token, ctx, WORD)))
 		ctx->status = ERROR;
 	if (c == '\\')
 		end = 2;
-	else if (c == '"')
+	else if (c == '"' || c == '\'')
 	{
-		if (!OK((end = find_dquote(input, ctx->i, ctx))))
+		if (!OK((end = c == '"'
+			? find_dquote(input, ctx->i, ctx)
+			: find_quote(input, ctx->i, ctx))))
+		{
 			ctx->status = end;
+			return ;
+		}
 		ctx->in_word = TRUE;
 	}
-	else if (c == '\'')
-	{
-		if (!OK((end = find_quote(input, ctx->i + 1, ctx))))
-			ctx->status = end;
-		ctx->in_word = TRUE;
-	}
-	ft_bufappend(token->value, &input[ctx->i], end);
+	ft_bufappend(token->value, &input[ctx->i], end + 1);
 	ctx->i += end + 1;
 	ctx->status = SUCCESS;
 }
@@ -129,14 +129,23 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
 	int		skip;
 
-	if (c == '`' && ERR((skip = find_bquote(ctx->input, ctx->i, ctx))))
+	if ((c == '`' && !OK((skip = find_bquote(ctx->input, ctx->i, ctx))))
+			|| (c == '$' && !OK((skip = find_subst(ctx->input, ctx->i, ctx)))))
+	{
+		ctx->status = skip;
+		return ;
+	}
+	if ((!token->type && ERR(create_new_tok(token, ctx, WORD)))
+		|| append_to_tok(c, token))
+	{
 		ctx->status = ERROR;
-	if (c == '$' && ERR((skip = find_subst(ctx->input, ctx->i, ctx))))
+		return ;
+	}
+	if (!ft_bufappend(token->value, &ctx->input[ctx->i + 1], skip - 1))
+	{
 		ctx->status = ERROR;
-	if (!token->type && ERR(create_new_tok(c, token, ctx, WORD)))
-		ctx->status = ERROR;
-	if (!ft_bufappend(token->value, &ctx->input[ctx->i + 1], skip))
-		ctx->status = ERROR;
+		return ;
+	}
 	ctx->i += skip + 1;
 	ctx->status = SUCCESS;
 }

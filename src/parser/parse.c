@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/29 16:37:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2018/12/30 17:03:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int		prepare_ast(char *complete_cmd, t_ast *ast)
 
 	tokens = NULL;
 	ft_bzero(ast, sizeof(t_ast));
-	if (!OK((status = lexical_analysis(complete_cmd, &tokens, ast->missing))))
+	if (!OK((status = lexical_analysis(complete_cmd, &tokens, &ast->missing))))
 		return (status);
 	return (parse_commands(tokens, ast));
 }

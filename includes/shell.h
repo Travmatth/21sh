@@ -66,7 +66,7 @@ char			*get_env_var(char *var);
 ** lexer/lexer.c
 */
 
-int				lexical_analysis(char *complete_cmd, t_list **tokens, t_list *missing);
+int				lexical_analysis(char *complete_cmd, t_list **tokens, t_list **missing);
 
 /*
 ** parse/parse.c
