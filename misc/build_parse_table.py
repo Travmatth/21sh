@@ -1,12 +1,46 @@
-"""
-Step 1: Build FIRST sets needed to construct action/goto tables
-	To build FIRST(X):
-	1. if X is a terminal, FIRST(X) is {X}
-	2. if X ::= <empty>, then <empty> in FIRST(X).
-	3. if X ::= Y_1Y_2...Y_k then put FIRST(Y_1) in FIRST(X)
-	4. if X is a non-terminal and X ::= Y_1Y_2...Y_k, then
-		a in FIRST(X) if a in FIRST(Y_i) and <empty> in FIRST(Y_j ) for all
-		1 < j < i.
-	(If  <empty> not in FIRST(Y1), then FIRST(Y_i) is irrelevant, for 1 < i.)
-https://parasol.tamu.edu/~rwerger/Courses/434/lec12-sum.pdf
-"""
+#!/usr/bin/python
+
+epsilon_set = {"EPS"}
+terminal_set = {"(", ")", "NUM", "NAME", "+", "-", "X", "/", "EOF", "EPS"}
+nonterminal_set = {"s", "expr", "expr'", "term", "term'", "factor"}
+
+def read_rules(filename, rules):
+	with open(filename) as file:
+		rules_text = file.read().split("\n")
+		for rule in rules_text:
+			sym, deriv_text = rule.split(":", 2) 
+			derivs = [[deriv for deriv in derivs_text.split()]
+				for derivs_text in deriv_text.split(",")]
+			rules[sym] = derivs
+
+def build_first_sets(rules, first):
+	for terminal in terminal_set:
+		first[terminal] = set()
+		first[terminal].add(terminal)
+	for nonterminal in nonterminal_set:
+		first[nonterminal] = set()
+	changed = True
+	while (changed):
+		changed = False
+		for rule, derivs in rules.iteritems():
+			for deriv in derivs:
+				rhs = set()
+				k = len(deriv) - 1
+				rhs = first[deriv[0]] - epsilon_set
+				i = 1
+				while (i <= k - 1 and "EPS" in first[deriv[i]]):
+					next_prod = first[deriv[i + 1]]
+					rhs = rhs | (next_prod & epsilon_set)
+					i += 1
+				if i == k and "EPS" in first[deriv[k]]:
+					rhs = rhs | empty_set
+				if not first[rule] >= rhs:
+					first[rule] = first[rule] | rhs
+					changed = True
+
+if __name__ == "__main__":
+	rules = {}
+	first_sets = {}
+	read_rules("misc/simple_grammar.txt", rules)
+	build_first_sets(rules, first_sets)
+	print(first_sets)

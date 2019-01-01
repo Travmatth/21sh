@@ -1,0 +1,6 @@
+s: expr
+expr: term expr'
+expr': + term expr', - term expr', EPS
+term: factor term'
+term': X factor term', / factor term', EPS
+factor: ( expr ), NUM, NAME
