@@ -27,13 +27,12 @@ def build_first_sets(rules, first):
 				rhs = set()
 				k = len(deriv) - 1
 				rhs = first[deriv[0]] - epsilon_set
-				i = 1
+				i = 0
 				while (i <= k - 1 and "EPS" in first[deriv[i]]):
-					next_prod = first[deriv[i + 1]]
-					rhs = rhs | (next_prod & epsilon_set)
+					rhs = rhs | (first[deriv[i + 1]] - epsilon_set)
 					i += 1
 				if i == k and "EPS" in first[deriv[k]]:
-					rhs = rhs | empty_set
+					rhs = rhs | epsilon_set
 				if not first[rule] >= rhs:
 					first[rule] = first[rule] | rhs
 					changed = True
