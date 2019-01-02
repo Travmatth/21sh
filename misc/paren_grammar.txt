@@ -1,0 +1,4 @@
+s: goal
+goal: list
+list: list pair, pair
+pair: ( pair ), ( )
