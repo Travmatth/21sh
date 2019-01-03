@@ -64,32 +64,65 @@ def	insert_lookahead(item, symbol):
 	item.insert(2, symbol)
 	return item
 
-def closure(kernel, lookahead, rules, firsts, cc, nonterminals):
-	changed = False
-	# for production rule on symbol kernel
-	for deriv in rules[kernel]:
-		# create rule placeholder string, i.e. goal: . list
-		next_sym = kernel + ":" + " . " + " ".join(deriv)
-		item = ITEM(next_sym, lookahead)
-		# add item with parent lookahead to canonical collection
-		if item not in cc:
-			cc.add(item)
-			changed = True
-		# add items with first terminals to canonical collection
-		if kernel != "goal":
-			for sym in firsts[deriv[0]]:
-				item = ITEM(next_sym, sym)
-				if item not in cc:
-					cc.add(item)
+# need closure to accept a set of items, rather than a kernel
+def closure(items, rules, firsts, nonterminals):
+	changed = True
+	tmp = set()
+	while (changed):
+		for item in items:
+			changed = False
+			# for production rule on symbol kernel
+			kernel = item.production.split(":")[0]
+			for deriv in rules[kernel]:
+				# create rule placeholder string, i.e. goal: . list
+				next_sym = kernel + ":" + " . " + " ".join(deriv)
+				next_item = ITEM(next_sym, item.lookahead)
+				# add next_item with parent lookahead to canonical collection
+				if next_item not in items and next_item not in tmp:
+					tmp.add(next_item)
 					changed = True
-		if changed and deriv[0] in nonterminals:
-			closure(deriv[0], lookahead, rules, firsts, cc, nonterminals)
+				# add items with first terminals to canonical collection
+				for sym in firsts[deriv[0]]:
+					next_item = ITEM(next_sym, sym)
+					if next_item not in items and next_item not in tmp:
+						tmp.add(next_item)
+						changed = True
+				if changed and deriv[0] in nonterminals:
+					closure(tmp, rules, firsts, nonterminals)
+		items = items | tmp
+
+# def closure(kernel, lookahead, rules, firsts, cc, nonterminals, depth):
+# 	changed = False
+# 	# for production rule on symbol kernel
+# 	for deriv in rules[kernel]:
+# 		# create rule placeholder string, i.e. goal: . list
+# 		next_sym = kernel + ":" + " . " + " ".join(deriv)
+# 		item = ITEM(next_sym, lookahead)
+# 		# add item with parent lookahead to canonical collection
+# 		if item not in cc:
+# 			cc.add(item)
+# 			changed = True
+# 		# add items with first terminals to canonical collection
+# 		if depth != 0:
+# 			for sym in firsts[deriv[0]]:
+# 				item = ITEM(next_sym, sym)
+# 				if item not in cc:
+# 					cc.add(item)
+# 					changed = True
+# 		if changed and deriv[0] in nonterminals:
+# 			closure(deriv[0], lookahead, rules, firsts, cc, nonterminals, depth + 1)
+
+def goto(cc, terminal, goto_set):
+	moved = set()
+	for item in cc:
+		pass
 
 
 def construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection):
-	kernel = "goal"
-	cc_0 = set()
-	closure(kernel, "eof", rules, first_sets, cc_0, nonterminals)
+	cc_0 = set([ITEM("goal: symbol", "eof")])
+	closure(cc_0, rules, first_sets, nonterminals)
+	goto_set = set()
+	goto(cc_0, "(", goto_set)
 	canonical_collection.insert(0, cc_0)
 
 if __name__ == "__main__":
