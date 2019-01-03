@@ -1,8 +1,12 @@
 #!/usr/bin/python
 
+import copy
+from collections import namedtuple
 epsilon_set = {"EPS"}
 
-def read_rules(filename, rules, terminal_set, nonterminal_set):
+ITEM = namedtuple("CC_ITEM", "production lookahead")
+
+def read_rules(filename, rules, terminals, nonterminals):
 	with open(filename) as file:
 		productions = file.read().split("\n")
 		for production in productions:
@@ -10,22 +14,22 @@ def read_rules(filename, rules, terminal_set, nonterminal_set):
 			derivs = [[deriv for deriv in derivs_text.split()]
 				for derivs_text in deriv_text.split(",")]
 			rules[sym] = derivs
-			if sym.islower() and sym not in nonterminal_set:
-				nonterminal_set.add(sym)
-			elif not sym.islower() and sym not in terminal_set:
-				terminal_set.add(sym)
+			if sym.islower() and sym not in nonterminals:
+				nonterminals.add(sym)
+			elif not sym.islower() and sym not in terminals:
+				terminals.add(sym)
 			for deriv in derivs:
 				for symbol in deriv:
-					if symbol.islower() and symbol not in nonterminal_set:
-						nonterminal_set.add(symbol)
-					elif not symbol.islower() and symbol not in terminal_set:
-						terminal_set.add(symbol)
+					if symbol.islower() and symbol not in nonterminals:
+						nonterminals.add(symbol)
+					elif not symbol.islower() and symbol not in terminals:
+						terminals.add(symbol)
 
 def build_first_sets(rules, first):
-	for terminal in terminal_set:
+	for terminal in terminals:
 		first[terminal] = set()
 		first[terminal].add(terminal)
-	for nonterminal in nonterminal_set:
+	for nonterminal in nonterminals:
 		first[nonterminal] = set()
 	changed = True
 	while (changed):
@@ -44,24 +48,56 @@ def build_first_sets(rules, first):
 				if not first[rule] >= rhs:
 					first[rule] = first[rule] | rhs
 					changed = True
+	first["eof"] = {"eof"}
 
-def construct_cc_0(cc_0)
-	cc_0.insert(0, "s")
-	cc_0.insert(1, rules["s"])
-	cc_0[1].insert(0, ".")
-	cc_0.insert(2, "eof")
+def construct_items(rule, derivs):
+	items = []
+	for i in len(derivs):
+		item = []
+		item.insert(0, rule)
+		item.insert(1, derivs[i])
+		item[1].insert(i, ".")
+		items.append(item)
+	return items
 
-def construct_canonical_collection(rules, terminal_set, nonterminal_set, canonical_collection)
-	cc_0 = []
-	construct_cc_0(cc_0)
+def	insert_lookahead(item, symbol):
+	item.insert(2, symbol)
+	return item
+
+def closure(kernel, lookahead, rules, firsts, cc, nonterminals):
+	changed = False
+	# for production rule on symbol kernel
+	for deriv in rules[kernel]:
+		# create rule placeholder string, i.e. goal: . list
+		next_sym = kernel + ":" + " . " + " ".join(deriv)
+		item = ITEM(next_sym, lookahead)
+		# add item with parent lookahead to canonical collection
+		if item not in cc:
+			cc.add(item)
+			changed = True
+		# add items with first terminals to canonical collection
+		if kernel != "goal":
+			for sym in firsts[deriv[0]]:
+				item = ITEM(next_sym, sym)
+				if item not in cc:
+					cc.add(item)
+					changed = True
+		if changed and deriv[0] in nonterminals:
+			closure(deriv[0], lookahead, rules, firsts, cc, nonterminals)
+
+
+def construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection):
+	kernel = "goal"
+	cc_0 = set()
+	closure(kernel, "eof", rules, first_sets, cc_0, nonterminals)
+	canonical_collection.insert(0, cc_0)
 
 if __name__ == "__main__":
 	rules = {}
 	first_sets = {}
-	terminal_set = set()
-	nonterminal_set = set()
-	read_rules("misc/paren_grammar.txt", rules, terminal_set, nonterminal_set)
+	terminals = set()
+	nonterminals = set()
+	read_rules("misc/paren_grammar.txt", rules, terminals, nonterminals)
 	build_first_sets(rules, first_sets)
 	canonical_collection = []
-	construct_canonical_collection(rules, terminal_set, nonterminal_set, canonical_collection)
-	print(first_sets)
+	construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection)
