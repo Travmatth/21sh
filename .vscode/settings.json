@@ -24,5 +24,5 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": false,
 	"editor.detectIndentation": false,
-	"python.pythonPath": "/usr/local/bin/python"
+	"python.pythonPath": "/usr/bin/python2.7"
 }
