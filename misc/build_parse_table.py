@@ -2,47 +2,89 @@
 
 import copy
 from collections import namedtuple
-epsilon_set = {"EPS"}
 
-ITEM = namedtuple("CC_ITEM", "production lookahead")
-
-def read_rules(filename, rules, terminals, nonterminals):
+def read_rules(filename):
+	rules = {}
+	terminals = set()
+	nonterminals = set()
 	with open(filename) as file:
-		productions = file.read().split("\n")
-		for production in productions:
-			sym, deriv_text = production.split(":", 2) 
-			derivs = [[deriv for deriv in derivs_text.split()]
-				for derivs_text in deriv_text.split(",")]
-			rules[sym] = derivs
-			if sym.islower() and sym not in nonterminals:
-				nonterminals.add(sym)
-			elif not sym.islower() and sym not in terminals:
-				terminals.add(sym)
-			for deriv in derivs:
-				for symbol in deriv:
-					if symbol.islower() and symbol not in nonterminals:
-						nonterminals.add(symbol)
-					elif not symbol.islower() and symbol not in terminals:
-						terminals.add(symbol)
+		for production in file.read().split("\n"):
+			lhs, rhs = production.split(":", 2) 
+			rhs = rhs.split()
+			if lhs in rules:
+				rules[lhs].append(rhs)
+			else:
+				rules[lhs] = [rhs]
+			if lhs.islower() and lhs not in nonterminals:
+				nonterminals.add(lhs)
+			elif not lhs.islower() and lhs not in terminals:
+				terminals.add(lhs)
+			for deriv in rhs:
+				if deriv.islower() and deriv not in nonterminals:
+					nonterminals.add(deriv)
+				elif deriv != "EPS" and not deriv.islower() and deriv not in terminals:
+					terminals.add(deriv)
+	return rules, terminals, nonterminals 
 
-def build_first_sets(rules, first):
-	for terminal in terminals:
-		first[terminal] = set()
-		first[terminal].add(terminal)
-	for nonterminal in nonterminals:
-		first[nonterminal] = set()
+def union(first, begins):
+	n = len(first)
+	first |= begins
+	return len(first) != n
+
+def build_sets(rules, terminals, nonterminals):
+	first = {}
+	follow = {}
+	follow_plus = {}
+	epsilon = set()
+
+	for nt in nonterminals:
+		first[nt] = set()
+		follow[nt] = set()
+		follow_plus[nt] = set()
 	changed = True
+	first.update((i, {i}) for i in terminals)
+	first["eof"] = {"eof"}
+	first["EPS"] = {"EPS"}
+	follow["s"] = {"eof"}
 	while (changed):
 		changed = False
-		for rule, derivs in rules.iteritems():
+		for nt, derivs in rules.iteritems():
+			# print(nt, derivs)
 			for deriv in derivs:
-				rhs = set()
-				k = len(deriv) - 1
-				rhs = first[deriv[0]] - epsilon_set
+				# build first set
+				for symbol in deriv:
+					# print(symbol)
+					changed |= union(first[nt], first[symbol])
+					if symbol not in epsilon:
+						break
+					else:
+						changed |= union(epsilon, {nt})
+				# build follow set
+				trailer = follow[nt]
+				for symbol in reversed(deriv):
+					if symbol in follow:
+						changed |= union(follow[symbol], trailer)
+					if symbol in epsilon:
+						trailer = trailer.union(first[symbol])
+					else:
+						trailer = first[symbol]
+		if not changed:
+			return first, follow, epsilon
+
+def	compute_first(rules, terminals, nonterminals):
+	for a in (terminals | {"eof"} | {"EPS"})
+		first[a] = {a}
+	for a in nonterminals:
+		first[a] = set()
+	while (True)
+		for nt, derivs in rules:
+			for deriv in derivs:
+				rhs = first[deriv[0]] - {"EPS"}
 				i = 0
-				while (i <= k - 1 and "EPS" in first[deriv[i]]):
-					rhs = rhs | (first[deriv[i + 1]] - epsilon_set)
+				while ("EPS" in first[deriv[i]] and i <= len(deriv) - 2):
+					rhs |= first[deriv[i + 1]] - {"eps"}
 					i += 1
+<<<<<<< HEAD
 				if i == k and "EPS" in first[deriv[k]]:
 					rhs = rhs | epsilon_set
 				if not first[rule] >= rhs:
@@ -97,9 +139,33 @@ def goto(cc, terminal, goto_set):
 	moved = set()
 	for item in cc:
 		pass
+=======
+			if (i == k) and "eps" in first[deriv[k]]:
+				rhs |= {"eps"}
+			first[nt] |= rhs
+>>>>>>> rewriting first/follow computations, again
 
+def compute_follow(rules, terminals, nonterminals):
+	follow = {}
+	for A in nonterminals:
+		follow[A] = set()
+	follow["s"] = {"eof"}
+	while (true):
+		for nt, derivs in rules.iteritems():
+			for deriv in derivs:
+				trailer = copy.deepcopy(follow[nt])
+				for symbol in reversed(deriv):
+					if symbol in nonterminals:
+						follow[symbol] |= trailer
+						if "EPS" in first[symbol]:
+							trailer |= first[symbol] - {"EPS"}
+						else:
+							trailer |= first[symbol]
+					else:
+						trailer |= first[symbol]
 
 def construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection):
+<<<<<<< HEAD
 	cc_0 = set([ITEM("goal: . symbol", "eof")])
 	cc_0 = cc_0 | closure(cc_0, rules, first_sets, nonterminals)
 	print(len(cc_0))
@@ -107,13 +173,20 @@ def construct_canonical_collection(rules, terminals, nonterminals, first_sets, c
 	# goto_set = set()
 	# goto(cc_0, "(", goto_set)
 	# canonical_collection.insert(0, cc_0)
+=======
+	pass
+>>>>>>> rewriting first/follow computations, again
 
 if __name__ == "__main__":
-	rules = {}
-	first_sets = {}
-	terminals = set()
-	nonterminals = set()
-	read_rules("misc/paren_grammar.txt", rules, terminals, nonterminals)
-	build_first_sets(rules, first_sets)
-	canonical_collection = []
-	construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection)
+	rules, terminals, nonterminals = read_rules("misc/simple_grammar.txt")
+	# print(rules)
+	first, follow, follow_plus = build_sets(rules, terminals, nonterminals)
+	print("first")
+	for k, v in first.iteritems():
+		print(k, v)
+	print("follow")
+	for k, v in follow.iteritems():
+		print(k, v)
+	print("epsilon")
+	for k in follow_plus:
+		print(k)

@@ -1,6 +1,12 @@
 s: expr
-expr: term expr'
-expr': + term expr', - term expr', EPS
-term: factor term'
-term': X factor term', / factor term', EPS
-factor: ( expr ), NUM, NAME
+expr: term expr_prime
+expr_prime: + term expr_prime
+expr_prime: - term expr_prime
+expr_prime: EPS
+term: factor term_prime
+term_prime: X factor term_prime
+term_prime: / factor term_prime
+term_prime: EPS
+factor: ( expr )
+factor: NUM
+factor: NAME

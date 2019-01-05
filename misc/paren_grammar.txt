@@ -1,3 +1,5 @@
 goal: list
-list: list pair, pair
-pair: ( pair ), ( )
+list: list pair
+list: pair
+pair: ( pair )
+pair: ( )
