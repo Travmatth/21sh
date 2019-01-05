@@ -58,25 +58,21 @@ def	compute_first(rules, terminals, nonterminals):
 	return first
 
 def compute_follow(rules, terminals, nonterminals):
-	follow = {}
-	for A in nonterminals:
-		follow[A] = set()
+	follow = {nt: set() for nt in nonterminals}
 	follow["s"] = {"eof"}
+
 	changed = True
-	while (changed):
+	while changed:
 		changed = False
-		for nt, production_set in rules.iteritems():
+		for nt, production_set in rules.items():
 			for production in production_set:
-				trailer = follow[nt]
-				n = len(trailer)
+				trailer = follow[nt].copy()
 				for symbol in reversed(production):
 					if symbol in nonterminals:
 						new_set = follow[symbol] | trailer
-						if n != len(trailer):
-							follow[symbol] = new_set
-							print(symbol)
-							print(follow[symbol])
+						if len(new_set) != len(follow[symbol]):
 							changed = True
+							follow[symbol] = new_set
 						if "EPS" in first[symbol]:
 							trailer |= first[symbol] - {"EPS"}
 						else:
@@ -85,21 +81,27 @@ def compute_follow(rules, terminals, nonterminals):
 						trailer = first[symbol]
 	return follow
 
-def construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection):
-	pass
+def compute_first_plus(rules, terminals, nonterminals, first, follow):
+	first_plus = copy.deepcopy(first)
+	for rule, production_set in rules.iteritems():
+		for production in production_set:
+			for symbol in production:
+				if "EPS" in first[symbol]:
+					first_plus[symbol] |= follow[rule]
+	return first_plus
+
+def build_parse_table(terminals, nonterminals, first, follow, first_plus):
+	terminal_lookup = build_terminal_lookup(terminals)
+	nonterminal_lookup = nonbuild_terminal_lookup(nonterminals)
+	table = []
+	for nt in nonterminals:
+		for t in terminals:
+			table[]
+
 
 if __name__ == "__main__":
 	rules, terminals, nonterminals = read_rules("misc/simple_grammar.txt")
-	# print(rules)
-	# first, follow, follow_plus = build_sets(rules, terminals, nonterminals)
 	first = compute_first(rules, terminals, nonterminals)
 	follow = compute_follow(rules, terminals, nonterminals)
-	# print("first")
-	# for k, v in first.iteritems():
-	# 	print(k, v)
-	print("follow")
-	for k, v in follow.iteritems():
-		print(k, v)
-	# print("epsilon")
-	# for k in follow_plus:
-	# 	print(k)
+	first_plus = compute_first_plus(rules, terminals, nonterminals, first, follow)
+	table = build_parse_table(first, follow, first_plus)
