@@ -84,66 +84,9 @@ def	compute_first(rules, terminals, nonterminals):
 				while ("EPS" in first[deriv[i]] and i <= len(deriv) - 2):
 					rhs |= first[deriv[i + 1]] - {"eps"}
 					i += 1
-<<<<<<< HEAD
-				if i == k and "EPS" in first[deriv[k]]:
-					rhs = rhs | epsilon_set
-				if not first[rule] >= rhs:
-					first[rule] = first[rule] | rhs
-					changed = True
-	first["eof"] = {"eof"}
-
-def construct_items(rule, derivs):
-	items = []
-	for i in len(derivs):
-		item = []
-		item.insert(0, rule)
-		item.insert(1, derivs[i])
-		item[1].insert(i, ".")
-		items.append(item)
-	return items
-
-def	insert_lookahead(item, symbol):
-	item.insert(2, symbol)
-	return item
-
-# need closure to accept a set of items, rather than a kernel
-def closure(items, rules, firsts, nonterminals):
-	changed = True
-	tmp = set()
-	while (changed):
-		for item in items:
-			changed = False
-			# for production rule on symbol kernel
-			kernel = item.production.split(":")[0]
-			for production in rules[kernel]:
-				for deriv in rules[production[0]]:
-					# create rule placeholder string, i.e. goal: . list
-					next_sym = production[0] + ":" + " . " + " ".join(deriv)
-					next_item = ITEM(next_sym, item.lookahead)
-					# add next_item with parent lookahead to canonical collection
-					if next_item not in items and next_item not in tmp:
-						tmp.add(next_item)
-						changed = True
-					# add items with first terminals to canonical collection
-					for sym in firsts[deriv[0]]:
-						next_item = ITEM(next_sym, sym)
-						if next_item not in items and next_item not in tmp:
-							tmp.add(next_item)
-							changed = True
-					if changed and deriv[0] in nonterminals:
-						closure(items | tmp, rules, firsts, nonterminals)
-		items = items | tmp
-	return items
-
-def goto(cc, terminal, goto_set):
-	moved = set()
-	for item in cc:
-		pass
-=======
 			if (i == k) and "eps" in first[deriv[k]]:
 				rhs |= {"eps"}
 			first[nt] |= rhs
->>>>>>> rewriting first/follow computations, again
 
 def compute_follow(rules, terminals, nonterminals):
 	follow = {}
@@ -165,17 +108,7 @@ def compute_follow(rules, terminals, nonterminals):
 						trailer |= first[symbol]
 
 def construct_canonical_collection(rules, terminals, nonterminals, first_sets, canonical_collection):
-<<<<<<< HEAD
-	cc_0 = set([ITEM("goal: . symbol", "eof")])
-	cc_0 = cc_0 | closure(cc_0, rules, first_sets, nonterminals)
-	print(len(cc_0))
-	print(cc_0)
-	# goto_set = set()
-	# goto(cc_0, "(", goto_set)
-	# canonical_collection.insert(0, cc_0)
-=======
 	pass
->>>>>>> rewriting first/follow computations, again
 
 if __name__ == "__main__":
 	rules, terminals, nonterminals = read_rules("misc/simple_grammar.txt")
