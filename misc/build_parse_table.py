@@ -3,7 +3,6 @@
 import copy
 from collections import namedtuple, OrderedDict
 
-# https://github.com/search?l=Python&q=follow+symbol+reversed+trailer&type=Code
 def read_rules(filename):
 	rules = OrderedDict()
 	terminals = set()
@@ -75,12 +74,11 @@ def compute_follow(rules, terminals, nonterminals):
 						trailer = first[symbol]
 	return follow
 
-Plus_set = namedtuple('Plus_set', ['production', 'predict'])
+Plus_set = namedtuple('Plus_set', ['num', 'predict'])
 
 def compute_first_plus(rules, terminals, nonterminals, first, follow):
 	first_plus = {}
 	i = 0
-	first_plus = copy.deepcopy(first)
 	for lhs, production_set in rules.iteritems():
 		for production in production_set:
 			rule = lhs + ": " + " ".join(production)
@@ -88,6 +86,7 @@ def compute_first_plus(rules, terminals, nonterminals, first, follow):
 			if "EPS" in predict:
 				predict |= follow[lhs]
 				predict = predict - {"EPS"}
+			first_plus[rule] = Plus_set(i, predict)
 			i += 1
 	return first_plus
 
@@ -98,15 +97,22 @@ def	build_lookup(symbols):
 	return lookup
 
 def build_parse_table(terminals, nonterminals, first, follow, first_plus):
-	table = []
+	terminals.add("eof")
+	table = [[-1 for i in terminals] for nt in nonterminals]
 	terminal_lookup = build_lookup(terminals)
 	nonterminal_lookup = build_lookup(nonterminals)
+
 	for nt in nonterminals:
-		for t in terminals:
-			table[nonterminal_lookup[nt]][terminal_lookup[t]] = -1
 		for production in rules[nt]:
 			rule = nt + ": " + " ".join(production)
-			for w in (w for w in first_plus)
+			current = first_plus[rule]
+			for w in current.predict:
+				next_prod = terminal_lookup[w]
+				next_lookup = nonterminal_lookup[nt]
+				if table[next_lookup][next_prod] != -1:
+					raise Exception("not ll(1)")
+				table[next_lookup][next_prod] = current.num
+	return table
 
 
 if __name__ == "__main__":
@@ -115,4 +121,5 @@ if __name__ == "__main__":
 	follow = compute_follow(rules, terminals, nonterminals)
 	first_plus = compute_first_plus(rules, terminals, nonterminals, first, follow)
 	table = build_parse_table(terminals, nonterminals, first, follow, first_plus)
-	# print(table)
+	for row in table:
+		print(row)
