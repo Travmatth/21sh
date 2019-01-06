@@ -3,7 +3,7 @@ complete_command: list separator, list
 list: list separator_op and_or, and_or
 and_or: pipeline, and_or AND_IF linebreak pipeline, and_or OR_IF linebreak pipeline
 pipeline: command, pipe_sequence | linebreak command
-pipe_sequence: command, pipe_sequence | linebreak command
+pipe_sequence: command, pipe_sequence, linebreak command
 command: simple_command
 simple_command: cmd_prefix cmd_word cmd_suffix, cmd_prefix cmd_word, cmd_prefix, cmd_name cmd_suffix, cmd_name
 cmd_word: WORD

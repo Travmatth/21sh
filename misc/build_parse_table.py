@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
 import copy
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 # https://github.com/search?l=Python&q=follow+symbol+reversed+trailer&type=Code
 def read_rules(filename):
-	rules = {}
+	rules = OrderedDict()
 	terminals = set()
 	nonterminals = set()
 	with open(filename) as file:
@@ -27,11 +27,6 @@ def read_rules(filename):
 					terminals.add(production)
 	return rules, terminals, nonterminals 
 
-def union(first, begins):
-	n = len(first)
-	first |= begins
-	return len(first) != n
-
 def	compute_first(rules, terminals, nonterminals):
 	first = {}
 	for a in (terminals | {"eof"} | {"EPS"}):
@@ -51,7 +46,6 @@ def	compute_first(rules, terminals, nonterminals):
 					i += 1
 				if (i == k) and "EPS" in first[production[k]]:
 					rhs |= {"EPS"}
-				# if not first[nt] >= rhs:
 				if not first[nt] >= rhs:
 					first[nt] |= rhs
 					changed = True
@@ -81,22 +75,38 @@ def compute_follow(rules, terminals, nonterminals):
 						trailer = first[symbol]
 	return follow
 
+Plus_set = namedtuple('Plus_set', ['production', 'predict'])
+
 def compute_first_plus(rules, terminals, nonterminals, first, follow):
+	first_plus = {}
+	i = 0
 	first_plus = copy.deepcopy(first)
-	for rule, production_set in rules.iteritems():
+	for lhs, production_set in rules.iteritems():
 		for production in production_set:
-			for symbol in production:
-				if "EPS" in first[symbol]:
-					first_plus[symbol] |= follow[rule]
+			rule = lhs + ": " + " ".join(production)
+			predict = copy.deepcopy(first[production[0]])
+			if "EPS" in predict:
+				predict |= follow[lhs]
+				predict = predict - {"EPS"}
+			i += 1
 	return first_plus
 
+def	build_lookup(symbols):
+	lookup = {}
+	for i, t in enumerate(symbols):
+		lookup[t] = i
+	return lookup
+
 def build_parse_table(terminals, nonterminals, first, follow, first_plus):
-	terminal_lookup = build_terminal_lookup(terminals)
-	nonterminal_lookup = nonbuild_terminal_lookup(nonterminals)
 	table = []
+	terminal_lookup = build_lookup(terminals)
+	nonterminal_lookup = build_lookup(nonterminals)
 	for nt in nonterminals:
 		for t in terminals:
-			table[]
+			table[nonterminal_lookup[nt]][terminal_lookup[t]] = -1
+		for production in rules[nt]:
+			rule = nt + ": " + " ".join(production)
+			for w in (w for w in first_plus)
 
 
 if __name__ == "__main__":
@@ -104,4 +114,5 @@ if __name__ == "__main__":
 	first = compute_first(rules, terminals, nonterminals)
 	follow = compute_follow(rules, terminals, nonterminals)
 	first_plus = compute_first_plus(rules, terminals, nonterminals, first, follow)
-	table = build_parse_table(first, follow, first_plus)
+	table = build_parse_table(terminals, nonterminals, first, follow, first_plus)
+	# print(table)
