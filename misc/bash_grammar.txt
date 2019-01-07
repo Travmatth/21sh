@@ -2,8 +2,8 @@ s: complete_command
 complete_command: list separator
 complete_command: list
 list: and_or list_prime
-list_prime: separator_op and_or list_prime 
-list_prime: EMPTY 
+list_prime: separator_op and_or list_prime
+list_prime: EPS
 and_or: pipeline
 and_or: and_or AND_IF linebreak pipeline
 and_or: and_or OR_IF linebreak pipeline
@@ -44,8 +44,9 @@ here_end: WORD
 newline_list: NEWLINE
 newline_list: newline_list NEWLINE
 linebreak: newline_list
-linebreak: EMPTY
+linebreak: EPS
 separator_op: &
 separator_op: ;
 separator: separator_op linebreak
 separator: newline_list
+#https://zaa.ch/jison/try/usf/index.html

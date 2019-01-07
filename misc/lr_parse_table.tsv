@@ -1,0 +1,70 @@
+States	EOF	AMPERSAND	SEMICOLON	LTHAN	GTHAN	AND_IF	ASSIGNMENT_WORD	BANG	CLOBBER	DGREAT	DLESS	DLESSDASH	GREATAND	IO_NUMBER	LESSAND	LESSGREAT	NEWLINE	OR_IF	WORD	PIPE_OP	and_or	cmd_name	cmd_prefix	cmd_suffix	cmd_word	command	complete_command	filename	here_end	io_file	io_here	io_redirect	linebreak	list	newline_list	pipe_sequence	pipeline	separator	separator_op	simple_command
+				s17	s19		s12	s6	s23	s21	s24	s25	s20	s15	s18	s22			s13		3	10	9			7	1			14	16	11		2		5	4			8
+1	a																																							
+2	r2	s29,r2	s30,r2	r2	r2	r2	r2	r2	r2	r2	r2	r2	r2	r2	r2	r2	s31,r2 	r2	r2	r2															28			26	27	
+3	r4	r4	r4	r4	r4	s32,r4 	r4	r4	r4	r4	r4	r4	r4	r4	r4	r4	r4	s33,r4 	r4	r4																				
+4	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5	r5																				
+5	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	r8	s34,r8 																				
+6				s17	s19		s12		s23	s21	s24	s25	s20	s15	s18	s22			s13			10	9			7				14	16	11				35				8
+7	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10	r10																				
+8	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12	r12																				
+9	r15	r15	r15	s17,r15 	s19,r15 	r15	s38,r15 	r15	s23,r15 	s21,r15 	s24,r15 	s25,r15 	s20,r15 	s15,r15 	s18,r15 	s22,r15 	r15	r15	s39,r15 	r15					36					14	16	37								
+10	r17	r17	r17	s17,r17 	s19,r17 	r17	r17	r17	s23,r17 	s21,r17 	s24,r17 	s25,r17 	s20,r17 	s15,r17 	s18,r17 	s22,r17 	r17	r17	s42,r17 	r17				40						14	16	41								
+11	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20	r20																				
+12	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22	r22																				
+13	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18	r18																				
+14	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28	r28																				
+15				s17	s19				s23	s21	s24	s25	s20		s18	s22														43	44									
+16	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30	r30																				
+17																			s46									45												
+18																			s46									47												
+19																			s46									48												
+20																			s46									49												
+21																			s46									50												
+22																			s46									51												
+23																			s46									52												
+24																			s54										53											
+25																			s54										55											
+26	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1	r1																				
+27	r46	r46	r46	s17,r46 	s19,r46 	r46	s12,r46 	s6,r46 	s23,r46 	s21,r46 	s24,r46 	s25,r46 	s20,r46 	s15,r46 	s18,r46 	s22,r46 	s31,r46 	r46	s13,r46 	r46	56	10	9			7				14	16	11	57		58	5	4			8
+28	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	r50	s59,r50 	r50	r50	r50																				
+29	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47	r47																				
+30	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48	r48																				
+31	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43	r43																				
+32	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	s31,r46 	r46	r46	r46																				
+33	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	s31,r46 	r46	r46	r46																				
+34	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	r46	s31,r46 	r46	r46	r46																				
+35	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	r9	s34,r9 																				
+36	r14	r14	r14	s17,r14 	s19,r14 	r14	r14	r14	s23,r14 	s21,r14 	s24,r14 	s25,r14 	s20,r14 	s15,r14 	s18,r14 	s22,r14 	r14	r14	s42,r14 	r14				63						14	16	41								
+37	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21	r21																				
+38	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23	r23																				
+39	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19	r19																				
+40	r16	r16	r16	s17,r16 	s19,r16 	r16	r16	r16	s23,r16 	s21,r16 	s24,r16 	s25,r16 	s20,r16 	s15,r16 	s18,r16 	s22,r16 	r16	r16	s65,r16 	r16										14	16	64								
+41	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24	r24																				
+42	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26	r26																				
+43	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29	r29																				
+44	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31	r31																				
+45	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32	r32																				
+46	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39	r39																				
+47	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33	r33																				
+48	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34	r34																				
+49	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35	r35																				
+50	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36	r36																				
+51	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37	r37																				
+52	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38	r38																				
+53	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40	r40																				
+54	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42	r42																				
+55	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41	r41																				
+56	r3	r3	r3	r3	r3	s32,r3 	r3	r3	r3	r3	r3	r3	r3	r3	r3	r3	r3	s33,r3 	r3	r3																				
+57	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49	r49																				
+58	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	r45	s59,r45 	r45	r45	r45																				
+59	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44	r44																				
+60				s17	s19		s12	s6	s23	s21	s24	s25	s20	s15	s18	s22			s13			10	9			7				14	16	11				5	66			8
+61				s17	s19		s12	s6	s23	s21	s24	s25	s20	s15	s18	s22			s13			10	9			7				14	16	11				5	67			8
+62				s17	s19		s12		s23	s21	s24	s25	s20	s15	s18	s22			s13			10	9			68				14	16	11								8
+63	r13	r13	r13	s17,r13 	s19,r13 	r13	r13	r13	s23,r13 	s21,r13 	s24,r13 	s25,r13 	s20,r13 	s15,r13 	s18,r13 	s22,r13 	r13	r13	s65,r13 	r13										14	16	64								
+64	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25	r25																				
+65	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27	r27																				
+66	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6	r6																				
+67	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7	r7																				
+68	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11	r11																				
