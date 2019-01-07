@@ -1,22 +1,51 @@
 s: complete_command
-complete_command: list separator, list
+complete_command: list separator
+complete_command: list
 list: and_or list_prime
-list_prime: separator_op and_or list_prime, EMPTY 
-and_or: pipeline, and_or AND_IF linebreak pipeline, and_or OR_IF linebreak pipeline
-pipeline: command, pipe_sequence | linebreak command
-pipe_sequence: command, pipe_sequence, linebreak command
+list_prime: separator_op and_or list_prime 
+list_prime: EMPTY 
+and_or: pipeline
+and_or: and_or AND_IF linebreak pipeline
+and_or: and_or OR_IF linebreak pipeline
+pipeline: command
+pipeline: pipe_sequence | linebreak command
+pipe_sequence: command
+pipe_sequence: pipe_sequence
+pipe_sequence: linebreak command
 command: simple_command
-simple_command: cmd_prefix cmd_word cmd_suffix, cmd_prefix cmd_word, cmd_prefix, cmd_name cmd_suffix, cmd_name
+simple_command: cmd_prefix cmd_word cmd_suffix
+simple_command: cmd_prefix cmd_word
+simple_command: cmd_prefix
+simple_command: cmd_name cmd_suffix
+simple_command: cmd_name
 cmd_word: WORD
 cmd_name: WORD
-cmd_prefix: io_redirect, cmd_prefix io_redirect
-cmd_suffix: io_redirect, cmd_suffix io_redirect, WORD, cmd_suffix WORD
-io_redirect: io_file, IO_NUMBER io_file, io_here, IO_NUMBER io_here
-io_file: < filename, LESSAND filename, > filename, GREATAND filename, DGREAT filename, LGREAT filename, CLOBBER filename
+cmd_prefix: io_redirect
+cmd_prefix: cmd_prefix io_redirect
+cmd_suffix: io_redirect
+cmd_suffix: cmd_suffix io_redirect
+cmd_suffix: WORD
+cmd_suffix: cmd_suffix WORD
+io_redirect: io_file
+io_redirect: IO_NUMBER io_file
+io_redirect: io_here
+io_redirect: IO_NUMBER io_here
+io_file: < filename
+io_file: LESSAND filename
+io_file: > filename
+io_file: GREATAND filename
+io_file: DGREAT filename
+io_file: LGREAT filename
+io_file: CLOBBER filename
 filename: WORD
-io_here: DLESS here_end, DLESSDASH here_end
+io_here: DLESS here_end
+io_here: DLESSDASH here_end
 here_end: WORD
-newline_list: NEWLINE, newline_list NEWLINE
-linebreak: newline_list, EMPTY
-separator_op: &, ;
-separator: separator_op linebreak, newline_list
+newline_list: NEWLINE
+newline_list: newline_list NEWLINE
+linebreak: newline_list
+linebreak: EMPTY
+separator_op: &
+separator_op: ;
+separator: separator_op linebreak
+separator: newline_list
