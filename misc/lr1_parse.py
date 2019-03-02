@@ -77,6 +77,19 @@ def write_parse_table(legend, parse_table):
 	with open('src/parser/parse_table.c', 'w+') as f:
 		f.write(table)
 
+def enumerate_dict(arr):
+	return '"' + '", "'.join(arr) + '"'
+
+def create_struct(handle):
+	return '{ "'
+			+ handle['lhs'] + '", '
+			+ enumerate_dict(handle['rhs']) + ', '
+			+ enumerate_dict(handle['lookaheads'])
+			+ ' }'
+
+def write_handlers(handles, rhs_size, lookahead_size):
+	strings = [[create_struct(struct) for struct in state] for state in handles]
+
 
 if __name__ == '__main__':
 	legend = []
@@ -87,4 +100,5 @@ if __name__ == '__main__':
 		soup = BeautifulSoup(f, features="html.parser")
 	parse(soup, legend, parse_table, raw_handles)
 	rhs_size, lookahead_size = format_handles(raw_handles, handles)
-	write_parse_table(legend, parse_table)
+	# write_parse_table(legend, parse_table)
+	write_handlers(handles, rhs_size, lookahead_size)
