@@ -18,6 +18,7 @@
 # include <signal.h>
 # include <sys/stat.h>
 # include "grammar.h"
+# include <fcntl.h>
 
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
@@ -30,7 +31,16 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-typedef struct s_ast
+typedef struct	s_handler
+{
+	char		*lhs;
+	char		**rhs;
+	char		**lookahed;
+}				t_handler;
+
+t_handler		**g_handlers;
+
+typedef struct	s_ast
 {
 	int			type;
 	t_list		*missing;
@@ -43,6 +53,11 @@ typedef struct	s_builtin
 	int			len;
 }				t_builtin;
 
+/*
+** src/main.c
+*/
+
+void			init_parser(void) __attribute__((constructor));
 /*
 ** signal.c
 */
