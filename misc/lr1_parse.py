@@ -1,19 +1,22 @@
+import re
 from bs4 import BeautifulSoup, NavigableString, Tag
 
 nbsp = u'\xa0'
 
-def parse_state(col, i, handles):
+def parse_state(div):
 	arr = []
-	for br in col.findAll('br'):
-		next_s = br.nextSibling
-		if not (next_s and isinstance(next_s, NavigableString)):
-			continue
-		next2_s = next_s.nextSibling
-		if next2_s and isinstance(next2_s, Tag) and next2_s.name == 'br':
-			text = str(next_s).strip()
-			if (text):
-				arr.append(text)
-	handles.insert(i, arr)
+	div = str(div)
+	div = re.sub(r'<\/?div[ ]?[a-z]*?=?"?[a-z|A-Z|0-9|-]*?"?>', '', div)
+	div = filter(None, div.split('<br/>'))
+	for handle in div:
+		handle_dict = {}
+		handle_str = handle.split(' -&gt; ')
+		handle_dict['lhs'] = handle_str[0]
+		handle_str = handle_str[1].split(' #lookaheads= ')
+		handle_dict['rhs'] = handle_str[0].split()
+		handle_dict['lookaheads'] = handle_str[1].split()
+		arr.append(handle_dict)
+	return arr
 
 def parse(soup, legend, parse_table, handles):
 	for row in soup.table.thead.tr:
@@ -22,7 +25,7 @@ def parse(soup, legend, parse_table, handles):
 		parse_table.insert(i, [])
 		for j, col in enumerate(row):
 			if j == 0:
-				parse_state(col, i, handles)
+				handles.insert(i, parse_state(col.div))
 			elif col.text == nbsp:
 				parse_table[i].insert(j - 1, '-')
 			else:
@@ -77,28 +80,26 @@ def write_parse_table(legend, parse_table):
 	with open('src/parser/parse_table.c', 'w+') as f:
 		f.write(table)
 
-def enumerate_dict(arr):
-	return '"' + '", "'.join(arr) + '"'
-
 def create_struct(handle):
-	return '{ "'
-			+ handle['lhs'] + '", '
-			+ enumerate_dict(handle['rhs']) + ', '
-			+ enumerate_dict(handle['lookaheads'])
-			+ ' }'
+	return  handle['lhs'] \
+		+ '#' + ','.join(handle['rhs']) \
+		+ '#' + ','.join(handle['lookaheads']) + '\n'
 
-def write_handlers(handles, rhs_size, lookahead_size):
-	strings = [[create_struct(struct) for struct in state] for state in handles]
+def write_handlers(handles):
+	out = str(len(handles)) + '\n'
+	for i, state in enumerate(handles):
+		out += '@' + str(i) + ',' + str(len(state)) + '\n'
+		out += ''.join([create_struct(struct) for struct in state])
+	with open('misc/parse_handlers.txt', 'w+') as f:
+		f.write(out)
 
 
 if __name__ == '__main__':
 	legend = []
 	handles = []
-	raw_handles = []
 	parse_table = []
 	with open("misc/jison_table_lr1.htm") as f:
 		soup = BeautifulSoup(f, features="html.parser")
-	parse(soup, legend, parse_table, raw_handles)
-	rhs_size, lookahead_size = format_handles(raw_handles, handles)
+	parse(soup, legend, parse_table, handles)
 	# write_parse_table(legend, parse_table)
-	write_handlers(handles, rhs_size, lookahead_size)
+	# write_handlers(handles)
