@@ -31,14 +31,14 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-typedef struct	s_handler
+typedef struct	s_handle
 {
 	char		*lhs;
 	char		**rhs;
 	char		**lookahed;
-}				t_handler;
+}				t_handle;
 
-t_handler		**g_handlers;
+t_handle		**g_handlers;
 
 typedef struct	s_ast
 {
@@ -57,7 +57,13 @@ typedef struct	s_builtin
 ** src/main.c
 */
 
-void			init_parser(void) __attribute__((constructor));
+/*
+** src/init.c
+*/
+
+void			init_environ(int argc, char **argv, char **environ);
+void			init_parser(void);
+
 /*
 ** signal.c
 */
@@ -81,7 +87,9 @@ char			*get_env_var(char *var);
 ** lexer/lexer.c
 */
 
-int				lexical_analysis(char *complete_cmd, t_list **tokens, t_list **missing);
+int				lexical_analysis(char *complete_cmd
+								, t_list **tokens
+								, t_list **missing);
 
 /*
 ** parse/parse.c
