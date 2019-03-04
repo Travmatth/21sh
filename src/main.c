@@ -6,11 +6,24 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/02 17:42:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/02 20:14:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/shell.h"
+
+// void	complete_command(t_ast *ast, t_ectx *ctx)
+// {
+// 	if (t->ast->form == 'complete_command : list separator')
+// 	{
+// 		list(ast->list, ctx);
+// 		separator(ast->separator, ctx);
+// 	}
+// 	else if (t->ast->form == 'complete_command : list')
+// 	{
+// 		list(ast->list, ctx);
+// 	}
+// }
 
 void	init_environ(int argc, char **argv, char **environ)
 {
