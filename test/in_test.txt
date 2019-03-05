@@ -1,3 +1,4 @@
+cat src/main.c
 cat < test/in_file > test/out_file;
 # LEXES
 echo \n; cat "foo";

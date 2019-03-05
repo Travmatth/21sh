@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/31 12:46:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/04 14:36:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 	size_t	end;
 
 	end = 0;
-	if (NONE(token->type) && ERR(create_new_tok(token, ctx, WORD)))
+	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
 	if (c == '\\')
 		end = 2;
@@ -135,7 +135,7 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 		ctx->status = skip;
 		return ;
 	}
-	if ((!token->type && ERR(create_new_tok(token, ctx, WORD)))
+	if ((!token->type && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		|| ERR(append_to_tok(c, token)))
 	{
 		ctx->status = ERROR;

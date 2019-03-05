@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 17:57:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/04 17:37:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,13 @@
 # define ACCEPTING(x) ((x >= 1) && (x <= 15))
 # define NOT_ERR(x) (x != 16)
 
+/*
+** Parsed token types
+** 
+*/
+
 # define EOI -1
-# define WORD 1
+# define LEXER_WORD 1
 # define IO_HERE 2
 
 # define END 1
@@ -69,6 +74,44 @@ typedef struct	s_token
 	int			type;
 	t_buf		*value;
 }				t_token;
+
+/*
+** used in src/parse/parse.c
+** to hold tokens pushed onto parse stack
+*/
+
+typedef struct	s_handle
+{
+	char		*lhs;
+	char		**rhs;
+	char		**lookahed;
+}				t_prod;
+
+extern char		*g_parse_table[][53];
+
+enum			e_stack_token_type
+{
+	STACK_END,
+	STACK_TOKEN,
+	STACK_STATE
+};
+
+enum			e_parse_sym
+{
+	PARSE_WORD = 23
+};
+
+typedef union	u_item
+{
+	t_token		*token;
+	int			state;
+}				t_item;
+
+typedef struct	s_stack
+{
+	int			type;
+	t_item		item;
+}				t_stack;
 
 /*
 ** lexer/quotes.c

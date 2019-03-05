@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 17:58:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/04 14:37:11 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,9 @@ int		create_new_tok(t_token *token, t_lctx *ctx, int type)
 	char	*buf;
 
 	token->type = type;
-	if (type == WORD)
+	if (type == LEXER_WORD)
 		ctx->in_word = TRUE;
-	if (!(buf = ft_memalloc(sizeof(char) * (type == WORD ? 10 : 4))))
+	if (!(buf = ft_memalloc(sizeof(char) * (type == LEXER_WORD ? 10 : 4))))
 		return (ERROR);
 	if (!(token->value = ft_bufnew(buf, 0, sizeof(char) * 10)))
 		return (ERROR);

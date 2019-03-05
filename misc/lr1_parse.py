@@ -31,7 +31,7 @@ def parse(soup, legend, parse_table, handles):
 			else:
 				parse_table[i].insert(j - 1, col.contents[0].text)
 
-def format_handles(raw_handles, handles):
+def format_prods(raw_handles, handles):
 	max_rhs = 0
 	max_lookaheads = 0
 	for i, state in enumerate(raw_handles):
@@ -85,12 +85,12 @@ def create_struct(handle):
 		+ '#' + ','.join(handle['rhs']) \
 		+ '#' + ','.join(handle['lookaheads']) + '\n'
 
-def write_handlers(handles):
+def write_prods(handles):
 	out = str(len(handles)) + '\n'
 	for i, state in enumerate(handles):
 		out += '@' + str(i) + ',' + str(len(state)) + '\n'
 		out += ''.join([create_struct(struct) for struct in state])
-	with open('misc/parse_handlers.txt', 'w+') as f:
+	with open('misc/parse_prods.txt', 'w+') as f:
 		f.write(out)
 
 
@@ -102,4 +102,4 @@ if __name__ == '__main__':
 		soup = BeautifulSoup(f, features="html.parser")
 	parse(soup, legend, parse_table, handles)
 	# write_parse_table(legend, parse_table)
-	# write_handlers(handles)
+	# write_prods(handles)

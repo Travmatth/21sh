@@ -31,14 +31,7 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-typedef struct	s_handle
-{
-	char		*lhs;
-	char		**rhs;
-	char		**lookahed;
-}				t_handle;
-
-t_handle		**g_handlers;
+t_prod		**g_prods;
 
 typedef struct	s_ast
 {

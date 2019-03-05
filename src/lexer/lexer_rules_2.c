@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/31 13:19:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/04 14:36:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 
 	ctx->i += 1;
 	node = NULL;
-	if (token->type == WORD && token->value->current)
+	if (token->type == LEXER_WORD && token->value->current)
 	{
 		i = 0;
 		io_here = TRUE;
