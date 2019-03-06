@@ -31,7 +31,7 @@ char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
 
-t_prod		**g_prods;
+t_prod			*g_prods;
 
 typedef struct	s_ast
 {

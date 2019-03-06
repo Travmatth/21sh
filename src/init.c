@@ -6,19 +6,18 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/04 16:41:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/05 11:55:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/shell.h"
 
-t_prod	*init_prods(int fd, t_prod **prods, char **line)
+t_prod	*init_prods(int fd, t_prod *prods, char **line)
 {
 	int			status;
 	size_t		i;
-	size_t		limit;
 	t_prod		*prod;
-	char		*prod_rule;
+	char		**prod_rule;
 
 	i = 0;
 	while (42)
@@ -30,10 +29,10 @@ t_prod	*init_prods(int fd, t_prod **prods, char **line)
 			return (prods);
 		prod = &prods[i++];
 		if (!(prod_rule = ft_strsplit(*line, '#')))
-			return (ERROR);
+			return (NULL);
 		prod->lhs = prod_rule[0];
-		if (!(prod->rhs = ft_strsplit(prod_rule[1], ',')))
-			return (ERROR);
+		if (prod_rule[1] && !(prod->rhs = ft_strsplit(prod_rule[1], ',')))
+			return (NULL);
 	}
 }
 
@@ -64,14 +63,14 @@ void	init_parser(void)
 	int		fd;
 	size_t	size;
 	char	*line;
-	t_prod	**productions;
+	t_prod	*productions;
 
 	if (ERR((fd = open("misc/productions.txt", O_RDONLY))))
 		return ;
 	line = NULL;
 	get_next_line(fd, &line);
 	size = ((size_t)ft_atoi(line) + 1) * sizeof(t_prod);
-	if (NONE((productions = (t_prod**)ft_memalloc(size))))
+	if (NONE((productions = (t_prod*)ft_memalloc(size))))
 		return ;
 	g_prods = init_prods(fd, productions, &line);
 }
