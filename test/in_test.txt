@@ -1,5 +1,4 @@
-cat src/main.c
-cat < test/in_file > test/out_file;
+c < "word" && > ;
 # LEXES
 echo \n; cat "foo";
 	 	echo 	 	 "\nthis should"	 	"work";

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/04 14:36:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/06 17:09:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void	rule_1(t_token *token, t_lctx *ctx, t_list **tokens)
 		ctx->stop = TRUE;
 	}
 	node = NULL;
+	if (token->type == LEXER_WORD)
+		token->type = PARSE_WORD;
 	if (ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;
@@ -48,7 +50,6 @@ int		rule_2(char c, t_token *token, t_lctx *ctx)
 		return (ctx->status = NIL);
 	if (!(ft_bufappend(token->value, &c, sizeof(char))))
 		return (ctx->status = ERROR);
-	ctx->i += 1;
 	ctx->op_state = next;
 	token->type = next;
 	ctx->status = SUCCESS;
@@ -66,9 +67,44 @@ void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx)
 	t_list	*node;
 
 	node = NULL;
-	if (ERR(push_token(token, node, tokens, ctx)))
+	if (token->type == AMPERSAND)
+		token->type = PARSE_AMPERSAND;
+	else if (token->type == AND_IF)
+		token->type = PARSE_AND_IF;
+	else if (token->type == PIPE)
+		token->type = PARSE_PIPE;
+	else if (token->type == OR_IF)
+		token->type = PARSE_OR_IF;
+	else if (token->type == SEMICOLON)
+		token->type = PARSE_SEMICOLON;
+	else if (token->type == LESS)
+		token->type = PARSE_LESS;
+	else if (token->type == DLESS)
+		token->type = PARSE_DLESS;
+	else if (token->type == GREAT)
+		token->type = PARSE_GREAT;
+	else if (token->type == DGREAT)
+		token->type = PARSE_DGREAT;
+	else if (token->type == LESSAND)
+		token->type = PARSE_LESSAND;
+	else if (token->type == GREATAND)
+		token->type = PARSE_GREATAND;
+	else if (token->type == LESSGREAT)
+		token->type = PARSE_LESSGREAT;
+	else if (token->type == DLESSDASH)
+		token->type = PARSE_DLESSDASH;
+	else if (token->type == CLOBBER)
+		token->type = PARSE_CLOBBER;
+	else
 		ctx->status = ERROR;
-	ctx->status = SUCCESS;
+	if (!ERR(ctx->status) && ERR(push_token(token, node, tokens, ctx)))
+		ctx->status = ERROR;
+	if (!ERR(ctx->status))
+	{
+		ctx->status = SUCCESS;
+		ctx->op_state = START;
+		ctx->i += 1;
+	}
 }
 
 /*

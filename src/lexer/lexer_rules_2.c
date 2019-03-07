@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/05 11:17:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/06 16:17:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 		if (io_here == TRUE)
 			token->type = IO_HERE;
 	}
+	if (token->type == LEXER_WORD)
+		token->type = PARSE_WORD;
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->op_state = next_op_state(c, START);
@@ -92,6 +94,8 @@ void	rule_8(t_token *token, t_list **tokens, t_lctx *ctx)
 		if (io_here == TRUE)
 			token->type = IO_HERE;
 	}
+	if (token->type == LEXER_WORD)
+		token->type = PARSE_WORD;
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;

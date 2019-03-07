@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/05 18:26:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/06 16:39:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,11 @@
 
 /*
 ** Parsed token types
-** 
 */
 
 # define EOI -1
-# define LEXER_WORD 1
-# define IO_HERE 2
+# define LEXER_WORD 17
+# define IO_HERE 18
 
 # define END 1
 # define BEGIN 0
@@ -148,7 +147,9 @@ enum			e_parse_sym
 	PARSE_SEQUENTIAL_SEP,
 	PARSE_SIMPLE_COMMAND,
 	PARSE_SUBSHELL,
-	PARSE_TERM
+	PARSE_TERM,
+	PARSE_LESS,
+	PARSE_GREAT
 };
 
 typedef union	u_item

@@ -12,20 +12,20 @@
 
 #include "../../includes/shell.h"
 
-void	translate_symbols(t_list **tokens)
-{
-	t_list	*list;
-	t_token	*token;
+// void	translate_symbols(t_list **tokens)
+// {
+// 	t_list	*list;
+// 	t_token	*token;
 
-	list = *tokens;
-	while (list)
-	{
-		token = (t_token*)list->content;
-		if (token->type == LEXER_WORD)
-			token->type = PARSE_WORD;
-		list = list->next;
-	}
-}
+// 	list = *tokens;
+// 	while (list)
+// 	{
+// 		token = (t_token*)list->content;
+// 		if (token->type == LEXER_WORD)
+// 			token->type = PARSE_WORD;
+// 		list = list->next;
+// 	}
+// }
 
 /*
 ** 11. The current character is used as the start of a new word.
@@ -86,7 +86,5 @@ int		lexical_analysis(char *input, t_list **tokens, t_list **missing)
 	}
 	if (NONE(ctx.status))
 		*missing = ctx.missing;
-	if (OK(ctx.status))
-		translate_symbols(tokens);
 	return (ctx.status);
 }
