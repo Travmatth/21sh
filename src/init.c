@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/05 11:55:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/07 18:32:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 		if (!(prod_rule = ft_strsplit(*line, '#')))
 			return (NULL);
 		prod->lhs = prod_rule[0];
-		if (prod_rule[1] && !(prod->rhs = ft_strsplit(prod_rule[1], ',')))
+		if (prod_rule[1] && !(prod->rhs = ft_strsplit(prod_rule[1], ' ')))
 			return (NULL);
 	}
 }

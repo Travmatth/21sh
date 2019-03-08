@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/06 16:39:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/07 17:45:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,37 +55,6 @@
 # define BQUOTE 5
 # define QUOTE 6
 # define DQUOTE 7
-
-typedef struct	s_lctx
-{
-	char		*input;
-	int			status;
-	short		i;
-	short		j;
-	short		stop;
-	short		op_state;
-	short		in_word;
-	t_list		*missing;
-}				t_lctx;
-
-typedef struct	s_token
-{
-	int			type;
-	t_buf		*value;
-}				t_token;
-
-/*
-** used in src/parse/parse.c
-** to hold tokens pushed onto parse stack
-*/
-
-typedef struct	s_handle
-{
-	char		*lhs;
-	char		**rhs;
-}				t_prod;
-
-extern char		*g_parse_table[][53];
 
 enum			e_stack_token_type
 {
@@ -152,17 +121,36 @@ enum			e_parse_sym
 	PARSE_GREAT
 };
 
-typedef union	u_item
-{
-	t_token		*token;
-	int			state;
-}				t_item;
+/*
+** used in src/parse/parse.c
+** to hold tokens pushed onto parse stack
+*/
 
-typedef struct	s_stack
+typedef struct	s_handle
+{
+	char		*lhs;
+	char		**rhs;
+}				t_prod;
+
+extern char		*g_parse_table[][53];
+
+typedef struct	s_lctx
+{
+	char		*input;
+	int			status;
+	short		i;
+	short		j;
+	short		stop;
+	short		op_state;
+	short		in_word;
+	t_list		*missing;
+}				t_lctx;
+
+typedef struct	s_token
 {
 	int			type;
-	t_item		item;
-}				t_stack;
+	t_buf		*value;
+}				t_token;
 
 /*
 ** AST structures used to store parsed token
@@ -175,6 +163,18 @@ typedef struct	s_ast_node
 	char		*rhs;
 	void		**val;
 }				t_ast_node;
+
+typedef union	u_item
+{
+	t_ast_node	*token;
+	int			state;
+}				t_item;
+
+typedef struct	s_stack
+{
+	int			type;
+	t_item		item;
+}				t_stack;
 
 /*
 ** lexer/quotes.c

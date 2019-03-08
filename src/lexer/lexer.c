@@ -52,7 +52,7 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 		rule_6(c, token, tokens, ctx);
 	else if (c == '\n' && !escaped(ctx->input, ctx->i))
 		rule_7(c, token, tokens, ctx);
-	else if (c == ' ' && !escaped(ctx->input, ctx->i))
+	else if ((c == ' ' || c == '\t') && !escaped(ctx->input, ctx->i))
 		rule_8(token, tokens, ctx);
 	else if (ctx->in_word)
 		rule_9(c, token, tokens, ctx);

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/06 13:34:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/07 18:05:53 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,18 @@ int		create_new_tok(t_token *token, t_lctx *ctx, int type)
 
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 {
-	if (!(node = ft_lstnew(token, sizeof(t_token))))
+	t_ast_node	*ast_node;
+
+	if (token->type == EOI)
+		token->type = PARSE_END;
+	if (!(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
+		return (ERROR);
+	if (!(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2)))
+		return (ERROR);
+	if (!(ast_node->val[0] = ft_strdup((char*)token->value->buf)))
+		return (ERROR);
+	ast_node->type = token->type;
+	if (!(node = ft_lstnew(ast_node, sizeof(t_ast_node))))
 		return (ERROR);
 	ft_lstpushback(tokens, node);
 	ctx->in_word = FALSE;

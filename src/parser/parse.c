@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/05 18:31:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/07 17:51:40 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 extern char		*g_parse_table[][53];
 extern t_prod	*g_prods;
 
-t_list	*create_stack_token(int type, t_token *token, int state)
+t_list	*create_stack_token(int type, t_ast_node *token, int state)
 {
 	t_stack	*stack_token;
 
@@ -25,7 +25,9 @@ t_list	*create_stack_token(int type, t_token *token, int state)
 	if (type == STACK_STATE)
 		stack_token->item.state = state;
 	else if (type == STACK_TOKEN)
+	{
 		stack_token->item.token = token;
+	}
 	return (ft_lstnew((void*)stack_token, sizeof(t_stack)));
 }
 
@@ -39,22 +41,13 @@ t_list	*create_end_stack_token(void)
 	return (ft_lstnew((void*)stack_token, sizeof(t_stack)));
 }
 
-t_token	*peek_token(t_list **tokens)
-{
-	t_list	*top;
-
-	if (!(top = ft_lstpeekhead(*tokens)))
-		return (NULL);
-	return ((t_token*)top->content);
-}
-
-t_token	*pop_token(t_list **tokens)
+t_ast_node	*pop_token(t_list **tokens)
 {
 	t_list	*top;
 
 	if (!(top = ft_lsthead(tokens)))
 		return (NULL);
-	return ((t_token*)top->content);
+	return ((t_ast_node*)top->content);
 }
 
 int		peek_state(t_list **stack, int *state)
@@ -136,11 +129,11 @@ int		assign_type(char *lhs, t_ast_node *node)
 	return (SUCCESS);
 }
 
-t_list	*reduce_symbol(t_prod *handle, t_list **tmp)
+t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 {
 	int			size;
 	t_ast_node	*node;
-	t_token		*token;
+	t_ast_node	*token;
 	t_stack		*stack_token;
 
 	if (!(node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
@@ -161,14 +154,15 @@ t_list	*reduce_symbol(t_prod *handle, t_list **tmp)
 	if (!(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
 		return (NULL);
 	stack_token->type = STACK_TOKEN;
-	stack_token->item.token = token;
-	return (ft_lstnew((void*)stack_token, sizeof(t_ast_node)));
+	stack_token->item.token = node;
+	return (stack_token);
 }
 
-int		reduce(int state, t_list **stack, t_token *word)
+int		reduce(int state, t_list **stack, t_ast_node *word)
 {
 	t_list	*tmp;
 	t_prod	*handle;
+	t_stack	*sym;
 	int		symbols;
 	int		next_state;
 
@@ -186,13 +180,15 @@ int		reduce(int state, t_list **stack, t_token *word)
 		ft_lstpushback(&tmp, ft_lsttail(stack));
 	}
 	peek_state(stack, &next_state);
-	ft_lstpushback(stack, reduce_symbol(handle, &tmp));
-	next_state = ft_atoi(g_parse_table[next_state][((t_ast_node*)peek_token(stack)->value)->type]);
+	sym = reduce_symbol(handle, &tmp);
+	t_ast_node	*n = (t_ast_node*)sym->item.token;
+	ft_lstpushback(stack, ft_lstnew(sym, sizeof(t_stack)));
+	next_state = ft_atoi(g_parse_table[next_state][n->type]);
 	ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next_state));
 	return (SUCCESS);
 }
 
-int		shift(int state, t_list **stack, t_token **word, t_list **tokens)
+int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 {
 	int		next_state;
 
@@ -206,7 +202,7 @@ int		shift(int state, t_list **stack, t_token **word, t_list **tokens)
 int		syntactic_analysis(t_list **tokens, t_ast *ast)
 {
 	t_list		*stack;
-	t_token		*word;
+	t_ast_node		*word;
 	int			state;
 
 	(void)ast;
