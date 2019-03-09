@@ -35,6 +35,7 @@ t_prod			*g_prods;
 
 typedef struct	s_ast
 {
+	t_ast_node	*root;
 	int			type;
 	t_list		*missing;
 }				t_ast;

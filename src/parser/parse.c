@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/07 17:51:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/08 20:30:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,6 @@ int		peek_state(t_list **stack, int *state)
 		return (ERROR);
 	*state = ((t_stack*)top->content)->item.state;
 	return (SUCCESS);
-}
-
-char	*ft_strsum(char **strings)
-{
-	(void)strings;
-	return (NULL);
 }
 
 int		assign_type(char *lhs, t_ast_node *node)
@@ -141,8 +135,8 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 	size = 0;
 	while (handle->rhs[size])
 		size += 1;
-	// if (!(node->rhs = ft_strsum(handle->rhs)))
-	// 	return (NULL);
+	if (!(node->rhs = ft_strsum(handle->rhs, " ")))
+		return (NULL);
 	if (!(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1))))
 		return (NULL);
 	while (--size >= 0)
@@ -151,6 +145,8 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 		node->val[size] = token;
 	}
 	assign_type(handle->lhs, node);
+	if (!(node->lhs = ft_strdup(handle->lhs)))
+		return (NULL);
 	if (!(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
 		return (NULL);
 	stack_token->type = STACK_TOKEN;
@@ -167,12 +163,7 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 	int		next_state;
 
 	tmp = NULL;
-	next_state = -1;
-	char *handle_str = g_parse_table[state][word->type];
-	int		handle_i = ft_atoi(&handle_str[1]);
-	t_prod	prod = g_prods[handle_i];
-	(void)prod;
-	handle = &g_prods[handle_i];
+	handle = &g_prods[ft_atoi(&g_parse_table[state][word->type][1])];
 	symbols = 0;
 	while (handle->rhs[symbols++])
 	{
@@ -181,9 +172,8 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 	}
 	peek_state(stack, &next_state);
 	sym = reduce_symbol(handle, &tmp);
-	t_ast_node	*n = (t_ast_node*)sym->item.token;
 	ft_lstpushback(stack, ft_lstnew(sym, sizeof(t_stack)));
-	next_state = ft_atoi(g_parse_table[next_state][n->type]);
+	next_state = ft_atoi(g_parse_table[next_state][sym->item.token->type]);
 	ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next_state));
 	return (SUCCESS);
 }
@@ -226,7 +216,11 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 				return (ERROR);
 		}
 		else if (g_parse_table[state][word->type][0] == 'a')
+		{
+			ft_lsttail(&stack);
+			ast->root = (t_ast_node*)(ft_lsttail(&stack)->content);
 			return (SUCCESS);
+		}
 		else
 			return (ERROR);
 	}
