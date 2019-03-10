@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/08 20:30:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/10 03:24:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_ast_node	*pop_token(t_list **tokens)
 
 	if (!(top = ft_lsthead(tokens)))
 		return (NULL);
-	return ((t_ast_node*)top->content);
+	return (t_ast_node*)((t_stack*)top->content)->item.token;
 }
 
 int		peek_state(t_list **stack, int *state)
@@ -141,7 +141,7 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 		return (NULL);
 	while (--size >= 0)
 	{
-		token = pop_token(tmp);
+		token = (t_ast_node*)ft_lsttail(tmp)->content;
 		node->val[size] = token;
 	}
 	assign_type(handle->lhs, node);
@@ -183,12 +183,28 @@ int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 	int		next_state;
 
 	next_state = ft_atoi(&g_parse_table[state][(*word)->type][1]);
-	ft_lstpushback(stack, create_stack_token(STACK_TOKEN, *word, NIL));
+	ft_lstpushback(stack, ft_lstnew(*word, sizeof(t_ast_node)));
 	ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next_state));
 	*word = pop_token(tokens);
 	return (SUCCESS);
 }
 
+int		accept_ast(t_list **stack, t_ast *ast)
+{
+	t_list	*tmp;
+	t_prod	*handle;
+	t_stack	*sym;
+
+	tmp = NULL;
+	ft_lsttail(stack);
+	handle = &g_prods[START];
+	ft_lstpushback(&tmp, ft_lsttail(stack));
+	sym = reduce_symbol(handle, &tmp);
+	ast->root = sym->item.token;
+	return (SUCCESS);
+}
+
+// (char*)((t_stack*)((t_stack*)stack->next->next->content)->item.token->val[0])->item.token->val[0]
 int		syntactic_analysis(t_list **tokens, t_ast *ast)
 {
 	t_list		*stack;
@@ -216,11 +232,7 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 				return (ERROR);
 		}
 		else if (g_parse_table[state][word->type][0] == 'a')
-		{
-			ft_lsttail(&stack);
-			ast->root = (t_ast_node*)(ft_lsttail(&stack)->content);
-			return (SUCCESS);
-		}
+			return (accept_ast(&stack, ast));
 		else
 			return (ERROR);
 	}
