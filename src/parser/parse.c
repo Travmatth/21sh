@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/10 03:24:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/10 18:58:53 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,13 +125,15 @@ int		assign_type(char *lhs, t_ast_node *node)
 
 t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 {
+	int			i;
 	int			size;
 	t_ast_node	*node;
-	t_ast_node	*token;
+	t_stack	*token;
 	t_stack		*stack_token;
 
 	if (!(node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
 		return (NULL);
+	i = 0;
 	size = 0;
 	while (handle->rhs[size])
 		size += 1;
@@ -139,10 +141,10 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 		return (NULL);
 	if (!(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1))))
 		return (NULL);
-	while (--size >= 0)
+	while (i < size)
 	{
-		token = (t_ast_node*)ft_lsttail(tmp)->content;
-		node->val[size] = token;
+		token = (t_stack*)ft_lsttail(tmp)->content;
+		node->val[i++] = token->item.token;
 	}
 	assign_type(handle->lhs, node);
 	if (!(node->lhs = ft_strdup(handle->lhs)))
@@ -183,7 +185,7 @@ int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 	int		next_state;
 
 	next_state = ft_atoi(&g_parse_table[state][(*word)->type][1]);
-	ft_lstpushback(stack, ft_lstnew(*word, sizeof(t_ast_node)));
+	ft_lstpushback(stack, create_stack_token(STACK_TOKEN, *word, NIL));
 	ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next_state));
 	*word = pop_token(tokens);
 	return (SUCCESS);
