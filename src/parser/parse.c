@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/10 18:58:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/10 23:33:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 		return (NULL);
 	if (!(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1))))
 		return (NULL);
-	while (i < size)
+	while (i < size && ft_strcmp("$end", handle->rhs[i]))
 	{
 		token = (t_stack*)ft_lsttail(tmp)->content;
 		node->val[i++] = token->item.token;
@@ -240,6 +240,13 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 	}
 	return (NIL);
 }
+
+/*
+-exec p (char*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)stack_token->item.token->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0]
+(char *) $34 = 0x0000602000002210 "cat"
+-exec p (char*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)stack_token->item.token->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[1])->val[0])->val[0]
+(char *) $35 = 0x00006020000022b0 "author"
+*/
 
 int		prepare_ast(char *complete_cmd, t_ast *ast)
 {
