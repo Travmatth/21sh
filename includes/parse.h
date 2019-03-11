@@ -6,12 +6,14 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/10 23:50:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/11 00:59:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSE_H
 # define PARSE_H
+
+# include "lexer.h"
 
 /*
 ** Operator DFA definitions
@@ -181,6 +183,19 @@ typedef struct	s_stack
 }				t_stack;
 
 /*
+** used by assign type to translate a given
+** nonterminal symbol into it's respective enum symbol
+*/
+
+# define TOTAL_PARSE_SYMS 26
+
+typedef struct s_parse_sym_lookup
+{
+	char		*lhs;
+	int			sym;
+}				t_parse_sym_lookup;
+
+/*
 ** lexer/quotes.c
 */
 
@@ -237,4 +252,21 @@ int				push_token(t_token *token
 int				find_closing_chars(t_list **missing
 					, t_token *token, t_lctx *ctx);
 int				identify_substitutions(char c, t_token *token, t_lctx *ctx, t_list **missing);
+
+/*
+** parse/parse_stack_utils.c
+*/
+
+t_list			*create_stack_token(int type, t_ast_node *token, int state);
+t_list			*create_end_stack_token(void);
+t_ast_node		*pop_token(t_list **tokens);
+
+/*
+** parse/parse_utils.c
+*/
+
+int				peek_state(t_list **stack, int *state);
+int				assign_type(char *lhs, t_ast_node *node);
+t_stack			*reduce_symbol(t_prod *handle, t_list **tmp);
+
 #endif
