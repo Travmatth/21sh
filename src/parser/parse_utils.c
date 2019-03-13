@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/11 00:57:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/12 18:16:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-t_parse_sym_lookup	g_sym_lookup[26] = 
+t_parse_sym_lookup	g_sym_lookup[27] =
 {
 	{ "and_or", PARSE_AND_OR },
 	{ "brace_group", PARSE_BRACE_GROUP },
@@ -43,7 +43,6 @@ t_parse_sym_lookup	g_sym_lookup[26] =
 	{ "term", PARSE_TERM }
 };
 
-
 int		peek_state(t_list **stack, int *state)
 {
 	t_list	*top;
@@ -55,6 +54,7 @@ int		peek_state(t_list **stack, int *state)
 	*state = ((t_stack*)top->content)->item.state;
 	return (SUCCESS);
 }
+
 int		assign_type(char *lhs, t_ast_node *node)
 {
 	int		i;
@@ -76,28 +76,22 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 	int			i;
 	int			size;
 	t_ast_node	*node;
-	t_stack	*token;
 	t_stack		*stack_token;
 
 	if (!(node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
 		return (NULL);
 	i = 0;
 	size = 0;
-	while (handle->rhs[size])
+	while (handle->rhs && handle->rhs[size])
 		size += 1;
-	if (!(node->rhs = ft_strsum(handle->rhs, " ")))
+	if (handle->rhs && (!(node->rhs = ft_strsum(handle->rhs, " "))
+		|| !(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1)))))
 		return (NULL);
-	if (!(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1))))
-		return (NULL);
-	while (i < size && ft_strcmp("$end", handle->rhs[i]))
-	{
-		token = (t_stack*)ft_lsttail(tmp)->content;
-		node->val[i++] = token->item.token;
-	}
+	while (handle->rhs && i < size && ft_strcmp("$end", handle->rhs[i]))
+		node->val[i++] = ((t_stack*)ft_lsttail(tmp)->content)->item.token;
 	assign_type(handle->lhs, node);
-	if (!(node->lhs = ft_strdup(handle->lhs)))
-		return (NULL);
-	if (!(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
+	if (!(node->lhs = ft_strdup(handle->lhs))
+		|| !(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
 		return (NULL);
 	stack_token->type = STACK_TOKEN;
 	stack_token->item.token = node;

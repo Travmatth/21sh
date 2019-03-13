@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/09 22:49:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/12 17:59:00 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,18 +103,52 @@ int		create_new_tok(t_token *token, t_lctx *ctx, int type)
 	return (SUCCESS);
 }
 
+t_token_cnv	g_tok_cnv[TOKEN_CONVERSIONS] =
+{
+	{ EOI, PARSE_END },
+	{ LEXER_WORD, PARSE_WORD },
+	{ IO_HERE, PARSE_IO_HERE },
+	{ AMPERSAND, PARSE_AMPERSAND },
+	{ AND_IF, PARSE_AND_IF },
+	{ PIPE, PARSE_PIPE },
+	{ OR_IF, PARSE_OR_IF },
+	{ SEMICOLON, PARSE_SEMICOLON },
+	{ LESS, PARSE_LESS },
+	{ DLESS, PARSE_DLESS },
+	{ GREAT, PARSE_GREAT },
+	{ DGREAT, PARSE_DGREAT },
+	{ LESSAND, PARSE_LESSAND },
+	{ GREATAND, PARSE_GREATAND },
+	{ LESSGREAT, PARSE_LESSGREAT },
+	{ DLESSDASH, PARSE_DLESSDASH },
+	{ CLOBBER, PARSE_CLOBBER }
+};
+
+int		convert_token(t_token *token)
+{
+	int		i;
+
+	i = -1;
+	while (++i < TOKEN_CONVERSIONS)
+	{
+		if (token->type == g_tok_cnv[i].lex_tok)
+		{
+			token->type = g_tok_cnv[i].parse_tok;
+			return (SUCCESS);
+		}
+	}
+	return (ERROR);
+}
+
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 {
 	t_ast_node	*ast_node;
 	t_stack		*stack_node;
 
-	if (token->type == EOI)
-		token->type = PARSE_END;
-	if (!(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
-		return (ERROR);
-	if (!(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2)))
-		return (ERROR);
-	if (!(ast_node->val[0] = ft_strdup((char*)token->value->buf)))
+	if (ERR(convert_token(token))
+		|| !(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node)))
+		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2))
+		|| !(ast_node->val[0] = ft_strdup((char*)token->value->buf)))
 		return (ERROR);
 	ast_node->type = token->type;
 	if (!(stack_node = (t_stack*)ft_memalloc(sizeof(t_stack))))

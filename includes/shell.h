@@ -18,6 +18,7 @@
 # include <signal.h>
 # include <sys/stat.h>
 # include "grammar.h"
+# include "traverse.h"
 # include <fcntl.h>
 
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')

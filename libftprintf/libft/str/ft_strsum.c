@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/08 17:28:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/08 20:07:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/12 18:15:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ char	*ft_strsum(char **strings, char *fill)
 	char	*tmp;
 
 	size = 0;
+	if (!strings)
+		return (NULL);
 	while (strings[size])
 		size += 1;
 	i = 0;

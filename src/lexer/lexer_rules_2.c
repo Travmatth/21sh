@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/06 16:17:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/11 15:26:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,17 @@ void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 		io_here = TRUE;
 		while ((io_here == TRUE) && i < token->value->current)
 		{
-			if (!ft_isdigit(((char*)token->value->buf)[i]))
+			if (!ft_isdigit(((char*)token->value->buf)[i++]))
 				io_here = FALSE;
-			i += 1;
 		}
 		if (io_here == TRUE)
 			token->type = IO_HERE;
 	}
-	if (token->type == LEXER_WORD)
-		token->type = PARSE_WORD;
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->op_state = next_op_state(c, START);
 	if (ERR(create_new_tok(token, ctx, ctx->op_state))
-		|| ERR(append_to_tok(c, token)))
+	|| ERR(append_to_tok(c, token)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;
 }
@@ -56,17 +53,9 @@ void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 ** be delimited.
 */
 
-void	rule_7(char c, t_token *token, t_list **tokens, t_lctx *ctx)
+void	rule_7(t_token *token, t_list **tokens, t_lctx *ctx)
 {
-	(void)c;
-	(void)token;
-	(void)tokens;
-	(void)ctx;
-	// {
-	// 	ctx.i += 1;
-	// 	ctx.in_word = FALSE;
-	// }
-	ctx->status = SUCCESS;
+	rule_8(token, tokens, ctx);
 }
 
 /*
@@ -94,8 +83,6 @@ void	rule_8(t_token *token, t_list **tokens, t_lctx *ctx)
 		if (io_here == TRUE)
 			token->type = IO_HERE;
 	}
-	if (token->type == LEXER_WORD)
-		token->type = PARSE_WORD;
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;
@@ -121,16 +108,9 @@ void	rule_9(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 ** The <newline> that ends the line is not considered part of the comment.
 */
 
-void	rule_10(char c, t_token *token, t_list **tokens, t_lctx *ctx)
+void	rule_10(t_lctx *ctx)
 {
-	(void)c;
-	(void)token;
-	(void)tokens;
-	(void)ctx;
-	// {
-		// if (NONE((ctx.j = find_sub_end(c, &input[1], &j))))
-			// return (ERROR);
-		// ctx.i += ctx.j;
-	// }
+	while (ctx->input[ctx->i] && ctx->input[ctx->i] != '\n')
+		ctx->i += 1;
 	ctx->status = SUCCESS;
 }

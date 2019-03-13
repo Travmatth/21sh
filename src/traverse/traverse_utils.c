@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   grammar.h                                          :+:      :+:    :+:   */
+/*   traverse_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/02 15:33:00 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/11 17:40:28 by tmatthew         ###   ########.fr       */
+/*   Created: 2019/03/12 15:04:48 by tmatthew          #+#    #+#             */
+/*   Updated: 2019/03/12 15:06:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GRAMMAR_H
-# define GRAMMAR_H
+#include "../../includes/shell.h"
 
-# include "parse.h"
-
-#endif
+void	reset_exec_ctx(t_ectx *e_ctx)
+{
+	e_ctx->is_bg = FALSE;
+	e_ctx->in_fd = STDIN;
+	e_ctx->out_fd = STDOUT;
+	e_ctx->err_fd = STDERR;
+}

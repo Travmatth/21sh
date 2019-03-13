@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/11 00:58:09 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/12 18:13:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 	tmp = NULL;
 	handle = &g_prods[ft_atoi(&g_parse_table[state][word->type][1])];
 	symbols = 0;
-	while (handle->rhs[symbols++])
+	while (handle->rhs && handle->rhs[symbols++])
 	{
 		ft_lsttail(stack);
 		ft_lstpushback(&tmp, ft_lsttail(stack));
@@ -65,7 +65,11 @@ int		accept_ast(t_list **stack, t_ast *ast)
 	return (SUCCESS);
 }
 
-// (char*)((t_stack*)((t_stack*)stack->next->next->content)->item.token->val[0])->item.token->val[0]
+/*
+** (char*)((t_stack*)((t_stack*)stack->next->next->content)->item.token->val[0])
+** ->item.token->val[0]
+*/
+
 int		syntactic_analysis(t_list **tokens, t_ast *ast)
 {
 	t_list		*stack;
@@ -89,17 +93,23 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 			return (ERROR);
 		else if (action[0] == 'a')
 			return (accept_ast(&stack, ast));
-		else
+		else if (action[0] != 'r' && action[0] != 's' && action[0] != 'a')
 			return (ERROR);
 	}
 	return (NIL);
 }
 
 /*
--exec p (char*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)stack_token->item.token->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0]
-(char *) $34 = 0x0000602000002210 "cat"
--exec p (char*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)stack_token->item.token->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[0])->val[1])->val[0])->val[0]
-(char *) $35 = 0x00006020000022b0 "author"
+** -exec p (char*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)
+** ((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)
+** stack_token->item.token->val[0])->val[0])->val[0])->val[0])->val[0])
+** ->val[0])->val[0])->val[0])->val[0])->val[0]
+** (char *) $34 = 0x0000602000002210 "cat"
+** -exec p (char*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)
+** ((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)((t_ast_node*)
+** stack_token->item.token->val[0])->val[0])->val[0])->val[0])->val[0])
+** ->val[0])->val[0])->val[1])->val[0])->val[0]
+** (char *) $35 = 0x00006020000022b0 "author"
 */
 
 int		prepare_ast(char *complete_cmd, t_ast *ast)

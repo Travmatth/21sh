@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/11 00:53:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/11 16:45:00 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-t_list	*create_stack_token(int type, t_ast_node *token, int state)
+t_list		*create_stack_token(int type, t_ast_node *token, int state)
 {
 	t_stack	*stack_token;
 
@@ -28,7 +28,7 @@ t_list	*create_stack_token(int type, t_ast_node *token, int state)
 	return (ft_lstnew((void*)stack_token, sizeof(t_stack)));
 }
 
-t_list	*create_end_stack_token(void)
+t_list		*create_end_stack_token(void)
 {
 	t_stack	*stack_token;
 
@@ -46,4 +46,3 @@ t_ast_node	*pop_token(t_list **tokens)
 		return (NULL);
 	return (t_ast_node*)((t_stack*)top->content)->item.token;
 }
-

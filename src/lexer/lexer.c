@@ -6,30 +6,22 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/30 17:59:1t8 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/11 15:23:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-// void	translate_symbols(t_list **tokens)
-// {
-// 	t_list	*list;
-// 	t_token	*token;
-
-// 	list = *tokens;
-// 	while (list)
-// 	{
-// 		token = (t_token*)list->content;
-// 		if (token->type == LEXER_WORD)
-// 			token->type = PARSE_WORD;
-// 		list = list->next;
-// 	}
-// }
-
 /*
 ** 11. The current character is used as the start of a new word.
 */
+
+void	rule_11(char c, t_lctx *ctx, t_token *token)
+{
+	ctx->status = create_new_tok(token, ctx, LEXER_WORD);
+	if (OK(ctx->status))
+		ctx->status = append_to_tok(c, token);
+}
 
 void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 {
@@ -43,27 +35,20 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	else if (!escaped(ctx->input, ctx->i)
 		&& (c == '\\' || c == '\'' || c == '"'))
 		rule_4(c, ctx->input, token, ctx);
-	else if (!escaped(ctx->input, ctx->i) && (c == '$' || c == '`')
-		&& ctx->input[ctx->i + 1]
-		&& !(ctx->input[ctx->i + 1] == ' ' || ctx->input[ctx->i + 1] == '\t'
-			|| ctx->input[ctx->i + 1] == '\n'))
+	else if (!escaped(ctx->input, ctx->i) && IS_QUOTED(c, ctx))
 		rule_5(c, token, ctx);
 	else if (can_form_op(c))
 		rule_6(c, token, tokens, ctx);
 	else if (c == '\n' && !escaped(ctx->input, ctx->i))
-		rule_7(c, token, tokens, ctx);
+		rule_7(token, tokens, ctx);
 	else if ((c == ' ' || c == '\t') && !escaped(ctx->input, ctx->i))
 		rule_8(token, tokens, ctx);
 	else if (ctx->in_word)
 		rule_9(c, token, tokens, ctx);
 	else if (c == '#')
-		rule_10(c, token, tokens, ctx);
+		rule_10(ctx);
 	else if ((ctx->i += 1))
-	{
-		ctx->status = create_new_tok(token, ctx, LEXER_WORD);
-		if (OK(ctx->status))
-			ctx->status = append_to_tok(c, token);
-	}
+		rule_11(c, ctx, token);
 }
 
 /*
