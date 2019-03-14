@@ -6,12 +6,14 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 14:29:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/12 15:07:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/13 15:15:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TRAVERSE_H
 # define TRAVERSE_H
+
+# define EXIT_OK(x) (x == 0)
 
 typedef struct	s_ectx
 {
@@ -19,7 +21,9 @@ typedef struct	s_ectx
 	int			out_fd;
 	int			err_fd;
 	int			is_bg;
+	int			exit_code;
 }				t_ectx;
 
 void			reset_exec_ctx(t_ectx *e_ctx);
+int				exec_simple_command(t_ectx *e_ctx, t_ast_node *root);
 #endif

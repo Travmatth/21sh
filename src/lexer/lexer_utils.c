@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/12 17:59:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/13 17:59:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,9 +113,9 @@ t_token_cnv	g_tok_cnv[TOKEN_CONVERSIONS] =
 	{ PIPE, PARSE_PIPE },
 	{ OR_IF, PARSE_OR_IF },
 	{ SEMICOLON, PARSE_SEMICOLON },
-	{ LESS, PARSE_LESS },
+	{ LESS, PARSE_LT },
 	{ DLESS, PARSE_DLESS },
-	{ GREAT, PARSE_GREAT },
+	{ GREAT, PARSE_GT },
 	{ DGREAT, PARSE_DGREAT },
 	{ LESSAND, PARSE_LESSAND },
 	{ GREATAND, PARSE_GREATAND },

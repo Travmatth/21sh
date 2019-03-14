@@ -16,7 +16,7 @@ CORE := main signal init
 BUILTINS := cd echo env setenv unsetenv 
 LEXER := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa reserved_dfa quotes
 PARSER := parse parse_table parse_stack_utils parse_utils
-TRAVERSE := traverse traverse_utils command
+TRAVERSE := traverse traverse_utils command simple_command
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
 		$(addprefix src/lexer/, $(LEXER)) \
