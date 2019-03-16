@@ -6,7 +6,7 @@
         {
             "taskName": "build",
             "command": "make",
-            "args": ["TEST=FULL"],
+            "args": ["TEST=1"],
             "showOutput": "always",
             "isBuildCommand": true,
             "isShellCommand": true,

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/13 17:59:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/15 15:07:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ t_token_cnv	g_tok_cnv[TOKEN_CONVERSIONS] =
 {
 	{ EOI, PARSE_END },
 	{ LEXER_WORD, PARSE_WORD },
-	{ IO_HERE, PARSE_IO_HERE },
+	{ IO_NUMBER, PARSE_IO_NUMBER },
 	{ AMPERSAND, PARSE_AMPERSAND },
 	{ AND_IF, PARSE_AND_IF },
 	{ PIPE, PARSE_PIPE },

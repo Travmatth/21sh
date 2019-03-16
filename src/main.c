@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/04 16:32:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/15 16:12:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,22 @@
 
 int		main(int argc, char **argv, char **environ)
 {
+	int		stopped;
 	char	*command;
 
+	stopped = FALSE;
 	init_parser();
 	init_environ(argc, argv, environ);
 	if (!g_prods || !g_environ)
 		return (0);
-	while (42)
+	while (!stopped)
 	{
 		signal(SIGINT, sig_handler);
 		write(STDOUT, "$> ", 3);
 		if (get_next_line(STDIN, &command) > 0)
 		{
-			if (ERR(execute_commands(command)))
-				break ;
+			if (!ft_strcmp("exit", command) || ERR(execute_commands(command)))
+				stopped = TRUE;
 			free(command);
 		}
 		else

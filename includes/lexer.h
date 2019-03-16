@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/12 16:34:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/15 15:07:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 
 # define EOI -1
 # define LEXER_WORD 17
-# define IO_HERE 18
+# define IO_NUMBER 18
 # define TOKEN_CONVERSIONS 17
 
 

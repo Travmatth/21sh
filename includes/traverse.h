@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 14:29:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/13 15:15:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/14 15:10:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,15 @@ typedef struct	s_ectx
 	int			in_fd;
 	int			out_fd;
 	int			err_fd;
+	int			orig_in;
+	int			orig_out;
+	int			orig_err;
 	int			is_bg;
 	int			exit_code;
 }				t_ectx;
 
+int				execute_cmd(char **command);
+void			set_exec_ctx(t_ectx *e_ctx);
 void			reset_exec_ctx(t_ectx *e_ctx);
 int				exec_simple_command(t_ectx *e_ctx, t_ast_node *root);
 #endif

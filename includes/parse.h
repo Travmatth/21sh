@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/11 16:43:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/15 15:19:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ enum			e_parse_sym
 	PARSE_SUBSHELL,
 	PARSE_TERM,
 	PARSE_LESS,
-	PARSE_GREAT
+	PARSE_GREAT,
 };
 
 /*

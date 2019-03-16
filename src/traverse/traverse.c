@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/13 17:45:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/14 13:09:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ int		exec_separator(int *is_bg, t_ast_node *root)
 
 int		exec_command(t_ectx *e_ctx, t_ast_node *root)
 {
-	if (!ft_strcmp("simple_command", root->val[0]))
-		return (exec_simple_command(e_ctx, root));
+	if (!ft_strcmp("simple_command", root->rhs))
+		return (exec_simple_command(e_ctx, root->val[0]));
 	else
 	{
 		ft_printf("Commands beyond simple commands not implemented\n");
@@ -76,19 +76,19 @@ int		exec_and_or(t_ectx *e_ctx, t_ast_node *root)
 		{
 			exec_and_or(e_ctx, root->val[0]);
 			if (EXIT_OK(e_ctx->exit_code))
-				return (exec_pipeline(e_ctx, root->val[3]));
+				return (exec_pipeline(e_ctx, root->val[2]));
 			return (SUCCESS);
 		}
 		else
 		{
 			exec_and_or(e_ctx, root->val[0]);
 			if (!EXIT_OK(e_ctx->exit_code))
-				return (exec_pipeline(e_ctx, root->val[3]));
+				return (exec_pipeline(e_ctx, root->val[2]));
 			return (SUCCESS);
 		}
 	}
 	else
-		return (exec_pipeline(e_ctx, root->val[3]));
+		return (exec_pipeline(e_ctx, root->val[0]));
 }
 
 int		exec_list(t_ectx *e_ctx, t_ast_node *root)
@@ -126,7 +126,7 @@ int		traverse_ast(t_ast *ast)
 {
 	t_ectx	e_ctx;
 
-	reset_exec_ctx(&e_ctx);
+	set_exec_ctx(&e_ctx);
 	if (!ft_strcmp("complete_command $end", ast->root->rhs))
 		return (exec_complete_command(&e_ctx, ast->root->val[0]));
 	return (NIL);

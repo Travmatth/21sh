@@ -6,11 +6,39 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/11 15:26:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/15 15:58:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** 2.10.1.3 Shell Grammar Lexical Conventions
+** If the string consists solely of digits and the delimiter character is
+** one of '<' or '>', the token identifier IO_NUMBER shall be returned.
+*/
+
+void	detect_io_number(t_token *token)
+{
+	size_t	i;
+	int		is_io_num;
+	char	*str;
+
+	i = 0;
+	is_io_num = TRUE;
+	str = token->value->buf;
+	while (i < token->value->current)
+	{
+		if (str[i] < '0' || str[i] > '9')
+		{
+			is_io_num = FALSE;
+			break ;
+		}
+		i += 1;
+	}
+	if (is_io_num)
+		token->type = IO_NUMBER;
+}
 
 /*
 ** 6: If the current character is not quoted and can be used as the first
@@ -21,29 +49,17 @@
 
 void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 {
-	size_t	i;
 	t_list	*node;
-	int		io_here;
 
 	ctx->i += 1;
 	node = NULL;
-	if (token->type == LEXER_WORD && token->value->current)
-	{
-		i = 0;
-		io_here = TRUE;
-		while ((io_here == TRUE) && i < token->value->current)
-		{
-			if (!ft_isdigit(((char*)token->value->buf)[i++]))
-				io_here = FALSE;
-		}
-		if (io_here == TRUE)
-			token->type = IO_HERE;
-	}
+	if (token->type && (c == '<' || c == '>'))
+		detect_io_number(token);
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->op_state = next_op_state(c, START);
 	if (ERR(create_new_tok(token, ctx, ctx->op_state))
-	|| ERR(append_to_tok(c, token)))
+		|| ERR(append_to_tok(c, token)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;
 }
@@ -65,24 +81,10 @@ void	rule_7(t_token *token, t_list **tokens, t_lctx *ctx)
 
 void	rule_8(t_token *token, t_list **tokens, t_lctx *ctx)
 {
-	size_t	i;
 	t_list	*node;
-	int		io_here;
 
 	ctx->i += 1;
 	node = NULL;
-	if (token->type == LEXER_WORD && token->value->current)
-	{
-		i = 0;
-		io_here = TRUE;
-		while ((io_here == TRUE) && i < token->value->current)
-		{
-			if (!ft_isdigit(((char*)token->value->buf)[i]))
-				io_here = FALSE;
-		}
-		if (io_here == TRUE)
-			token->type = IO_HERE;
-	}
 	if (token->type && ERR(push_token(token, node, tokens, ctx)))
 		ctx->status = ERROR;
 	ctx->status = SUCCESS;

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/12 17:49:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/15 13:53:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx)
 	{
 		ctx->status = SUCCESS;
 		ctx->op_state = START;
-		ctx->i += 1;
 	}
 }
 

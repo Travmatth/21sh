@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/19 17:21:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/31 13:17:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/14 12:04:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static short	g_operator_char_table[128] =
 ** table to specify allowable transitions between states,
 ** based on category of input character
 **
-**      &,  |,  ;,  <,  -,  >,  other
+**      &   |   ;   <   -   >  other
 **  0 { 1,  3,  5,  7, 16,  9, 16}, // start
 **  1 { 2, 16, 16, 16, 16, 16, 16}, // FINAL &
 **  2 {16, 16, 16, 16, 16, 16, 16}, //FINAL &&
@@ -58,7 +58,7 @@ static short	g_operator_char_table[128] =
 ** 14 {16, 16, 16, 16, 16, 16, 16}, //FINAL <<-
 ** 15 {16, 16, 16, 16, 16, 16, 16}, //FINAL >|
 ** 16 {16, 16, 16, 16, 16, 16, 16} //error
-**      &,  |,  ;,  <,  -,  >,  other
+**      &   |   ;   <   -   >   other
 */
 
 static short	g_operator_transition_table[][17] =

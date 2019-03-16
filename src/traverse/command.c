@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/27 10:59:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/14 15:51:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,12 @@ int		find_command(char **command, char **paths, int i, int found)
 ** into series of commands to fork/execve/waitpid
 */
 
-void	execute_command(char **av)
+int		execute_command(char **av)
 {
+	int		status;
 	pid_t	pid;
 
+	status = ERROR;
 	if (NONE((pid = fork())))
 	{
 		execve(av[0], av, g_environ);
@@ -84,31 +86,35 @@ void	execute_command(char **av)
 		_exit(1);
 	}
 	else if (OK(pid))
-		waitpid(pid, NULL, 0);
+		waitpid(pid, &status, NIL);
 	else if (ERR(pid))
 		ft_printf("fork error: %s", av[0]);
+	return (WEXITSTATUS(status));
 }
 
-void	execute_cmd(char **command)
+int		execute_cmd(char **command)
 {
 	int		j;
 	int		found;
 	char	**paths;
 	int		result;
+	int		status;
 
 	found = 0;
 	paths = ft_strsplit(get_env_var("PATH"), ':');
 	j = 0;
+	status = ERROR;
 	while (paths && paths[j])
 		j += 1;
 	result = find_command(&command[0], paths, j, found);
 	if (ERR(result))
 		ft_printf("sh: permission denied: %s\n", command[0]);
 	else if (OK(result))
-		execute_command(command);
+		status = execute_command(command);
 	else
 		ft_printf("sh: command not found: %s\n", command[0]);
 	ft_freearr(paths);
+	return (status);
 }
 
 /*
