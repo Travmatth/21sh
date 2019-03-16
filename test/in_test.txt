@@ -1,4 +1,4 @@
-echo foo > tmp
+echo foo > tmp > tmp_1
 cat	< author
 # LEXES
 echo \n; cat "foo";
