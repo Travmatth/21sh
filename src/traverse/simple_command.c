@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/15 18:41:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/16 15:25:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,27 @@ int		process_io_file(int io_num, t_ectx *e_ctx, t_ast_node *root)
 	}
 	else if (!ft_strcmp("DGREAT filename", root->rhs))
 	{
-		ft_printf("'DGREAT filename' not implemented");
+		if (!ERR(e_ctx->orig_out))
+		{
+			dup2(e_ctx->orig_out, STDOUT);
+			close(e_ctx->orig_out);
+			e_ctx->out_fd = e_ctx->orig_out;
+			e_ctx->orig_out = ERROR;
+		}
+		if (!ERR(e_ctx->orig_err))
+		{
+			dup2(e_ctx->orig_err, STDERR);
+			close(e_ctx->orig_err);
+			e_ctx->err_fd = e_ctx->orig_err;
+			e_ctx->orig_err = ERROR;
+		}
+		filename = ((t_ast_node*)((t_ast_node*)root->val[1])->val[0])->val[0];
+		tmp_fd = ERR(io_num) ? e_ctx->out_fd : io_num;
+		if (ERR((e_ctx->orig_out = dup(tmp_fd))))
+			return (ERROR);
+		close(e_ctx->out_fd);
+		if (ERR((e_ctx->out_fd = open(filename, O_RDWR | O_CREAT | O_APPEND, 0666))))
+			throw_redir_err();
 	}
 	else if (!ft_strcmp("LESSGREAT filename", root->rhs))
 	{
