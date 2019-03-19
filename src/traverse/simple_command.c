@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/16 15:25:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/18 15:56:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,6 @@ int		process_io_file(int io_num, t_ectx *e_ctx, t_ast_node *root)
 			e_ctx->in_fd = e_ctx->orig_in;
 			e_ctx->orig_in = ERROR;
 		}
-		if (!ERR(e_ctx->orig_err))
-		{
-			dup2(e_ctx->orig_err, STDERR);
-			close(e_ctx->orig_err);
-			e_ctx->err_fd = e_ctx->orig_err;
-			e_ctx->orig_err = ERROR;
-		}
 		filename = ((t_ast_node*)((t_ast_node*)root->val[1])->val[0])->val[0];
 		tmp_fd = ERR(io_num) ? e_ctx->in_fd : io_num;
 		if (ERR((e_ctx->orig_in = dup(tmp_fd))))
@@ -84,13 +77,6 @@ int		process_io_file(int io_num, t_ectx *e_ctx, t_ast_node *root)
 			e_ctx->out_fd = e_ctx->orig_out;
 			e_ctx->orig_out = ERROR;
 		}
-		if (!ERR(e_ctx->orig_err))
-		{
-			dup2(e_ctx->orig_err, STDERR);
-			close(e_ctx->orig_err);
-			e_ctx->err_fd = e_ctx->orig_err;
-			e_ctx->orig_err = ERROR;
-		}
 		filename = ((t_ast_node*)((t_ast_node*)root->val[1])->val[0])->val[0];
 		tmp_fd = ERR(io_num) ? e_ctx->out_fd : io_num;
 		if (ERR((e_ctx->orig_out = dup(tmp_fd))))
@@ -112,13 +98,6 @@ int		process_io_file(int io_num, t_ectx *e_ctx, t_ast_node *root)
 			close(e_ctx->orig_out);
 			e_ctx->out_fd = e_ctx->orig_out;
 			e_ctx->orig_out = ERROR;
-		}
-		if (!ERR(e_ctx->orig_err))
-		{
-			dup2(e_ctx->orig_err, STDERR);
-			close(e_ctx->orig_err);
-			e_ctx->err_fd = e_ctx->orig_err;
-			e_ctx->orig_err = ERROR;
 		}
 		filename = ((t_ast_node*)((t_ast_node*)root->val[1])->val[0])->val[0];
 		tmp_fd = ERR(io_num) ? e_ctx->out_fd : io_num;
@@ -154,16 +133,47 @@ int		process_io_number(int *io_num, t_ast_node *root)
 	return (SUCCESS);
 }
 
-int		process_io_here(int *io_num, t_ectx *e_ctx, char ***command, t_ast_node *root)
+int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
 {
-	(void)io_num;
-	(void)e_ctx;
-	(void)command;
-	(void)root;
+	int		tmp_fd;
+	char	*filename;
+	void	*here_end;
+	// char	*buf;
+	// char	*tmp;
+	// int		size;
+	// int		found;
+
+	here_end = NULL;
+	if (!ERR(e_ctx->orig_in))
+	{
+		dup2(e_ctx->orig_in, STDIN);
+		close(e_ctx->orig_in);
+		e_ctx->in_fd = e_ctx->orig_in;
+		e_ctx->orig_in = ERROR;
+	}
+	filename = ((t_ast_node*)((t_ast_node*)root->val[1])->val[0])->val[0];
+	tmp_fd = ERR(io_num) ? e_ctx->in_fd : io_num;
+	if (ERR((e_ctx->orig_in = dup(tmp_fd))))
+		return (ERROR);
+	close(e_ctx->in_fd);
+	// rewrite: create pipe and continually scan for given here_end
+	// once encountered, write buf less here_end to file and set as in_fd
+
+	//	store here_end
+	// allocate buf of here_end size
+	// while !found
+		// read size of here_end into tmp
+		// join buf and tmp into new
+		// free old buf
+		// assign new tmp
+
+	// write buf into in_fd
+	// if (ERR((e_ctx->in_fd = open(filename, O_RDWR))))
+	// 	throw_redir_err();
 	return (SUCCESS);
 }
 
-int		process_io_redirect(t_ectx *e_ctx, char ***command, t_ast_node *root)
+int		process_io_redirect(t_ectx *e_ctx, t_ast_node *root)
 {
 	int		io_num;
 
@@ -177,12 +187,12 @@ int		process_io_redirect(t_ectx *e_ctx, char ***command, t_ast_node *root)
 		return (process_io_file(io_num, e_ctx, root->val[1]));
 	}
 	else if (!ft_strcmp("io_here", root->rhs))
-		return (process_io_here(&io_num, e_ctx, command, root->val[0]));
-	else if (!ft_strcmp("io_here WORD", root->rhs))
+		return (process_io_here(io_num, e_ctx, root->val[0]));
+	else if (!ft_strcmp("IO_NUMBER io_here", root->rhs))
 	{
 		if (ERR(process_io_number(&io_num, root->val[0])))
 			return (ERROR);
-		return (process_io_here(&io_num, e_ctx, command, root->val[0]));
+		return (process_io_here(io_num, e_ctx, root->val[1]));
 	}
 	return (SUCCESS);
 }
@@ -220,12 +230,12 @@ int		process_suffix(t_ectx *e_ctx, char ***command, t_ast_node *root)
 	char	**new;
 
 	if (!ft_strcmp("io_redirect", root->rhs))
-		return (process_io_redirect(e_ctx, command, root->val[0]));
+		return (process_io_redirect(e_ctx, root->val[0]));
 	else if (!ft_strcmp("cmd_suffix io_redirect", root->rhs))
 	{
 		if (ERR(process_suffix(e_ctx, command, root->val[0])))
 			return (ERROR);
-		return (process_io_redirect(e_ctx, command, root->val[1]));
+		return (process_io_redirect(e_ctx, root->val[1]));
 	}
 	else if (!ft_strcmp("WORD", root->rhs))
 	{

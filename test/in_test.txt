@@ -1,4 +1,4 @@
-echo foo > tmp > tmp_1
+./test/read_from_fd.py 5 5<<EOF
 cat	< author
 # LEXES
 echo \n; cat "foo";
