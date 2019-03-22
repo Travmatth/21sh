@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/18 15:56:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/21 16:36:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,6 @@
 void	throw_redir_err(void)
 {
 }
-
-/*
-** The only difference between >&- and <&- is the default fd when not specified
-** (>&- is 1>&- while <&- is 0<&-). Same for x>&y which is the same as x<&y
-** except when x is not provided.
-**
-** The redirection operator
-**		[n]<&word
-** is used to duplicate input file descriptors. If word expands to one or
-** more digits, the file descriptor denoted by n is made to be a copy of
-** that file descriptor. If the digits in word do not specify a file
-** descriptor open for input, a redirection error occurs. If word evalu‐
-** ates to -, file descriptor n is closed. If n is not specified, the
-** standard input (file descriptor 0) is used.
-** 
-** The operator
-**		[n]>&word
-** is used similarly to duplicate output file descriptors. If n is not
-** specified, the standard output (file descriptor 1) is used. If the
-** digits in word do not specify a file descriptor open for output, a re‐
-** direction error occurs. As a special case, if n is omitted, and word
-** does not expand to one or more digits, the standard output and standard
-** error are redirected as described previously.
-*/
-
 
 int		process_io_file(int io_num, t_ectx *e_ctx, t_ast_node *root)
 {
@@ -133,43 +108,55 @@ int		process_io_number(int *io_num, t_ast_node *root)
 	return (SUCCESS);
 }
 
+int		process_here_end(char **here_end, t_ast_node *root)
+{
+	*here_end = NULL;
+	if (ft_strcmp("WORD", root->rhs))
+		return (ERROR);
+	*here_end = (char*)((t_ast_node*)root->val[0])->val[0];
+	return (SUCCESS);
+}
+
+# define EOT 0x04
 int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
 {
-	int		tmp_fd;
-	char	*filename;
-	void	*here_end;
-	// char	*buf;
-	// char	*tmp;
-	// int		size;
-	// int		found;
+	char			read_buf[10];
+	char			*buf;
+	char			*tmp_buf;
+	struct termios	tty;
+	char			*here_end;
+	ssize_t			bytes;
 
-	here_end = NULL;
-	if (!ERR(e_ctx->orig_in))
-	{
-		dup2(e_ctx->orig_in, STDIN);
-		close(e_ctx->orig_in);
-		e_ctx->in_fd = e_ctx->orig_in;
-		e_ctx->orig_in = ERROR;
-	}
-	filename = ((t_ast_node*)((t_ast_node*)root->val[1])->val[0])->val[0];
-	tmp_fd = ERR(io_num) ? e_ctx->in_fd : io_num;
-	if (ERR((e_ctx->orig_in = dup(tmp_fd))))
+	(void)io_num;
+	(void)e_ctx;
+	if (ERR(process_here_end(&here_end, root->val[1])) || !(buf = ft_strnew(0)))
 		return (ERROR);
-	close(e_ctx->in_fd);
-	// rewrite: create pipe and continually scan for given here_end
-	// once encountered, write buf less here_end to file and set as in_fd
-
-	//	store here_end
-	// allocate buf of here_end size
-	// while !found
-		// read size of here_end into tmp
-		// join buf and tmp into new
-		// free old buf
-		// assign new tmp
-
-	// write buf into in_fd
-	// if (ERR((e_ctx->in_fd = open(filename, O_RDWR))))
-	// 	throw_redir_err();
+	tmp_buf = buf;
+	if (!ft_strcmp("DLESS here_end", root->rhs))
+	{
+		prep_terminal_here_end(&tty);
+		while (TRUE)
+		{
+			ft_bzero(read_buf, 10);
+			if (NONE((bytes = read(STDIN, read_buf, 9))) || read_buf[0] == EOT)
+				break ;
+			if (!(tmp_buf = ft_strjoin(buf, read_buf)))
+				break ;
+			free(buf);
+			buf = tmp_buf;
+			if (ft_strstr(buf, here_end))
+				break ;
+		}
+		ft_printf("recieved: %s\n", buf);
+		restore_terminal_here_end(&tty);
+		if (!tmp_buf)
+			return (ERROR);
+	}
+	else if (ft_strcmp("DLESSDASH here_end", root->rhs))
+	{
+		ft_printf("<<- not implemented");
+		return (ERROR);
+	}
 	return (SUCCESS);
 }
 

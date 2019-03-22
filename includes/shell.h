@@ -13,13 +13,18 @@
 #ifndef SHELL_H
 # define SHELL_H
 
-# include "../libftprintf/srcs/includes/ft_printf.h"
-# include <unistd.h>
-# include <signal.h>
 # include <sys/stat.h>
+# include <sys/ioctl.h>
+# include <unistd.h>
+# include <termcap.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <termios.h>
+# include <signal.h>
+
+# include "../libftprintf/srcs/includes/ft_printf.h"
 # include "grammar.h"
 # include "traverse.h"
-# include <fcntl.h>
 
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')

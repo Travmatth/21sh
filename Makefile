@@ -11,12 +11,12 @@ endif
 NAME = 21sh
 LIBFT = libftprintf/libftprintf.a
 CFLAGS += -Wall -Wextra -Werror -Wpedantic
-LDFLAGS := -Llibftprintf -lftprintf -I./includes
+LDFLAGS := -Llibftprintf -lftprintf -I./includes -ltermcap
 CORE := main signal init 
 BUILTINS := cd echo env setenv unsetenv 
 LEXER := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa reserved_dfa quotes
 PARSER := parse parse_table parse_stack_utils parse_utils
-TRAVERSE := traverse traverse_utils command simple_command
+TRAVERSE := traverse traverse_utils command simple_command here_end
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
 		$(addprefix src/lexer/, $(LEXER)) \
