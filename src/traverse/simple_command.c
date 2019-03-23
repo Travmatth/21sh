@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/21 16:36:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/22 17:36:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,17 +124,21 @@ int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
 	char			*buf;
 	char			*tmp_buf;
 	struct termios	tty;
+	struct termios	old_tty;
 	char			*here_end;
 	ssize_t			bytes;
+	ssize_t			total;
+	int				pipe_fds[2];
 
-	(void)io_num;
-	(void)e_ctx;
 	if (ERR(process_here_end(&here_end, root->val[1])) || !(buf = ft_strnew(0)))
 		return (ERROR);
+	total = 0;
 	tmp_buf = buf;
 	if (!ft_strcmp("DLESS here_end", root->rhs))
 	{
-		prep_terminal_here_end(&tty);
+		if (ERR(pipe(pipe_fds)))
+			return (ERROR);
+		prep_terminal_here_end(&tty, &old_tty, e_ctx);
 		while (TRUE)
 		{
 			ft_bzero(read_buf, 10);
@@ -142,15 +146,27 @@ int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
 				break ;
 			if (!(tmp_buf = ft_strjoin(buf, read_buf)))
 				break ;
+			total += bytes;
 			free(buf);
 			buf = tmp_buf;
 			if (ft_strstr(buf, here_end))
 				break ;
 		}
-		ft_printf("recieved: %s\n", buf);
-		restore_terminal_here_end(&tty);
+		restore_terminal_here_end(&old_tty, e_ctx);
 		if (!tmp_buf)
 			return (ERROR);
+		write(pipe_fds[1], buf, total);
+		if (ERR(io_num))
+		{
+			if (ERR((e_ctx->orig_in = dup(e_ctx->in_fd))))
+				return (ERROR);
+			close(pipe_fds[1]);
+			if (ERR((e_ctx->in_fd = dup2(pipe_fds[0], e_ctx->in_fd))))
+				return (ERROR);
+		}
+		else
+			dup2(pipe_fds[0], io_num);
+		close(pipe_fds[0]);
 	}
 	else if (ft_strcmp("DLESSDASH here_end", root->rhs))
 	{

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 14:29:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/21 13:59:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/22 16:09:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ typedef struct	s_ectx
 	int			exit_code;
 }				t_ectx;
 
-int				prep_terminal_here_end(struct termios *tty);
-int				restore_terminal_here_end(struct termios *tty);
+int				prep_terminal_here_end(struct termios *tty, struct termios *old_tty, t_ectx *ctx);
+int				restore_terminal_here_end(struct termios *tty, t_ectx *ctx);
 int				execute_cmd(char **command);
 void			set_exec_ctx(t_ectx *e_ctx);
 void			reset_exec_ctx(t_ectx *e_ctx);
