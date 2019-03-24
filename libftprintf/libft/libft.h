@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 12:34:43 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/08 19:27:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/23 16:12:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,6 +231,7 @@ char					*ft_strfilter(int (*f)(char elem
 									, char *str);
 void					ft_freearr(char **arr);
 char					*ft_strsum(char **strings, char *fill);
+char					**ft_strappend(char **strings, char *string);
 
 /*
 ** String functions

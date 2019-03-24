@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 15:04:48 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/15 16:08:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/23 15:59:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,8 @@ void	reset_exec_ctx(t_ectx *e_ctx)
 		e_ctx->err_fd = e_ctx->orig_err;
 		e_ctx->orig_err = ERROR;
 	}
+}
+
+void	throw_redir_err(void)
+{
 }

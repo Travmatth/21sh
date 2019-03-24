@@ -5,160 +5,53 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/14 15:51:31 by tmatthew         ###   ########.fr       */
+/*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
+/*   Updated: 2019/03/23 17:04:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-t_builtin	g_builtins[] =
+int		process_cmd(t_ectx *e_ctx, char ***command, t_ast_node *root)
 {
-	{"echo", builtin_echo, 4},
-	{"cd", builtin_cd, 2},
-	{"setenv", builtin_setenv, 6},
-	{"unsetenv", builtin_unsetenv, 8},
-	{"env", builtin_env, 3},
-};
+	(void)e_ctx;
+	if (!*command && !(*command = (char**)ft_memalloc(sizeof(char*) * 2)))
+		return (ERROR);
+	if (!((*command)[0] = ft_strdup(((t_ast_node*)root->val[0])->val[0])))
+		return (ERROR);
+	return (SUCCESS);
+}
 
-int		find_exec(char *command)
+int		exec_simple_command(t_ectx *e_ctx, t_ast_node *root)
 {
-	int			result;
-	int			status;
-	struct stat	attribs;
+	char	**command;
 
-	status = stat(command, &attribs);
-	result = access(command, X_OK);
-	if (!result && S_ISREG(attribs.st_mode))
-		return (1);
-	if (!status && S_ISREG(attribs.st_mode))
+	command = NULL;
+	if (!ft_strcmp("cmd_prefix cmd_word cmd_suffix", root->rhs))
 	{
-		if (~(attribs.st_mode & S_IXUSR))
-			return (-1);
+		// not implemented
 	}
-	return (0);
-}
-
-int		find_command(char **command, char **paths, int i, int found)
-{
-	int		result;
-	char	*tmp;
-	char	*full_name;
-
-	if (ft_strequ(".", *command) || ft_strequ("..", *command))
-		return (0);
-	if ((result = find_exec(*command)) == -1 || result == 1)
-		return (result);
-	while (!found && --i >= 0)
+	else if (!ft_strcmp("cmd_prefix cmd_word", root->rhs))
 	{
-		tmp = ft_strjoin(paths[i], "/");
-		full_name = ft_strjoin(tmp, *command);
-		free(tmp);
-		if ((result = find_exec(full_name)) == -1)
-			found = 1;
-		else if (result == 1)
-		{
-			found = 1;
-			free(*command);
-			*command = full_name;
-		}
-		else
-			free(full_name);
+		// not implemented
 	}
-	return (result);
-}
-
-/*
-** need to write a wrapper function that deals with translating jobs
-** into series of commands to fork/execve/waitpid
-*/
-
-int		execute_command(char **av)
-{
-	int		status;
-	pid_t	pid;
-
-	status = ERROR;
-	if (NONE((pid = fork())))
+	else if (!ft_strcmp("cmd_prefix", root->rhs))
 	{
-		execve(av[0], av, g_environ);
-		ft_printf("fork error: %s", av[0]);
-		_exit(1);
+		// not implemented
 	}
-	else if (OK(pid))
-		waitpid(pid, &status, NIL);
-	else if (ERR(pid))
-		ft_printf("fork error: %s", av[0]);
-	return (WEXITSTATUS(status));
-}
-
-int		execute_cmd(char **command)
-{
-	int		j;
-	int		found;
-	char	**paths;
-	int		result;
-	int		status;
-
-	found = 0;
-	paths = ft_strsplit(get_env_var("PATH"), ':');
-	j = 0;
-	status = ERROR;
-	while (paths && paths[j])
-		j += 1;
-	result = find_command(&command[0], paths, j, found);
-	if (ERR(result))
-		ft_printf("sh: permission denied: %s\n", command[0]);
-	else if (OK(result))
-		status = execute_command(command);
-	else
-		ft_printf("sh: command not found: %s\n", command[0]);
-	ft_freearr(paths);
-	return (status);
-}
-
-/*
-** Shell grammar parsing steps
-** 2: break input into tokens: words and operators
-** 3: parse input into simple commands and compound commands
-** 4: perform expansions
-** 5: register redirections and removes operators from parameter list
-*/
-
-int		builtin_command(char **argv)
-{
-	int		i;
-	int		ac;
-
-	i = 0;
-	while (i < 5)
+	else if (!ft_strcmp("cmd_name cmd_suffix", root->rhs))
 	{
-		if (ft_strnequ(g_builtins[i].cmd, argv[0], g_builtins[i].len))
-		{
-			ac = 0;
-			while (argv[ac])
-				ac += 1;
-			i = g_builtins[i].f(ac, argv);
-			ac -= 1;
-			return (i);
-		}
-		i += 1;
+		if (ERR(process_cmd(e_ctx, &command, root->val[0])))
+			return (ERROR);
+		if (ERR(process_suffix(e_ctx, &command, root->val[1])))
+			return (ERROR);
 	}
-	return (0);
-}
-
-/*
-** 6: execute function
-** 7: optionally wait for command to complete and collect exit status
-*/
-
-int		execute_commands(char *complete_cmd)
-{
-	int		status;
-	t_ast	ast;
-
-	ft_bzero(&ast, sizeof(t_ast));
-	if (!OK((status = prepare_ast(complete_cmd, &ast))))
-		return (status);
-	return (traverse_ast(&ast));
+	else if (!ft_strcmp("cmd_name", root->rhs))
+	{
+		if (ERR(process_cmd(e_ctx, &command, root->val[0])))
+			return (ERROR);
+	}
+	e_ctx->exit_code = execute_cmd(command);
+	reset_exec_ctx(e_ctx);
+	return (SUCCESS);
 }

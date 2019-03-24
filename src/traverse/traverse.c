@@ -6,67 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/14 13:09:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/23 17:09:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-int		separator_op_is_linebreak(int *is_bg, t_ast_node *root)
-{
-	if (root->type == PARSE_SEPARATOR_OP && !ft_strcmp(root->rhs, "&"))
-	{
-		*is_bg = TRUE;
-		return (SUCCESS);
-	}
-	*is_bg = FALSE;
-	return (ERROR);
-}
-
-int		exec_separator(int *is_bg, t_ast_node *root)
-{
-	if (!ft_strcmp("separator_op linebreak", root->rhs))
-		separator_op_is_linebreak(is_bg, (t_ast_node*)root->val[0]);
-	return (SUCCESS);
-}
-
-int		exec_command(t_ectx *e_ctx, t_ast_node *root)
-{
-	if (!ft_strcmp("simple_command", root->rhs))
-		return (exec_simple_command(e_ctx, root->val[0]));
-	else
-	{
-		ft_printf("Commands beyond simple commands not implemented\n");
-	}
-	return (SUCCESS);
-}
-
-int		exec_pipe_seq(t_ectx *e_ctx, t_ast_node *root)
-{
-	int		position;
-
-	position = 0;
-	if (ft_strcmp("command", root->rhs))
-	{
-		position = 3;
-		if (ERR(exec_pipe_seq(e_ctx, root->val[0])))
-			return (ERROR);
-	}
-	return (exec_command(e_ctx, root->val[position]));
-}
-
-int		exec_pipeline(t_ectx *e_ctx, t_ast_node *root)
-{
-	int		position;
-
-	position = 0;
-	if (((t_ast_node*)root->val[0])->type == PARSE_BANG)
-	{
-		ft_printf("Bang operator not implemented");
-		position = 1;
-	}
-	return (exec_pipe_seq(e_ctx, root->val[position]));
-}
 
 int		exec_and_or(t_ectx *e_ctx, t_ast_node *root)
 {

@@ -1,20 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   simple_command.c                                   :+:      :+:    :+:   */
+/*   affixes.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/22 17:36:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/23 16:38:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-void	throw_redir_err(void)
-{
-}
 
 int		process_io_file(int io_num, t_ectx *e_ctx, t_ast_node *root)
 {
@@ -108,74 +104,6 @@ int		process_io_number(int *io_num, t_ast_node *root)
 	return (SUCCESS);
 }
 
-int		process_here_end(char **here_end, t_ast_node *root)
-{
-	*here_end = NULL;
-	if (ft_strcmp("WORD", root->rhs))
-		return (ERROR);
-	*here_end = (char*)((t_ast_node*)root->val[0])->val[0];
-	return (SUCCESS);
-}
-
-# define EOT 0x04
-int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
-{
-	char			read_buf[10];
-	char			*buf;
-	char			*tmp_buf;
-	struct termios	tty;
-	struct termios	old_tty;
-	char			*here_end;
-	ssize_t			bytes;
-	ssize_t			total;
-	int				pipe_fds[2];
-
-	if (ERR(process_here_end(&here_end, root->val[1])) || !(buf = ft_strnew(0)))
-		return (ERROR);
-	total = 0;
-	tmp_buf = buf;
-	if (!ft_strcmp("DLESS here_end", root->rhs))
-	{
-		if (ERR(pipe(pipe_fds)))
-			return (ERROR);
-		prep_terminal_here_end(&tty, &old_tty, e_ctx);
-		while (TRUE)
-		{
-			ft_bzero(read_buf, 10);
-			if (NONE((bytes = read(STDIN, read_buf, 9))) || read_buf[0] == EOT)
-				break ;
-			if (!(tmp_buf = ft_strjoin(buf, read_buf)))
-				break ;
-			total += bytes;
-			free(buf);
-			buf = tmp_buf;
-			if (ft_strstr(buf, here_end))
-				break ;
-		}
-		restore_terminal_here_end(&old_tty, e_ctx);
-		if (!tmp_buf)
-			return (ERROR);
-		write(pipe_fds[1], buf, total);
-		if (ERR(io_num))
-		{
-			if (ERR((e_ctx->orig_in = dup(e_ctx->in_fd))))
-				return (ERROR);
-			close(pipe_fds[1]);
-			if (ERR((e_ctx->in_fd = dup2(pipe_fds[0], e_ctx->in_fd))))
-				return (ERROR);
-		}
-		else
-			dup2(pipe_fds[0], io_num);
-		close(pipe_fds[0]);
-	}
-	else if (ft_strcmp("DLESSDASH here_end", root->rhs))
-	{
-		ft_printf("<<- not implemented");
-		return (ERROR);
-	}
-	return (SUCCESS);
-}
-
 int		process_io_redirect(t_ectx *e_ctx, t_ast_node *root)
 {
 	int		io_num;
@@ -208,26 +136,6 @@ int		process_prefix(t_ectx *e_ctx, char ***command, t_ast_node *root)
 	return (SUCCESS);
 }
 
-char	**ft_strappend(char **strings, char *string)
-{
-	int		i;
-	char	**new;
-
-	if (!strings)
-		return (NULL);
-	else if (!string)
-		return (strings);
-	i = 0;
-	while (strings[i])
-		i += 1;
-	if (!(new = (char**)ft_memalloc(sizeof(char*) * (i + 2))))
-		return (NULL);
-	new[i] = string;
-	while (--i >= 0)
-		new[i] = strings[i];
-	return (new);
-}
-
 int		process_suffix(t_ectx *e_ctx, char ***command, t_ast_node *root)
 {
 	char	**new;
@@ -254,49 +162,5 @@ int		process_suffix(t_ectx *e_ctx, char ***command, t_ast_node *root)
 		free(*command);
 		*command = new;
 	}
-	return (SUCCESS);
-}
-
-int		process_cmd(t_ectx *e_ctx, char ***command, t_ast_node *root)
-{
-	(void)e_ctx;
-	if (!*command && !(*command = (char**)ft_memalloc(sizeof(char*) * 2)))
-		return (ERROR);
-	if (!((*command)[0] = ft_strdup(((t_ast_node*)root->val[0])->val[0])))
-		return (ERROR);
-	return (SUCCESS);
-}
-
-int		exec_simple_command(t_ectx *e_ctx, t_ast_node *root)
-{
-	char	**command;
-
-	command = NULL;
-	if (!ft_strcmp("cmd_prefix cmd_word cmd_suffix", root->rhs))
-	{
-		// not implemented
-	}
-	else if (!ft_strcmp("cmd_prefix cmd_word", root->rhs))
-	{
-		// not implemented
-	}
-	else if (!ft_strcmp("cmd_prefix", root->rhs))
-	{
-		// not implemented
-	}
-	else if (!ft_strcmp("cmd_name cmd_suffix", root->rhs))
-	{
-		if (ERR(process_cmd(e_ctx, &command, root->val[0])))
-			return (ERROR);
-		if (ERR(process_suffix(e_ctx, &command, root->val[1])))
-			return (ERROR);
-	}
-	else if (!ft_strcmp("cmd_name", root->rhs))
-	{
-		if (ERR(process_cmd(e_ctx, &command, root->val[0])))
-			return (ERROR);
-	}
-	e_ctx->exit_code = execute_cmd(command);
-	reset_exec_ctx(e_ctx);
 	return (SUCCESS);
 }
