@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/15 16:12:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/25 12:59:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int		main(int argc, char **argv, char **environ)
 	init_parser();
 	init_environ(argc, argv, environ);
 	if (!g_prods || !g_environ)
-		return (0);
+		return (1);
 	while (!stopped)
 	{
 		signal(SIGINT, sig_handler);
