@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/15 15:07:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/26 17:00:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,32 @@
 ** Operator DFA definitions
 */
 
-# define START 0
-# define AMPERSAND 1
-# define AND_IF 2
-# define PIPE 4
-# define OR_IF 4
-# define SEMICOLON 5
-# define DSEMI 6
-# define LESS 7
-# define DLESS 8
-# define GREAT 9
-# define DGREAT 10
-# define LESSAND 11
-# define GREATAND 12
-# define LESSGREAT 13
-# define DLESSDASH 14
-# define CLOBBER 15
+enum	e_parse_ops
+{
+	EOI = -1,
+	START = 0,
+	AMPERSAND = 1,
+	AND_IF = 2,
+	PIPE = 3,
+	OR_IF = 4,
+	SEMICOLON = 5,
+	DSEMI = 6,
+	LESS = 7,
+	DLESS = 8,
+	GREAT = 9,
+	DGREAT = 10,
+	LESSAND = 11,
+	GREATAND = 12,
+	LESSGREAT = 13,
+	DLESSDASH = 14,
+	CLOBBER = 15,
+	LEXER_WORD = 17,
+	IO_NUMBER = 18
+};
+
+# define TOKEN_CONVERSIONS 17
 # define ACCEPTING(x) ((x >= 1) && (x <= 15))
 # define NOT_ERR(x) (x != 16)
-
-# define EOI -1
-# define LEXER_WORD 17
-# define IO_NUMBER 18
-# define TOKEN_CONVERSIONS 17
 
 
 # define _IS_Q(c) ((c == '$' || c == '`'))
