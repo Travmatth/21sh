@@ -63,6 +63,7 @@ typedef struct	s_builtin
 
 void			init_environ(int argc, char **argv, char **environ);
 void			init_parser(void);
+int				init_shell(void);
 
 /*
 ** signal.c
