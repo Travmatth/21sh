@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/23 17:09:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/26 21:10:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,14 @@ int		exec_and_or(t_ectx *e_ctx, t_ast_node *root)
 		{
 			exec_and_or(e_ctx, root->val[0]);
 			if (EXIT_OK(e_ctx->exit_code))
-				return (exec_pipeline(e_ctx, root->val[2]));
+				return (exec_pipeline(e_ctx, root->val[3]));
 			return (SUCCESS);
 		}
 		else
 		{
 			exec_and_or(e_ctx, root->val[0]);
 			if (!EXIT_OK(e_ctx->exit_code))
-				return (exec_pipeline(e_ctx, root->val[2]));
+				return (exec_pipeline(e_ctx, root->val[3]));
 			return (SUCCESS);
 		}
 	}
