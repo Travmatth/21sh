@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command.c                                          :+:      :+:    :+:   */
+/*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/14 15:51:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/27 00:33:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int		execute_command(char **av)
 	int		status;
 	pid_t	pid;
 
-	status = ERROR;
+	status = 0;
 	if (NONE((pid = fork())))
 	{
 		execve(av[0], av, g_environ);
@@ -89,7 +89,7 @@ int		execute_command(char **av)
 		waitpid(pid, &status, NIL);
 	else if (ERR(pid))
 		ft_printf("fork error: %s", av[0]);
-	return (WEXITSTATUS(status));
+	return (WIFEXITED(status) ? WEXITSTATUS(status) : -1);
 }
 
 int		execute_cmd(char **command)
