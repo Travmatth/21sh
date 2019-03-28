@@ -6,13 +6,14 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 14:29:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/23 17:40:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/27 17:28:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TRAVERSE_H
 # define TRAVERSE_H
 
+# define INTR 0x03
 # define EOT 0x04
 # define EXIT_OK(x) (x == 0)
 

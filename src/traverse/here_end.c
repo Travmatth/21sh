@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/24 16:35:32 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/27 17:28:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,15 @@ int		process_here_end(char **here_end, t_ast_node *root)
 	*here_end = (char*)((t_ast_node*)root->val[0])->val[0];
 	return (SUCCESS);
 }
+
+/*
+** function call to find optimal buff size
+** dfa generator for here_end detection
+** turn off icanon ? need prompt after newlines
+** turn on isig -> need to catch ctrl-c in input
+** find EOF directly
+** should break on EOT and ctrl-c
+*/
 
 int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
 {
