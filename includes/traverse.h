@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 14:29:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/27 17:28:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/28 17:14:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,14 @@
 # define INTR 0x03
 # define EOT 0x04
 # define EXIT_OK(x) (x == 0)
+
+enum			e_here_end_dfa
+{
+	ACCEPT,
+	SIG,
+	STATE,
+	LAST_STATE
+};
 
 typedef struct	s_ectx
 {
@@ -46,8 +54,9 @@ int				execute_cmd(char **command);
 ** src/traverse/here_end_utils.c
 */
 
-int				prep_terminal_here_end(struct termios *tty, struct termios *old_tty, t_ectx *ctx);
-int				restore_terminal_here_end(struct termios *tty, t_ectx *ctx);
+int				create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[3]);
+int				prep_terminal_here_end(struct termios *tty, struct termios *old_tty);
+int				restore_terminal_here_end(struct termios *tty);
 
 /*
 ** src/traverse/here_end.c
