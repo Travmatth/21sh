@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/28 17:13:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/29 17:48:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[3])
+int		create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[5])
 {
 	int		i;
 	int		j;
@@ -49,13 +49,15 @@ int		create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[3])
 			(*dfa)[len][j] = len;
 		(*dfa)[len + 1][j] = len + 1;
 	}
+	dfa_state[CHARS] = 0;
+	dfa_state[STATE] = 0;
+	dfa_state[LAST_STATE] = 0;
 	dfa_state[ACCEPT] = (int)len;
 	dfa_state[SIG] = (int)len + 1;
 	return (SUCCESS);
 }
 
-int		prep_terminal_here_end(struct termios *tty
-								, struct termios *old_tty)
+int		prep_here_end(struct termios *ttys)
 {
 	char			*type;
 	char			buf[BUFF_SIZE];
@@ -63,18 +65,18 @@ int		prep_terminal_here_end(struct termios *tty
 	if (!isatty(STDIN)
 		|| NONE((type = get_env_var("TERM")))
 		|| ERR(tgetent(buf, type))
-		|| ERR(tcgetattr(STDIN, tty))
-		|| ERR(tcgetattr(STDIN, old_tty)))
+		|| ERR(tcgetattr(STDIN, &ttys[0]))
+		|| ERR(tcgetattr(STDIN, &ttys[1])))
 		return (ERROR);
-	tty->c_lflag &= ~(ICANON | ISIG | ECHO);
-	tty->c_cc[VMIN] = 1;
-	tty->c_cc[VTIME] = 0;
-	if (ERR(tcsetattr(STDIN, TCSANOW, tty)))
+	ttys[0].c_lflag &= ~(ICANON | ISIG | ECHO);
+	ttys[0].c_cc[VMIN] = 1;
+	ttys[0].c_cc[VTIME] = 0;
+	if (ERR(tcsetattr(STDIN, TCSANOW, &ttys[0])))
 		return (ERROR);
 	return (SUCCESS);
 }
 
-int		restore_terminal_here_end(struct termios *tty)
+int		restore_here_end(struct termios *tty)
 {
 	if (ERR(tcsetattr(STDIN, TCSADRAIN, tty)))
 		return (ERROR);

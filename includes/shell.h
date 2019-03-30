@@ -21,6 +21,7 @@
 # include <errno.h>
 # include <termios.h>
 # include <signal.h>
+# include <sys/syslimits.h>
 
 # include "../libftprintf/srcs/includes/ft_printf.h"
 # include "grammar.h"
