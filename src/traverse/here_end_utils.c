@@ -6,11 +6,31 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/29 17:48:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/30 17:18:49 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+char	**init_bufs(size_t len)
+{
+	char	**bufs;
+
+	if (!(bufs = (char**)ft_memalloc(sizeof(char*) * 2)))
+		return (NULL);
+	if (!(bufs[HERE_END_BUF] = (char*)ft_strnew(len)))
+	{
+		free(bufs);
+		return (NULL);
+	}
+	if (!(bufs[IN_BUF] = (char*)ft_strnew(len)))
+	{
+		free(bufs[HERE_END_BUF]);
+		free(bufs);
+		return (NULL);
+	}
+	return (bufs);
+}
 
 int		create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[5])
 {

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/12 14:29:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/29 17:49:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/03/30 17:05:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@
 # define EXIT_OK(x) (x == 0)
 # define IS_DONE(state, c) (state[STATE] == state[ACCEPT] && buf == '\n')
 # define IS_SIG(state) (state[STATE] == state[SIG])
+
+enum			e_here_end_buf
+{
+	HERE_END_BUF,
+	IN_BUF
+};
 
 enum			e_here_end_dfa
 {
@@ -61,6 +67,7 @@ int				execute_cmd(char **command);
 int				create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[5]);
 int				prep_here_end(struct termios *ttys);
 int				restore_here_end(struct termios *tty);
+char			**init_bufs(size_t len);
 
 /*
 ** src/traverse/here_end.c

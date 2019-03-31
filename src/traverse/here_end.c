@@ -13,86 +13,112 @@
 #include "../../includes/shell.h"
 
 /*
+** if backspace character encountered, either need to remove last
+** char in read buffer and set new state or erase last char in file
+*/
+
+int		manage_del(int **dfa, int dfa_state[5], char **read_buf)
+{
+	int		i;
+
+	if (!dfa_state[CHARS])
+		return (SUCCESS);
+	dfa_state[CHARS] -= 1;
+	if (read_buf[HERE_END_BUF][0])
+	{
+		i = 0;
+		while (read_buf[HERE_END_BUF][i])
+			i += 1;
+		read_buf[HERE_END_BUF][--i] = '\0';
+		i = 0;
+		dfa_state[STATE] = 0;
+		while (read_buf[HERE_END_BUF][i])
+			dfa_state[STATE] = dfa[dfa_state[STATE]][(int)read_buf[HERE_END_BUF][i++]];
+		write(STDIN, "\b \b", 3);
+		return (SUCCESS);
+	}
+	i = 0;
+	while (read_buf[IN_BUF][i])
+		i += 1;
+	read_buf[IN_BUF][--i] = '\0';
+	write(STDIN, "\b \b", 3);
+	return (SUCCESS);
+}
+
+/*
 ** If given characters could form here_end, save chars into buf until
 ** determination can be made
 */
 
-int		manage_read_buf(int fd, int dfa_state[4], char buf, char *read_buf)
+int		manage_read(int dfa_state[5], char buf, char **read_buf)
 {
 	size_t	b_len;
+	char	*tmp;
 
 	ft_putchar(buf);
 	dfa_state[CHARS] += buf == '\n' ? -dfa_state[CHARS] : 1;
+	b_len = LEN(read_buf[HERE_END_BUF], 0);
 	if (dfa_state[STATE] == dfa_state[ACCEPT])
-		ft_bzero(read_buf, LEN(read_buf, 0));
+		ft_bzero(read_buf[HERE_END_BUF], b_len);
 	if (dfa_state[LAST_STATE] && !dfa_state[STATE])
 	{
-		ft_strncat(read_buf, &buf, 1);
-		b_len = LEN(read_buf, 0);
-		if (ERR(write(fd, read_buf, b_len)))
+		ft_strncat(read_buf[HERE_END_BUF], &buf, 1);
+		if (!(tmp = ft_strjoin(read_buf[HERE_END_BUF], read_buf[IN_BUF])))
 			return (ERROR);
-		ft_bzero(read_buf, b_len);
+		free(read_buf[HERE_END_BUF]);
+		read_buf[HERE_END_BUF] = tmp;
+		ft_bzero(read_buf[HERE_END_BUF], b_len + 1);
 	}
 	else if (dfa_state[STATE])
-		ft_strncat(read_buf, &buf, 1);
-	else if (ERR(write(fd, &buf, 1)))
-		return (ERROR);
+		ft_strncat(read_buf[HERE_END_BUF], &buf, 1);
+	else
+	{
+		read_buf[HERE_END_BUF][0] = buf;
+		if (!(tmp = ft_strjoin(read_buf[IN_BUF], read_buf[HERE_END_BUF])))
+			return (ERROR);
+		free(read_buf[IN_BUF]);
+		read_buf[IN_BUF] = tmp;
+		read_buf[HERE_END_BUF][0] = '\0';
+	}
 	if (buf == '\n')
 		ft_putstr("heredoc > ");
 	return (SUCCESS);
 }
 
 /*
-** read from STDIN until here_end is encountered
-** write into pipe
+** read from STDIN until here_end is encountered, write into pipe
 */
 
-int		manage_backspace(int fd, int dfa_state[4], char *read_buf)
-{
-	int		i;
-
-	if (dfa_state[CHARS])
-	{
-		dfa_state[CHARS] -= 1;
-		if (read_buf[0])
-		{
-			i = 0;
-			while (read_buf[i])
-				i += 1;
-			read_buf[--i] = '\0';
-			dfa_state[STATE] = dfa_state[LAST_STATE];
-		}
-		else
-			write(fd, "\x7f", 1);
-	}
-	return (SUCCESS);
-}
-
-int		read_until_here_end(char *here_end, int **dfa, int dfa_state[4], int fd)
+int		read_until_here_end(char *here_end, int **dfa, int dfa_state[5], int fd)
 {
 	char			buf;
-	char			*read_buf;
+	char			**read_buf;
 	struct termios	tty[2];
 	ssize_t			bytes;
+	int				err;
 
-	if (!(read_buf = ft_strnew(LEN(here_end, 0))) || ERR(prep_here_end(tty)))
+	if (!(read_buf = init_bufs(LEN(here_end, 0))) || ERR(prep_here_end(tty)))
 		return (ERROR);
-	while (TRUE)
+	err = FALSE;
+	while (!err)
 	{
 		if (NONE((bytes = read(STDIN, &buf, 1))))
 			break ;
 		dfa_state[STATE] = dfa[dfa_state[STATE]][(int)buf];
-		if (buf == DEL)
+		if (buf == DEL && ERR(manage_del(dfa, dfa_state, read_buf)))
+			err = TRUE;
+		else if (buf != DEL && (IS_DONE(dfa_state, buf) || IS_SIG(dfa_state)))
 		{
-			if (ERR(manage_backspace(fd, dfa_state, read_buf)))
-				return (ERROR);
-		}
-		else if (IS_DONE(dfa_state, buf) || IS_SIG(dfa_state))
+			if (ERR(write(fd, read_buf[IN_BUF], LEN(read_buf[IN_BUF], 0))))
+				err = TRUE;
 			break ;
-		else if (ERR(manage_read_buf(fd, dfa_state, buf, read_buf)))
-			return (ERROR);
+		}
+		else if (buf != DEL && ERR(manage_read(dfa_state, buf, read_buf)))
+			err = TRUE;
 		dfa_state[LAST_STATE] = dfa_state[STATE];
 	}
+	if (err && restore_here_end(&tty[1]))
+		return (ERROR);
 	return (restore_here_end(&tty[1]));
 }
 
@@ -103,7 +129,7 @@ int		read_until_here_end(char *here_end, int **dfa, int dfa_state[4], int fd)
 
 int		swap_here_end_fd(t_ectx *e_ctx
 						, int pipe_fds[2]
-						, int dfa_state[4]
+						, int dfa_state[5]
 						, int io_num)
 {
 	if (dfa_state[STATE] != dfa_state[SIG] && ERR(io_num))
@@ -131,7 +157,7 @@ int		process_io_here(int io_num, t_ectx *e_ctx, t_ast_node *root)
 	char			*here_end;
 	int				pipe_fds[2];
 	int				**dfa;
-	int				dfa_state[4];
+	int				dfa_state[5];
 
 	if (ft_strcmp("WORD", ((t_ast_node*)root->val[1])->rhs))
 		return (ERROR);
