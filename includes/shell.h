@@ -24,8 +24,7 @@
 # include <sys/syslimits.h>
 
 # include "../libftprintf/srcs/includes/ft_printf.h"
-# include "grammar.h"
-# include "traverse.h"
+# include "execution.h"
 
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
@@ -37,15 +36,6 @@
 char			**g_environ;
 int				g_processes;
 typedef int		(*t_builtinf)(int argc, char **argv);
-
-t_prod			*g_prods;
-
-typedef struct	s_ast
-{
-	t_ast_node	*root;
-	int			type;
-	t_list		*missing;
-}				t_ast;
 
 typedef struct	s_builtin
 {
@@ -84,32 +74,4 @@ int				builtin_setenv(int argc, char **argv);
 int				builtin_unsetenv(int argc, char **argv);
 int				builtin_env(int argc, char **argv);
 char			*get_env_var(char *var);
-
-/*
-** lexer/lexer.c
-*/
-
-int				lexical_analysis(char *complete_cmd
-								, t_list **tokens
-								, t_list **missing);
-
-/*
-** parse/parse.c
-*/
-
-int				parse_commands(t_list *tokens, t_ast *ast);
-int				prepare_ast(char *complete_cmd, t_ast *ast);
-
-/*
-** parse/command.c
-*/
-
-int				execute_commands(char *command);
-int				builtin_command(char **command);
-
-/*
-** traverse/traverse.c
-*/
-
-int				traverse_ast(t_ast *ast);
 #endif

@@ -14,14 +14,16 @@ CFLAGS += -Wall -Wextra -Werror -Wpedantic
 LDFLAGS := -Llibftprintf -lftprintf -I./includes -ltermcap
 CORE := main signal init 
 BUILTINS := cd echo env setenv unsetenv 
-LEXER := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa reserved_dfa quotes
-PARSER := parse parse_table parse_stack_utils parse_utils
-TRAVERSE := affixes command exec here_end_utils here_end pipe separator traverse_utils traverse 
+LEXICAL := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa quotes reserved_dfa
+SYNTACTIC := expansions parse parse_stack_utils parse_table parse_utils
+SEMANTIC := affixes command pipe semantic separator redir_utils expansion
+EXECUTION := exec here_end here_end_utils operators redirs
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
-		$(addprefix src/lexer/, $(LEXER)) \
-		$(addprefix src/parser/, $(PARSER)) \
-		$(addprefix src/traverse/, $(TRAVERSE))
+		$(addprefix src/lexical_analysis/, $(LEXICAL)) \
+		$(addprefix src/syntactic_analysis/, $(SYNTACTIC)) \
+		$(addprefix src/semantic_analysis/, $(SEMANTIC)) \
+		$(addprefix src/execution/, $(EXECUTION))
 SRC := $(addsuffix .c, $(FILES))
 OBJ := $(SRC:.c=.o)
 
