@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/02 17:34:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/03 14:53:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 # define IO(x, y) (ERR(x) ? y : x)
 # define IS_A(type, node) (!ft_strcmp(type, node))
+# define TILDE_PREFIX(x) (x && x[0] == '~')
 
 /*
 ** Used by execution to differentiate types of redirections 
@@ -185,7 +186,7 @@ int		semantic_analysis(t_ast *ast, t_program *program);
 ** src/semantic_analysis/expansion.c
 */
 
-int		word_expansion(char **new, char *old);
+int		word_expansion(char ***new, char *old);
 
 /*
 ** src/semantic_analysis/separator.c
