@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 19:02:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/04 19:06:41 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,13 @@
 # define IO(x, y) (ERR(x) ? y : x)
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define TILDE_PREFIX(x) (x && x[0] == '~')
+
+enum						e_expansion_symbol
+{
+	FULL_PARAM,
+	NAME,
+	WORD
+};
 
 /*
 ** Used by execution to differentiate types of redirections 
