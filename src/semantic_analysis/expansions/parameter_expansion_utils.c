@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:51:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 17:54:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 12:37:11 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,12 +91,13 @@ int		init_param_state(char *param[6], size_t len[4], char sep, char *str)
 		test = ft_strchr(str, ':') ? TRUE : FALSE;
 		len[TEST] = test;
 		param[FULL_PARAM] = str;
-		len[FULL_PARAM] = find_end_brace(str, '}') - &str[1];
+		len[FULL_PARAM] = find_end_brace(str) - &str[1];
 		param[NAME] = &str[2];
 		len[NAME] = ft_strchr(str, test ? ':' : sep) - param[NAME];
 		param[WORD] = &ft_strchr(str, sep)[1];
-		len[WORD] = find_end_brace(str, '}') - param[WORD];
+		len[WORD] = find_end_brace(str) - param[WORD];
 	}
+	return (SUCCESS);
 }
 
 /*

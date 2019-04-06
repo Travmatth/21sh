@@ -6,11 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:40:09 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 12:40:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 18:43:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/shell.h"
+#include "../../../includes/shell.h"
 
 /*
 ** Arithmetic Expansion
@@ -58,8 +58,63 @@
 ** standard error indicating the failure.
 */
 
+int		process_arithmetic_expansion(char *cmd, int *skip)
+{
+	int		i;
+	int		status;
+	int		prefixed;
+
+	i = 0;
+	prefixed = 0;
+	status = SUCCESS;
+	while (OK(status) && cmd[i])
+	{
+		if (cmd[i] == '$')
+			prefixed += 1;
+		else if (prefixed == 1 && cmd[i] == '(')
+			prefixed += 1;
+		else if (prefixed == 2 && cmd[i] == '(')
+		{
+			status = process_arithmetic_expansion(&cmd[i], skip);
+		}
+		else if (cmd[i] == ')')
+		{
+			ft_printf("Semantic Error: Arithmetic Expansion not implemented");
+			return (NIL);
+		}
+		else
+			i += 1;
+	}
+	*skip = *skip + i;
+	return (status);
+}
+
 int		arithmetic_expansion(char **parameter)
 {
-	(void)parameter;
-	return (SUCCESS);
+	int		i;
+	int		status;
+	int		prefixed;
+	char	*param;
+
+	if (!(param = ft_strdup(*parameter)))
+		return (ERROR);
+	i = 0;
+	prefixed = 0;
+	status = SUCCESS;
+	while (OK(status) && param[i])
+	{
+		if (param[i] == '$' && (i += 1))
+			prefixed += 1;
+		else if (prefixed == 1 && param[i] == '(' && (i += 1))
+			prefixed += 1;
+		else if (prefixed == 2 && param[i] == '(')
+		{
+			if (!OK((status = process_arithmetic_expansion(&param[i], &i))))
+				break ;
+		}
+		else if ((i += 1))
+			prefixed = 0;
+	}
+	free(param);
+	return (status);
 }

@@ -6,11 +6,41 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/02 18:02:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 12:03:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Join a null terminated array of strings with given delimiter
+*/
+
+char	*ft_strarrjoin(char **arr, char delim)
+{
+	int		i;
+	char	*tmp;
+	char	*joined;
+
+	i = 0;
+	if (!(joined = ft_strnew(0)))
+		return (NULL);
+	while (arr[i])
+	{
+		tmp = ft_strjoin(joined, arr[i]);
+		if (arr[i + 1])
+		{
+			if (!(joined = ft_strjoin(tmp, &delim)))
+				return (NULL);
+			free(tmp);
+		}
+		else
+			joined = tmp;
+		tmp = NULL;
+	}
+	return (joined);
+}
+
 
 int		push_redir(t_simple_command *cmd, t_redir *redir)
 {
@@ -42,8 +72,10 @@ int		get_filename(char **filename, t_ast_node *root)
 int		simple_redir(t_redir *redir, int io_num, char *filename, int type)
 {
 	char	*name;
+	char	**arr;
 
-	if (ERR(word_expansion(&name, filename)))
+	if (ERR(full_word_expansion(&arr, filename))
+		|| !(name = ft_strarrjoin(arr, ' ')))
 		return (NIL);
 	redir->replacement = io_num;
 	redir->word = name;
@@ -54,9 +86,11 @@ int		simple_redir(t_redir *redir, int io_num, char *filename, int type)
 int		dup_redir(t_redir *redir, int io_num, char *filename, int type)
 {
 	char	*fd;
+	char	**arr;
 
-	if (ERR(word_expansion(&fd, filename)))
-		return (ERROR);
+	if (ERR(full_word_expansion(&arr, filename))
+		|| !(fd = ft_strarrjoin(arr, ' ')))
+		return (NIL);
 	if (IS_A("-", fd))
 		redir->word = fd;
 	else if (IS_A("0", fd) && !ft_atoi(fd))

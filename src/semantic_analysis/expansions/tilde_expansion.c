@@ -6,11 +6,25 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:48:07 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 12:51:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 12:37:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+char	*ft_quotestr(char *str)
+{
+	size_t	len;
+	char	*new;
+
+	if (!str)
+		return (NULL);
+	len = LEN(str, 0);
+	if (!(new = ft_strnew(len + 2)))
+		return (NULL);
+	new[0] = '"';
+	return (ft_strcat(ft_strcat(new, str), "\""));
+}
 
 /*
 ** Tilde Expansion

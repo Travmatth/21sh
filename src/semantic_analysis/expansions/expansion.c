@@ -6,55 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 17:46:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 12:39:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/shell.h"
-
-/*
-** Join a null terminated array of strings with given delimiter
-*/
-
-char	*ft_strarrjoin(char **arr, char delim)
-{
-	int		i;
-	char	*tmp;
-	char	*joined;
-
-	i = 0;
-	if (!(joined = ft_strnew(0)))
-		return (NULL);
-	while (arr[i])
-	{
-		tmp = ft_strjoin(joined, arr[i]);
-		if (arr[i + 1])
-		{
-			if (!(joined = ft_strjoin(tmp, &delim)))
-				return (NULL);
-			free(tmp);
-		}
-		else
-			joined = tmp;
-		tmp = NULL;
-	}
-	return (joined);
-}
-
-// TODO: move to libft
-char	ft_quotestr(char *str)
-{
-	size_t	len;
-	char	*new;
-
-	if (!str)
-		return (NULL);
-	len = LEN(str, 0);
-	if (!(new = ft_strnew(len + 2)))
-		return (NULL);
-	new[0] = '"';
-	return (ft_strcat(ft_strcat(new, str), "\""));
-}
+#include "../../../includes/shell.h"
 
 /*
 ** Parameter Expansion
@@ -147,13 +103,15 @@ int		full_word_expansion(char ***new, char *old)
 	char	*parameter;
 	char	**fields;
 
+	fields = NULL;
+	parameter = old;
 	if (OK((status = tilde_expansion(&parameter)))
-		|| OK((status = parameter_expansion(&parameter)))
-		|| OK((status = command_substitution(&parameter)))
-		|| OK((status = arithmetic_expansion(&parameter)))
-		|| OK((status = field_splitting(&fields, parameter)))
-		|| OK((status = pathname_expansion(&fields)))
-		|| OK((status = quote_removal(&fields))))
+		&& OK((status = parameter_expansion(&parameter)))
+		&& OK((status = command_substitution(&parameter)))
+		&& OK((status = arithmetic_expansion(&parameter)))
+		&& OK((status = field_splitting(&fields, parameter)))
+		&& OK((status = pathname_expansion(&fields)))
+		&& OK((status = quote_removal(&fields))))
 		*new = fields;
 	return (status);
 }
@@ -168,12 +126,12 @@ int		sub_expansion(char **new, char *old)
 {
 	int		status;
 	char	*parameter;
-	char	**fields;
 
+	parameter = old;
 	if (OK((status = tilde_expansion(&parameter)))
-		|| OK((status = parameter_expansion(&parameter)))
-		|| OK((status = command_substitution(&parameter)))
-		|| OK((status = arithmetic_expansion(&parameter))))
+		&& OK((status = parameter_expansion(&parameter)))
+		&& OK((status = command_substitution(&parameter)))
+		&& OK((status = arithmetic_expansion(&parameter))))
 		*new = parameter;
 	return (status);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 12:50:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 17:11:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,114 @@
 ** $( (command) )
 */
 
+int		process_backtick(char *cmd, int *skip)
+{
+	int		i;
+	int		status;
+	int		prefixed;
+
+	i = 0;
+	prefixed = FALSE;
+	status = SUCCESS;
+	while (OK(status) && cmd[i])
+	{
+		if (escaped(cmd, i))
+			i += 1;
+		else if (cmd[i] == '`')
+			status = NIL;
+		else if (cmd[i] == '$' && !escaped(cmd, i) && (i += 1))
+			prefixed = TRUE;
+		else if (prefixed && cmd[i] == '('
+			&& OK((status = process_paren(&cmd[i], &i))))
+			break ;
+		else
+			i += 1;
+	}
+	*skip = *skip + i;
+	return (status);
+}
+
+int		process_arithmetic(char *cmd, int *skip)
+{
+	int		i;
+	int		status;
+	int		prefixed;
+
+	i = 0;
+	prefixed = FALSE;
+	while (cmd[i])
+	{
+		if (escaped(cmd, i))
+			i += 1;
+		else if (i == 0 && cmd[i] == '(')
+			return (process_arithmetic(&cmd[1], skip));
+		else if (cmd[i] == '`' && !OK((status = process_backtick(&cmd[i], &i))))
+			return (status);
+		else if (cmd[i] == '$' && !escaped(cmd, i) && (i += 1))
+			prefixed = TRUE;
+		else if (prefixed && cmd[i] == '(' && !OK(process_paren(&cmd[i], &i)))
+			return (status);
+		else if (cmd[i] == ')' && (*skip = *skip + i))
+			return (SUCCESS);
+		else
+			i += 1;
+	}
+	return (SUCCESS);
+}
+
+int		process_paren(char *cmd, int *skip)
+{
+	int		i;
+	int		status;
+	int		prefixed;
+
+	i = 0;
+	prefixed = FALSE;
+	while (cmd[i])
+	{
+		if (escaped(cmd, i))
+			i += 1;
+		else if (i == 0 && cmd[i] == '(')
+			return (process_arithmetic(&cmd[1], skip));
+		else if (cmd[i] == '`' && !OK((status = process_backtick(&cmd[i], &i))))
+			return (status);
+		else if (cmd[i] == '$' && !escaped(cmd, i) && (i += 1))
+			prefixed = TRUE;
+		else if (prefixed && cmd[i] == '('
+			&& !OK((status = process_paren(&cmd[i], &i))))
+			return (status);
+		else if (cmd[i] == ')')
+			return (NIL);
+		else if ((*skip = *skip + i))
+			i += 1;
+	}
+	return (SUCCESS);
+}
+
 int		command_substitution(char **parameter)
 {
-	(void)parameter;
-	return (SUCCESS);
+	int		i;
+	int		state;
+	int		prefixed;
+	char	*name;
+
+	i = 0;
+	prefixed = FALSE;
+	name = *parameter;
+	state = SUCCESS;
+	while (OK(state) && name[i])
+	{
+		if (name[i] == '`' && OK((state = process_backtick(&name[i + 1], &i))))
+			i += 1;
+		else if (name[i] == '$' && !escaped(name, i) && (i += 1))
+			prefixed = TRUE;
+		else if (prefixed && name[i] == '('
+			&& OK((state = process_paren(&name[i + 1], &i))))
+			i += 1;
+		else
+			i += 1;
+	}
+	if (name[i])
+		ft_printf(CMD_SUB_ERR);
+	return (state);
 }

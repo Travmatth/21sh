@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:44:02 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/04 12:51:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/05 18:46:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,59 @@
 ** Filename Expansion.
 */
 
+int		find_pathname_end(char *str, int *skip)
+{
+	int		i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\\')
+			i += 2;
+		else if (str[i] == '}')
+		{
+			ft_printf("Semantic Error: pathname expansion not implemented\n");
+			return (NIL);
+		}
+		else
+			i += 1;
+	}
+	*skip = *skip + i;
+	return (SUCCESS);
+}
+
+int		expand_pathname(char **field)
+{
+	int		i;
+	char	*str;
+	int		status;
+
+	i = 0;
+	str = *field;
+	status = SUCCESS;
+	while (str[i])
+	{
+		if (str[i] == '\\')
+			i += 2;
+		else if (str[i] == '{')
+		{
+			if (!OK((status = find_pathname_end(&str[i], &i))))
+				break ;
+		}
+		else
+			i += 1;
+	}
+	return (status);
+}
+
 int		pathname_expansion(char ***fields)
 {
-	(void)fields;
-	return (SUCCESS);
+	int		i;
+	int		status;
+
+	i = 0;
+	while ((*fields)[i])
+		if (!OK((status = expand_pathname(&(*fields)[i]))))
+			break ;
+	return (status);
 }
