@@ -6,11 +6,22 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:46:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 12:26:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/07 17:44:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+int		ft_safeatoi(char *num, int *number)
+{
+	int		nbr;
+
+	nbr = ft_atoi(num);
+	if (!nbr && ft_strcmp("0", num))
+		return ERROR;
+	*number = nbr;
+	return (SUCCESS);
+}
 
 /*
 ** ${parameter}
@@ -23,24 +34,30 @@
 ** substitutions.
 */
 
-int		plain_param_expansion(char **parameter, char *var, size_t *skip)
+int		plain_param_expansion(char **parameter, char *var, size_t *i)
 {
-	char	*new;
-	char	*replacement;
+	char	*tmp[2];
 	char	*env_lookup;
 	char	*param[3];
+	int		position;
 	size_t	len[4];
 
 	if (ERR(init_param_state(param, len, NIL, var))
 		|| ERR(create_param_state(param, len)))
 		return (ERROR);
-	env_lookup = get_env_var(param[NAME]);
-	new = env_lookup ? env_lookup : "";
-	if (!(replacement = ft_swap(*parameter, param[FULL_PARAM], new)))
+	if (OK(ft_safeatoi(param[NAME], &position)))
+	{
+		ft_printf("Semantic Error: Positional Parameters not implemented");
+		return (NIL);
+	}
+	else
+		env_lookup = get_env_var(param[NAME]);
+	tmp[NEW] = env_lookup ? env_lookup : "";
+	if (!(tmp[NEXT] = ft_swap(*parameter, param[FULL_PARAM], tmp[NEW])))
 		return (ERROR);
 	free(*parameter);
-	*parameter = replacement;
-	*skip = *skip + len[FULL_PARAM];
+	*parameter = tmp[NEXT];
+	*i = *i + len[FULL_PARAM];
 	ft_freearr(param);
 	return (SUCCESS);
 }

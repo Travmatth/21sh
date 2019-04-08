@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/02 17:21:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 16:44:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int		pipe_sequence(t_pipe *pipe, t_ast_node *root, int bg)
 {
+	int					status;
 	int					position;
 	t_pipe_child		*pipe_child;
 	t_pipe				*tmp;
@@ -29,14 +30,15 @@ int		pipe_sequence(t_pipe *pipe, t_ast_node *root, int bg)
 		pipe->left = pipe_child;
 		pipe->bg = bg;
 		position = 3;
-		if (ERR(pipe_sequence(tmp, root->val[0], FALSE)))
+		if (!OK((status = pipe_sequence(tmp, root->val[0], FALSE))))
 			return (ERROR);
 	}
-	if (!IS_A("command", root->rhs)
-		|| !(pipe_child = ft_memalloc(sizeof(t_pipe_child)))
+	if (!IS_A("command", root->rhs))
+		return (NIL);
+	if (!(pipe_child = ft_memalloc(sizeof(t_pipe_child)))
 		|| !(s_command = ft_memalloc(sizeof(t_simple_command))))
 		return (ERROR);
-	pipe_child->simple_command = s_command ;
+	pipe_child->simple_command = s_command;
 	pipe_child->type = EXEC_SIMPLE_COMMAND;
 	pipe->type = position ? EXEC_PIPE : EXEC_NONE;
 	if (position)
@@ -56,7 +58,7 @@ int		pipeline(t_pipe *pipe, t_ast_node *root, int bg)
 		pipe->bang = TRUE;
 		position = 1;
 	}
-	else if (!IS_A("pipe_sequence", root->rhs))
-		return (ERROR);
-	return pipe_sequence(pipe, root->val[position], bg);
+	else if (IS_A("pipe_sequence", root->rhs))
+		return pipe_sequence(pipe, root->val[position], bg);
+	return (NIL);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 12:03:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 16:33:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,12 +85,13 @@ int		simple_redir(t_redir *redir, int io_num, char *filename, int type)
 
 int		dup_redir(t_redir *redir, int io_num, char *filename, int type)
 {
+	int		status;
 	char	*fd;
 	char	**arr;
 
-	if (ERR(full_word_expansion(&arr, filename))
+	if (!OK((status = full_word_expansion(&arr, filename)))
 		|| !(fd = ft_strarrjoin(arr, ' ')))
-		return (NIL);
+		return (OK(status) ? ERROR : status);
 	if (IS_A("-", fd))
 		redir->word = fd;
 	else if (IS_A("0", fd) && !ft_atoi(fd))

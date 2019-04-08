@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 13:02:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 18:21:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int		io_file(t_simple_command *cmd, int io_num, t_ast_node *root)
 	else if (OK(status) && IS_A("CLOBBER filename", root->rhs))
 		status = simple_redir(redir, IO(io_num, STDOUT), file, PARSE_CLOBBER);
 	else
-		return (ERROR);
+		return (status);
 	if (!OK(status) && ERR(push_redir(cmd, redir)))
 		return (status);
 	return (SUCCESS);
@@ -69,21 +69,23 @@ int		io_here(t_simple_command *cmd, int io_num, t_ast_node *root)
 		type = PARSE_DLESSDASH;
 	if (OK(status))
 		status = simple_redir(redir, IO(io_num, STDIN), here_end, type);
-	if OK(status)
+	if (OK(status))
 		push_redir(cmd, redir);
 	return (status);
 }
 
 int		io_redirect(t_simple_command *cmd, t_ast_node *root)
 {
+	int		status;
 	int		io_num;
 
+	status = NIL;
 	io_num = ERROR;
 	if (IS_A("io_file", root->rhs))
 		return (io_file(cmd, io_num, root->val[0]));
 	else if (IS_A("IO_NUMBER io_file", root->rhs))
 	{
-		if (ERR(io_number(&io_num, root->val[0])))
+		if (!OK((status = io_number(&io_num, root->val[0]))))
 			return (ERROR);
 		return (io_file(cmd, io_num, root->val[1]));
 	}
@@ -91,59 +93,65 @@ int		io_redirect(t_simple_command *cmd, t_ast_node *root)
 		return (io_here(cmd, io_num, root->val[0]));
 	else if (IS_A("IO_NUMBER io_here", root->rhs))
 	{
-		if (ERR(io_number(&io_num, root->val[0])))
+		if (!OK((status = io_number(&io_num, root->val[0]))))
 			return (ERROR);
 		return (io_here(cmd, io_num, root->val[1]));
 	}
-	return (SUCCESS);
+	return (status);
 }
 
 int		prefix(t_simple_command *cmd, t_ast_node *root)
 {
-	if (!IS_A("io_redirect", root->rhs))
+	int		status;
+
+	if (IS_A("io_redirect", root->rhs))
 		return (io_redirect(cmd, root->val[0]));
-	else if (!IS_A("cmd_prefix io_redirect", root->rhs))
-		return (ERR(prefix(cmd, root->val[0]))
-			? ERROR : io_redirect(cmd, root->val[1]));
-	else if (!IS_A("ASSIGNMENT_WORD", root->rhs))
+	else if (IS_A("cmd_prefix io_redirect", root->rhs))
+		return (!OK((status = prefix(cmd, root->val[0])))
+			? status : io_redirect(cmd, root->val[1]));
+	else if (IS_A("ASSIGNMENT_WORD", root->rhs))
 		ft_putendl("Error: ASSIGNMENT_WORD syntax not implemented");
-	else if (!IS_A("cmd_prefix ASSIGNMENT_WORD", root->rhs))
+	else if (IS_A("cmd_prefix ASSIGNMENT_WORD", root->rhs))
 	{
-		if (ERR(prefix(cmd, root->val[0])))
-			return (ERROR);
+		if (!OK((status = prefix(cmd, root->val[0]))))
+			return (status);
 		ft_putendl("Error: ASSIGNMENT_WORD syntax not implemented");
 	}
-	return (SUCCESS);
+	return (NIL);
 }
 
 int		suffix(t_simple_command *cmd, t_ast_node *root)
 {
-	int		status;
-	char	**tmp;
-	char	**fields;
+	int			status;
+	char		**tmp;
+	char		**fields;
+	t_ast_node	*node;
 
 	if (IS_A("io_redirect", root->rhs))
 		return (io_redirect(cmd, root->val[0]));
 	else if (IS_A("cmd_suffix io_redirect", root->rhs))
-		return (ERR(suffix(cmd, root->val[0]))
-			? ERROR : io_redirect(cmd, root->val[1]));
+		return (!OK((status = suffix(cmd, root->val[0])))
+			? status : io_redirect(cmd, root->val[1]));
 	else if (IS_A("WORD", root->rhs))
 	{
-		if (!OK((status = full_word_expansion(&fields, (char*)root->val[0]))))
+		node = (t_ast_node*)root->val[0];
+		if (!OK((status = full_word_expansion(&fields, (char*)node->val[0]))))
 			return (status);
 		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
 			return (ERROR);
+		// ft_freearr(cmd->command);
 		free(cmd->command);
 		cmd->command = tmp;
 	}
 	else if (IS_A("cmd_suffix WORD", root->rhs))
 	{
-		if (ERR(suffix(cmd, root->val[0])))
-			return (ERROR);
+		if (!OK((status = suffix(cmd, root->val[0]))))
+			return (status);
 		if (!OK((status = full_word_expansion(&fields, (char*)root->val[1]))))
 			return (status);
 		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
 			return (ERROR);
+		// ft_freearr(cmd->command);
 		free(cmd->command);
 		cmd->command = tmp;
 	}

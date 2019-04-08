@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 13:25:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 16:32:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,28 @@
 char	**ft_strjoinarrs(char **arr_1, char **arr_2)
 {
 	int		i;
-	int		total;
+	int		arr_1_len;
 	char	**new;
 
 	i = 0;
-	total = 0;
-	while (arr_1[i])
-		total += 1;
+	arr_1_len = 0;
+	while (arr_1 && arr_1[i])
+	{
+		i += 1;
+		arr_1_len += 1;
+	}
+	i = 0;
 	while (arr_2[i])
-		total += 1;
-	if (!(new = ft_memalloc(sizeof(char*) * (total + 1))))
+		i += 1;
+	if (!(new = ft_memalloc(sizeof(char*) * (arr_1_len + i + 1))))
 		return (NULL);
 	i = -1;
-	while (arr_1[++i])
+	while (arr_1 && arr_1[++i])
 		new[i] = arr_1[i];
-	total = i;
+	arr_1_len = i >= 0 ? i : 0;
 	i = -1;
 	while (arr_2[++i])
-		new[total + i] = arr_1[i];
+		new[arr_1_len + i] = arr_2[i];
 	return (new);
 }
 
@@ -55,6 +59,7 @@ int		cmd_name(t_simple_command *command, t_ast_node *root)
 
 int		simple_command(t_simple_command *command, t_ast_node *root, int bg)
 {
+	int		status;
 	char	**argv;
 
 	argv = NULL;
@@ -72,41 +77,31 @@ int		simple_command(t_simple_command *command, t_ast_node *root, int bg)
 	}
 	else if (IS_A("cmd_name cmd_suffix", root->rhs))
 	{
-		if (ERR(cmd_name(command, root->val[0])))
-			return (ERROR);
-		if (ERR(suffix(command, root->val[1])))
-			return (ERROR);
+		if (!OK((status = cmd_name(command, root->val[0]))))
+			return (status);
+		if (!OK((status = suffix(command, root->val[1]))))
+			return (status);
 	}
 	else if (IS_A("cmd_name", root->rhs))
 	{
-		if (ERR(cmd_name(command, root->val[0])))
-			return (ERROR);
+		if (!OK((status = cmd_name(command, root->val[0]))))
+			return (status);
 	}
-	(void)bg;
-	// TODO
-	// verify_command();
-	// t_ctx->exit_code = execute_cmd(command);
-	// TODO
-	return (SUCCESS);
+	status = verify_command(&command->command[0]);
+	command->is_builtin = status == BUILTIN ? TRUE : FALSE;
+	command->bg = bg;
+	return (status);
 }
 
 int		command(t_simple_command *cmd, t_ast_node *root, int bg)
 {
 	if (IS_A("simple_command", root->rhs))
 		return (simple_command(cmd, root->val[0], bg));
-	else if (IS_A("compound_command", root->rhs))
+	else if (IS_A("compound_command", root->rhs)
+		|| IS_A("compound_command redirect_list", root->rhs)
+		|| IS_A("function_definition", root->rhs))
 	{
-		ft_putendl("Error: compound command not implemented");
-		return (NIL);
-	}
-	else if (IS_A("compound_command redirect_list", root->rhs))
-	{
-		ft_putendl("Error: compound command not implemented");
-		return (NIL);
-	}
-	else if (IS_A("function_definition", root->rhs))
-	{
-		ft_putendl("Error: compound command not implemented");
+		ft_printf("Error: %s not implemented", root->rhs);
 		return (NIL);
 	}
 	else

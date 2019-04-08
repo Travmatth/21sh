@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 17:44:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/07 17:41:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include "syntactic_analysis.h"
 
+# define EXECUTABLE 1
+# define BUILTIN 2
 # define IO(x, y) (ERR(x) ? y : x)
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define TILDE_PREFIX(x) (x && x[0] == '~')
@@ -210,6 +212,15 @@ int		separator_op_is_linebreak(int *is_bg, t_ast_node *root);
 int		separator(int *is_bg, t_ast_node *root);
 
 /*
+** src/semantic_analysis/verify_command.c
+*/
+
+int		find_exec(char *command);
+int		find_command(char **command, char **paths, int i, int found);
+int		is_builtin(char *command);
+int		verify_command(char **command);
+
+/*
 ** src/semantic_analysis/expansions/arithmetic_expansion.c
 */
 
@@ -243,7 +254,13 @@ int		field_splitting(char ***fields, char *parameter);
 ** src/semantic_analysis/expansions/paramater_expansion.c
 */
 
-int		plain_param_expansion(char **parameter, char *var, size_t *skip);
+enum	e_plain_vars
+{
+	NEW,
+	NEXT
+};
+
+int		plain_param_expansion(char **parameter, char *var, size_t *i);
 int		use_defaults_param_expansion(char **parameter, char *var, size_t *i);
 int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i);
 int		error_unset_param_expansion(char **parameter, char *var, size_t *i);

@@ -35,14 +35,6 @@
 
 char			**g_environ;
 int				g_processes;
-typedef int		(*t_builtinf)(int argc, char **argv);
-
-typedef struct	s_builtin
-{
-	char		*cmd;
-	t_builtinf	f;
-	int			len;
-}				t_builtin;
 
 /*
 ** src/main.c
@@ -74,4 +66,19 @@ int				builtin_setenv(int argc, char **argv);
 int				builtin_unsetenv(int argc, char **argv);
 int				builtin_env(int argc, char **argv);
 char			*get_env_var(char *var);
+
+/*
+** Structures used to store and execute shell builtins
+*/
+
+typedef int		(*t_builtinf)(int argc, char **argv);
+
+typedef struct	s_builtin
+{
+	char		*cmd;
+	t_builtinf	f;
+	int			len;
+}				t_builtin;
+
+extern t_builtin	g_builtins[];
 #endif

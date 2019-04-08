@@ -41,11 +41,9 @@ enum			e_here_end_dfa
 ** src/execution/exec.c
 */
 
-int		find_exec(char *command);
-int		find_command(char **command, char **paths, int i, int found);
-int		execute_command(char **av);
-int		execute_cmd(char **command);
 int		builtin_command(char **argv);
+int		execute_command(char **av);
+int		execute(t_program *program);
 int		execute_commands(char *complete_cmd);
 
 /*

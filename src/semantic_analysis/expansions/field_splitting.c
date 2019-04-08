@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:47:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 18:45:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 13:49:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int		count_fields(char *str)
 				i += 1;
 		}
 		else
-			while (!IS_IFS(str[i]) || escaped(str, i))
+			while (str[i] && (!IS_IFS(str[i]) || escaped(str, i)))
 				i += 1;
 	}
 	return (count);
@@ -91,7 +91,7 @@ int		field_splitting(char ***fields, char *parameter)
 	size = 0;
 	while (parameter[i])
 	{
-		while (IS_IFS(parameter[i]) && !escaped(parameter, i))
+		while (parameter[i] && (IS_IFS(parameter[i])) && !escaped(parameter, i))
 			i += 1;
 		if (!parameter[i])
 			break ;
@@ -99,7 +99,7 @@ int		field_splitting(char ***fields, char *parameter)
 		if ((parameter[i] == '\'' || parameter[i] == '"') && !escaped(parameter, i))
 		{
 			quote = parameter[i++];
-			while (parameter[i] != quote || escaped(parameter, i))
+			while (parameter[i] && (parameter[i] != quote || escaped(parameter, i)))
 				i += 1;
 			if (!(arr[size++] = ft_strsub(parameter, start, ++i)))
 				return (ERROR);
@@ -108,7 +108,7 @@ int		field_splitting(char ***fields, char *parameter)
 		{
 			while (parameter[i] && (!IS_IFS(parameter[i]) || escaped(parameter, i)))
 				i += 1;
-			if (!(arr[size++] = ft_strsub(parameter, start, ++i)))
+			if (!(arr[size++] = ft_strsub(parameter, start, i)))
 				return (ERROR);
 		}
 	}

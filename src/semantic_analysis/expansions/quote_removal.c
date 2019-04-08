@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:55:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 18:46:59 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 13:56:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,12 @@ int		remove_quotes(char **str)
 	{
 		if ((*str)[i] == quote)
 			i += 1;
-		else if ((*str)[i++] == '\\')
+		else if ((*str)[i] == '\\')
+		{
+			i += 1;
+			new[j++] = (*str)[i++];
+		}
+		else
 			new[j++] = (*str)[i++];
 	}
 	free(*str);
@@ -54,7 +59,7 @@ int		quote_removal(char ***fields)
 	i = 0;
 	status = SUCCESS;
 	while ((*fields)[i])
-		if (!OK((status = remove_quotes(&(*fields)[i]))))
+		if (!OK((status = remove_quotes(&(*fields)[i++]))))
 			break ;
 	return (status);
 }

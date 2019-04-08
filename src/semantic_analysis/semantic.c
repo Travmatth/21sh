@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/02 17:39:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/06 16:01:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,12 @@ int		and_or(t_operator *op, t_ast_node *root, int is_bg)
 	}
 	if (!(tmp = ft_memalloc(sizeof(t_operator))))
 		return (ERROR);
-	if (!IS_A("and_or AND_IF linebreak pipeline", root->rhs))
+	if (IS_A("and_or AND_IF linebreak pipeline", root->rhs))
 		op->type = EXEC_AND;
-	else if (!IS_A("and_or AND_IF linebreak pipeline", root->rhs))
+	else if (IS_A("and_or AND_IF linebreak pipeline", root->rhs))
 		op->type = EXEC_OR;
 	else
-		return (ERROR);
+		return (NIL);
 	op->bg = is_bg;
 	op_child->type = EXEC_OP;
 	op_child->operator = tmp;
@@ -101,6 +101,7 @@ int		and_or(t_operator *op, t_ast_node *root, int is_bg)
 
 int		list(t_program *p, t_ast_node *root, int last_is_bg)
 {
+	int			status;
 	int			is_bg;
 	t_operator	*op;
 	t_operator	**tmp;
@@ -113,21 +114,21 @@ int		list(t_program *p, t_ast_node *root, int last_is_bg)
 	p->commands = tmp;
 	if (IS_A("list separator_op and_or", root->rhs))
 	{
-		if (ERR(separator_op_is_linebreak(&is_bg, root->val[1])))
-			return (ERROR);
-		if (ERR(list(p, root->val[0], is_bg)))
-			return (ERROR);
+		if (!OK((status = separator_op_is_linebreak(&is_bg, root->val[1]))))
+			return (status);
+		if (!OK((status = list(p, root->val[0], is_bg))))
+			return (status);
 		return (and_or(op, root->val[0], last_is_bg));
 	}
 	else if (IS_A("and_or", root->rhs))
 		return (and_or(op, root->val[0], last_is_bg));
 	else
-		return (ERROR);
-	return (SUCCESS);
+		return (NIL);
 }
 
 int		semantic_analysis(t_ast *ast, t_program *program)
 {
+	int			status;
 	t_ast_node	*root;
 	int			is_bg;
 
@@ -139,8 +140,8 @@ int		semantic_analysis(t_ast *ast, t_program *program)
 	{
 		root = (t_ast_node*)ast->root->val[0];
 		if (IS_A("list separator", root->rhs)
-			&& ERR(separator(&is_bg, root->val[1])))
-			return (ERROR);
+			&& !OK((status = separator(&is_bg, root->val[1]))))
+			return (status);
 		return (list(program, root->val[0], is_bg));
 	}
 	return (NIL);
