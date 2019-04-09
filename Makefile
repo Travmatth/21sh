@@ -12,15 +12,17 @@ NAME = 21sh
 LIBFT = libftprintf/libftprintf.a
 CFLAGS += -Wall -Wextra -Werror -Wpedantic
 LDFLAGS := -Llibftprintf -lftprintf -I./includes -ltermcap
-CORE := main signal init 
+CORE := main
 BUILTINS := cd echo env setenv unsetenv 
 LEXICAL := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa quotes reserved_dfa
 SYNTACTIC := parse parse_stack_utils parse_table parse_utils
 SEMANTIC := affixes command pipe semantic separator redir_utils verify_command
 EXPANSIONS :=  arithmetic_expansion command_substitution expansion field_splitting paramater_expansion parameter_expansion_actions parameter_expansion_utils pathname_expansion quote_removal tilde_expansion
 EXECUTION := exec here_end here_end_utils operators redirs
+UTILS := signal init quote_management 
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
+		$(addprefix src/utils/, $(UTILS)) \
 		$(addprefix src/lexical_analysis/, $(LEXICAL)) \
 		$(addprefix src/syntactic_analysis/, $(SYNTACTIC)) \
 		$(addprefix src/semantic_analysis/, $(SEMANTIC)) \

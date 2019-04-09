@@ -73,10 +73,10 @@ int		init_param_state(char *param[6], size_t len[4], char sep, char *str)
 	size_t	i;
 	int		test;
 
-	if (!NONE(sep))
+	if (NONE(sep))
 	{
 		i = 0;
-		while (IS_VAR_CHAR(str[i]))
+		while (IS_VAR_CHAR(str[i + 1]))
 			i += 1;
 		len[FULL_PARAM] = i + 1;
 		param[FULL_PARAM] = str;

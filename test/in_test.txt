@@ -1,4 +1,9 @@
-cat author
+echo $HOME
+echo "HOME"
+echo ${HOME}
+echo $(echo $HOME)
+echo 'echo $HOME'
+echo `echo $HOME`
 cat << EOF
 cat foo || echo foo
 cat author && echo foo

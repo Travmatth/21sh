@@ -12,6 +12,15 @@
 
 #include "../../includes/shell.h"
 
+extern t_list	*g_missing;
+int		lex_quote(char **str, int start, int end)
+{
+	(void)str;
+	(void)start;
+	(void)end;
+	return (SUCCESS);
+}
+
 /*
 ** 1. If the end of input is recognized the current token shall be delimited.
 ** If there is no current token, the end-of-input indicator shall be returned as
@@ -88,26 +97,47 @@ void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx)
 
 void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 {
-	size_t	end;
+	int		skip;
+	int		status;
 
-	end = 0;
+	skip = 0;
 	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
 	if (c == '\\')
-		end = 2;
-	else if (c == '"' || c == '\'')
+		skip = 2;
+	else if (c == '"')
 	{
-		if (!OK((end = c == '"'
-			? find_dquote(input, ctx->i, ctx)
-			: find_quote(input, ctx->i, ctx))))
+		if (ERR((status = dbl_quote(&ctx->input, ctx->i, &skip, lex_quote))))
+			ctx->status = ERROR;
+		else if (NONE(status))	
 		{
-			ctx->status = end;
-			return ;
+			ctx->status = NIL;
+			ctx->missing = g_missing;
 		}
-		ctx->in_word = TRUE;
 	}
-	ft_bufappend(token->value, &input[ctx->i], end + 1);
-	ctx->i += end + 1;
+	else if (c == '\'')
+	{
+		if (ERR((status = quote(&ctx->input, ctx->i, &skip, lex_quote))))
+			ctx->status = ERROR;
+		else if (NONE(status))	
+		{
+			ctx->status = NIL;
+			ctx->missing = g_missing;
+		}
+	}
+	// else if (c == '"' || c == '\'')
+	// {
+	// 	if (!OK((skip = c == '"'
+	// 		? find_dquote(input, ctx->i, ctx)
+	// 		: find_quote(input, ctx->i, ctx))))
+	// 	{
+	// 		ctx->status = skip;
+	// 		return ;
+	// 	}
+	// 	ctx->in_word = TRUE;
+	// }
+	ft_bufappend(token->value, &input[ctx->i], skip + 1);
+	ctx->i += skip + 1;
 	ctx->status = SUCCESS;
 }
 
@@ -131,12 +161,35 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
 	int		skip;
+	int		status;
 
-	if ((c == '`' && !OK((skip = find_bquote(ctx->input, ctx->i, ctx))))
-			|| (c == '$' && !OK((skip = find_subst(ctx->input, ctx->i, ctx)))))
+	skip = ERROR;
+	status = SUCCESS;
+	if (c == '`')
 	{
-		ctx->status = skip;
-		return ;
+		if (ERR((status = backtick(&ctx->input, ctx->i, &skip, lex_quote))))
+			ctx->status = ERROR;
+		else if (NONE(status))	
+		{
+			ctx->status = NIL;
+			ctx->missing = g_missing;
+		}
+	}
+	else if (c == '$')
+	{
+		if (TWO_PARENS(ctx->input, ctx->i) && ERR((status = arith_exp(&ctx->input, ctx->i, &skip, lex_quote))))
+			ctx->status = ERROR;
+		else if (NEXT_PAREN(ctx->input, ctx->i) && ERR((status = command_sub(&ctx->input, ctx->i, &skip, lex_quote))))
+			ctx->status = ERROR;
+		else if (NEXT_BRACE(ctx->input, ctx->i) && ERR((status = command_sub(&ctx->input, ctx->i, &skip, lex_quote))))
+			ctx->status = ERROR;
+		else if (IS_VAR_CHAR(ctx->input[ctx->i + 1]))	
+			skip = 1;
+		else if (NONE(status))	
+		{
+			ctx->status = NIL;
+			ctx->missing = g_missing;
+		}
 	}
 	if ((!token->type && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		|| ERR(append_to_tok(c, token)))

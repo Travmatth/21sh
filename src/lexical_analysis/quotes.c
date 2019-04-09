@@ -12,6 +12,7 @@
 
 #include "../../includes/shell.h"
 
+/*
 int		find_subst(char *input, int x, t_lctx *ctx)
 {
 	int		i;
@@ -182,3 +183,5 @@ int		find_bquote(char *input, int x, t_lctx *ctx)
 	}
 	return (i);
 }
+*/
+

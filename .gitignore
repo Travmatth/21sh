@@ -3,4 +3,4 @@
 *.o
 .nfs*
 ft_ls
-21sh
+.vscode/ipch

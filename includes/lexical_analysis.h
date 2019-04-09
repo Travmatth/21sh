@@ -14,6 +14,26 @@
 # define LEXICAL_ANALYSIS_H
 
 /*
+** Used by quote management functions to give context pecific functionality to
+** functions as they parse different quote types - lexical analysis needs to
+** store unclosed quotes, word expansion needs to execute closed quoted strings
+*/
+
+t_list		*g_missing;
+typedef	int	(*t_quote)(char **str, int start, int end);
+
+# define NEXT_BRACE(s, i) (s[i + 1] && s[i + 1] == '{')
+# define NEXT_PAREN(s, i) (s[i + 1] && s[i + 1] == '(')
+# define TWO_PARENS(s, i) (NEXT_PAREN(s, i) && NEXT_PAREN(s, i + 1))
+
+# define SNGL_QUOTE(s, i) (s[i] == '\'')
+# define DBL_QUOTE(s, i) (s[i] == '"')
+# define PARAM_EXP(s, i) (s[i] == '$' && NEXT_BRACE(s, i))
+# define ARITH_EXP(s, i) (s[i] == '$' && TWO_PARENS(s, i))
+# define CMD_SUB(s, i) (s[i] == '$' && NEXT_BRACE(s, i))
+# define BACKTICK(s, i) (s[i] == '`')
+
+/*
 ** Operator DFA symbols used to match input to specific bash operator
 */
 
@@ -105,6 +125,17 @@ typedef struct	s_token_cnv
 	int			lex_tok;
 	int			parse_tok;
 }				t_token_cnv;
+
+/*
+** src/utils/quote_management.c
+*/
+
+int		quote(char **str, int start, int *end, t_quote f);
+int		backtick(char **str, int start, int *end, t_quote f);
+int		dbl_quote(char **str, int start, int *end, t_quote f);
+int		param_exp(char **str, int start, int *end, t_quote f);
+int		command_sub(char **str, int start, int *end, t_quote f);
+int		arith_exp(char **str, int start, int *end, t_quote f);
 
 /*
 ** src/lexical_analysis/lexer.c
