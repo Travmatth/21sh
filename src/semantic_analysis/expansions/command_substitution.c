@@ -13,6 +13,15 @@
 
 #include "../../../includes/shell.h"
 
+int		cmd_sub_err(char **str, int start, int end)
+{
+	(void)str;
+	(void)start;
+	(void)end;
+	ft_printf("Semantic Error: command substitution not implemented\n");
+	return (NIL);
+}
+
 /*
 ** Command Substitution
 ** Command substitution allows the output of a command to be substituted in
@@ -79,114 +88,31 @@
 ** $( (command) )
 */
 
-int		process_backtick(char *cmd, int *skip)
-{
-	int		i;
-	int		status;
-	int		prefixed;
-
-	i = 0;
-	prefixed = FALSE;
-	status = SUCCESS;
-	while (OK(status) && cmd[i])
-	{
-		if (escaped(cmd, i))
-			i += 1;
-		else if (cmd[i] == '`')
-			status = NIL;
-		else if (cmd[i] == '$' && !escaped(cmd, i) && (i += 1))
-			prefixed = TRUE;
-		else if (prefixed && cmd[i] == '('
-			&& OK((status = process_paren(&cmd[i], &i))))
-			break ;
-		else
-			i += 1;
-	}
-	*skip = *skip + i;
-	return (status);
-}
-
-int		process_arithmetic(char *cmd, int *skip)
-{
-	int		i;
-	int		status;
-	int		prefixed;
-
-	i = 0;
-	prefixed = FALSE;
-	while (cmd[i])
-	{
-		if (escaped(cmd, i))
-			i += 1;
-		else if (i == 0 && cmd[i] == '(')
-			return (process_arithmetic(&cmd[1], skip));
-		else if (cmd[i] == '`' && !OK((status = process_backtick(&cmd[i], &i))))
-			return (status);
-		else if (cmd[i] == '$' && !escaped(cmd, i) && (i += 1))
-			prefixed = TRUE;
-		else if (prefixed && cmd[i] == '(' && !OK(process_paren(&cmd[i], &i)))
-			return (status);
-		else if (cmd[i] == ')' && (*skip = *skip + i))
-			return (SUCCESS);
-		else
-			i += 1;
-	}
-	return (SUCCESS);
-}
-
-int		process_paren(char *cmd, int *skip)
-{
-	int		i;
-	int		status;
-	int		prefixed;
-
-	i = 0;
-	prefixed = FALSE;
-	while (cmd[i])
-	{
-		if (escaped(cmd, i))
-			i += 1;
-		else if (i == 0 && cmd[i] == '(')
-			return (process_arithmetic(&cmd[1], skip));
-		else if (cmd[i] == '`' && !OK((status = process_backtick(&cmd[i], &i))))
-			return (status);
-		else if (cmd[i] == '$' && !escaped(cmd, i) && (i += 1))
-			prefixed = TRUE;
-		else if (prefixed && cmd[i] == '('
-			&& !OK((status = process_paren(&cmd[i], &i))))
-			return (status);
-		else if (cmd[i] == ')')
-			return (NIL);
-		else if ((*skip = *skip + i))
-			i += 1;
-	}
-	return (SUCCESS);
-}
-
 int		command_substitution(char **parameter)
 {
 	int		i;
+	int		end;
 	int		state;
-	int		prefixed;
 	char	*name;
 
 	i = 0;
-	prefixed = FALSE;
-	name = *parameter;
+	if (!(name = ft_strdup(*parameter)))
+		return (ERROR);
 	state = SUCCESS;
 	while (OK(state) && name[i])
 	{
-		if (name[i] == '`' && OK((state = process_backtick(&name[i + 1], &i))))
-			i += 1;
-		else if (name[i] == '$' && !escaped(name, i) && (i += 1))
-			prefixed = TRUE;
-		else if (prefixed && name[i] == '('
-			&& OK((state = process_paren(&name[i + 1], &i))))
-			i += 1;
-		else
+		if (name[i] == '`' && OK((state = backtick(&name, i, &end, NULL))))
+			i += end + 1;
+		else if (name[i] == '$' && TWO_PARENS(name, i)
+			&& OK((state = arith_exp(&name, i, &end, NULL))))
+			i += end + 1;
+		else if (name[i] == '$' && NEXT_PAREN(name, i)
+			&& OK((state = arith_exp(&name, i, &end, cmd_sub_err))))
+			i += end + 1;
+		else if (OK(state))
 			i += 1;
 	}
-	if (name[i])
-		ft_printf(CMD_SUB_ERR);
+	free(*parameter);
+	*parameter = name;
 	return (state);
 }

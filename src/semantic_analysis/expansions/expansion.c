@@ -60,6 +60,8 @@ int		parameter_expansion(char **parameter)
 			status = plain_param_expansion(&new, param, &i);
 	}
 	free(param);
+	free(*parameter);
+	*parameter = new;
 	return (status);
 }
 
@@ -109,7 +111,7 @@ int		full_word_expansion(char ***new, char *old)
 		&& OK((status = parameter_expansion(&parameter)))
 		&& OK((status = command_substitution(&parameter)))
 		&& OK((status = arithmetic_expansion(&parameter)))
-		&& OK((status = field_splitting(&fields, parameter)))
+		&& OK((status = field_splitting(&fields, &parameter)))
 		&& OK((status = pathname_expansion(&fields)))
 		&& OK((status = quote_removal(&fields))))
 		*new = fields;

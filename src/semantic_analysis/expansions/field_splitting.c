@@ -48,70 +48,70 @@
 ** Non-zero-length IFS white space shall delimit a field.
 */
 
-int		count_fields(char *str)
+int		count_fields(char **str)
 {
 	int		i;
+	int		skip;
+	int		status;
 	int		count;
-	char	quote;
 
 	i = 0;
 	count = 0;
-	while (str[i])
+	status = SUCCESS;
+	while (OK(status) && ((*str)[i]))
 	{
-		while (IS_IFS(str[i]) && !escaped(str, i))
+		skip = 0;
+		while (IS_IFS((*str)[i]))
 			i += 1;
-		if (!str[i])
-			break ;
 		count += 1;
-		if ((str[i] == '\'' || str[i] == '"') && !escaped(str, i))
+		while ((*str)[i] && (!IS_IFS((*str)[i]) || escaped(*str, i)))
 		{
-			quote = str[i++];
-			while (str[i] != quote || escaped(str, i))
+			if ((SNGL_QUOTE((*str), i)
+					&& OK((status = quote(str, i, &skip, NULL))))
+				|| (DBL_QUOTE((*str), i)
+					&& OK((status = dbl_quote(str, i, &skip, NULL)))))
+				i += skip + 1;
+			else
 				i += 1;
 		}
-		else
-			while (str[i] && (!IS_IFS(str[i]) || escaped(str, i)))
-				i += 1;
 	}
 	return (count);
 }
 
-int		field_splitting(char ***fields, char *parameter)
+int		field_splitting(char ***fields, char **parameter)
 {
 	int		i;
+	int		skip;
+	int		status;
 	int		start;
 	int		size;
 	char	**arr;
-	char	quote;
 
 	i = 0;
+	status = SUCCESS;
 	size = count_fields(parameter);
 	if (!(arr = ft_memalloc(sizeof(char*) * (size + 1))))
 		return (ERROR);
 	size = 0;
-	while (parameter[i])
+	while (OK(status) && (*parameter)[i])
 	{
-		while (parameter[i] && (IS_IFS(parameter[i])) && !escaped(parameter, i))
+		skip = 0;
+		while (IS_IFS((*parameter)[i]))
 			i += 1;
-		if (!parameter[i])
-			break ;
 		start = i;
-		if ((parameter[i] == '\'' || parameter[i] == '"') && !escaped(parameter, i))
+		while ((*parameter)[i] && (!IS_IFS((*parameter)[i]) || escaped(*parameter, i)))
 		{
-			quote = parameter[i++];
-			while (parameter[i] && (parameter[i] != quote || escaped(parameter, i)))
+			if ((SNGL_QUOTE((*parameter), i)
+					&& OK((status = quote(parameter, i, &skip, NULL))))
+				|| (DBL_QUOTE((*parameter), i)
+					&& OK((status = dbl_quote(parameter, i, &skip, NULL)))))
+				i += skip + 1;
+			else
 				i += 1;
-			if (!(arr[size++] = ft_strsub(parameter, start, ++i)))
-				return (ERROR);
 		}
-		else
-		{
-			while (parameter[i] && (!IS_IFS(parameter[i]) || escaped(parameter, i)))
-				i += 1;
-			if (!(arr[size++] = ft_strsub(parameter, start, i)))
-				return (ERROR);
-		}
+		if (OK(status) && (i - start) && (!(arr[size++] = ft_strsub(*parameter, start, i))))
+			return (ERROR);
 	}
 	*fields = arr;
-	return (SUCCESS);
+	return (status);
 }

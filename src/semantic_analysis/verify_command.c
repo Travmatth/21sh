@@ -101,6 +101,6 @@ int		verify_command(char **command)
 		ft_printf("sh: permission denied: %s\n", *command);
 	else if (NONE(status))
 		ft_printf("sh: command not found: %s\n", *command);
-	ft_freearr(paths);
+	ft_freearr(paths, TRUE);
 	return (status);
 }

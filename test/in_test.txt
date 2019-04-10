@@ -1,7 +1,8 @@
+echo $(echo $HOME)
+echo ${HOME}
+echo $(((1 + 2) + 1))
 echo $HOME
 echo "HOME"
-echo ${HOME}
-echo $(echo $HOME)
 echo 'echo $HOME'
 echo `echo $HOME`
 cat << EOF

@@ -101,6 +101,7 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 	int		status;
 
 	skip = 0;
+	status = SUCCESS;
 	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
 	if (c == '\\')
@@ -109,33 +110,17 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 	{
 		if (ERR((status = dbl_quote(&ctx->input, ctx->i, &skip, lex_quote))))
 			ctx->status = ERROR;
-		else if (NONE(status))	
-		{
-			ctx->status = NIL;
-			ctx->missing = g_missing;
-		}
 	}
 	else if (c == '\'')
 	{
 		if (ERR((status = quote(&ctx->input, ctx->i, &skip, lex_quote))))
 			ctx->status = ERROR;
-		else if (NONE(status))	
-		{
-			ctx->status = NIL;
-			ctx->missing = g_missing;
-		}
 	}
-	// else if (c == '"' || c == '\'')
-	// {
-	// 	if (!OK((skip = c == '"'
-	// 		? find_dquote(input, ctx->i, ctx)
-	// 		: find_quote(input, ctx->i, ctx))))
-	// 	{
-	// 		ctx->status = skip;
-	// 		return ;
-	// 	}
-	// 	ctx->in_word = TRUE;
-	// }
+	if (NONE(status))	
+	{
+		ctx->status = NIL;
+		ctx->missing = g_missing;
+	}
 	ft_bufappend(token->value, &input[ctx->i], skip + 1);
 	ctx->i += skip + 1;
 	ctx->status = SUCCESS;
@@ -162,46 +147,31 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
 	int		skip;
 	int		status;
+	char	**in;
 
 	skip = ERROR;
 	status = SUCCESS;
-	if (c == '`')
-	{
-		if (ERR((status = backtick(&ctx->input, ctx->i, &skip, lex_quote))))
-			ctx->status = ERROR;
-		else if (NONE(status))	
-		{
-			ctx->status = NIL;
-			ctx->missing = g_missing;
-		}
-	}
+	in = &ctx->input;
+	if (c == '`' && OK((status = backtick(in, ctx->i, &skip, lex_quote))))
+		skip += 1;
 	else if (c == '$')
 	{
-		if (TWO_PARENS(ctx->input, ctx->i) && ERR((status = arith_exp(&ctx->input, ctx->i, &skip, lex_quote))))
-			ctx->status = ERROR;
-		else if (NEXT_PAREN(ctx->input, ctx->i) && ERR((status = command_sub(&ctx->input, ctx->i, &skip, lex_quote))))
-			ctx->status = ERROR;
-		else if (NEXT_BRACE(ctx->input, ctx->i) && ERR((status = command_sub(&ctx->input, ctx->i, &skip, lex_quote))))
-			ctx->status = ERROR;
+		if ((TWO_PARENS(ctx->input, ctx->i)
+				&& OK((ctx->status = arith_exp(in, ctx->i, &skip, lex_quote))))
+			|| (NEXT_PAREN(ctx->input, ctx->i)
+				&& OK((ctx->status = command_sub(in, ctx->i, &skip, lex_quote))))
+			|| (NEXT_BRACE(ctx->input, ctx->i)
+				&& OK((status = param_exp(in, ctx->i, &skip, lex_quote)))))
+			skip += 1;
 		else if (IS_VAR_CHAR(ctx->input[ctx->i + 1]))	
 			skip = 1;
-		else if (NONE(status))	
-		{
-			ctx->status = NIL;
-			ctx->missing = g_missing;
-		}
 	}
+	if (NONE(ctx->status))	
+		ctx->missing = g_missing;
 	if ((!token->type && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		|| ERR(append_to_tok(c, token)))
-	{
 		ctx->status = ERROR;
-		return ;
-	}
-	if (!ft_bufappend(token->value, &ctx->input[ctx->i + 1], skip - 1))
-	{
+	if (!ft_bufappend(token->value, &(*in)[ctx->i + 1], skip - 1))
 		ctx->status = ERROR;
-		return ;
-	}
-	ctx->i += skip;
-	ctx->status = SUCCESS;
+	ctx->i += OK(ctx->status) ? skip : 0;
 }

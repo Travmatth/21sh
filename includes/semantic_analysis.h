@@ -248,7 +248,7 @@ int		sub_expansion(char **new, char *old);
 ** src/semantic_analysis/expansions/field_splitting.c
 */
 
-int		field_splitting(char ***fields, char *parameter);
+int		field_splitting(char ***fields, char **parameter);
 
 /*
 ** src/semantic_analysis/expansions/paramater_expansion.c

@@ -12,6 +12,15 @@
 
 #include "../../../includes/shell.h"
 
+int		arith_exp_err(char **str, int start, int end)
+{
+	(void)str;
+	(void)start;
+	(void)end;
+	ft_printf("Semantic Error: arithmetic expansion not implemented\n");
+	return (NIL);
+}
+
 /*
 ** Arithmetic Expansion
 ** Arithmetic expansion provides a mechanism for evaluating an arithmetic
@@ -58,63 +67,26 @@
 ** standard error indicating the failure.
 */
 
-int		process_arithmetic_expansion(char *cmd, int *skip)
-{
-	int		i;
-	int		status;
-	int		prefixed;
-
-	i = 0;
-	prefixed = 0;
-	status = SUCCESS;
-	while (OK(status) && cmd[i])
-	{
-		if (cmd[i] == '$')
-			prefixed += 1;
-		else if (prefixed == 1 && cmd[i] == '(')
-			prefixed += 1;
-		else if (prefixed == 2 && cmd[i] == '(')
-		{
-			status = process_arithmetic_expansion(&cmd[i], skip);
-		}
-		else if (cmd[i] == ')')
-		{
-			ft_printf("Semantic Error: Arithmetic Expansion not implemented");
-			return (NIL);
-		}
-		else
-			i += 1;
-	}
-	*skip = *skip + i;
-	return (status);
-}
-
 int		arithmetic_expansion(char **parameter)
 {
 	int		i;
-	int		status;
-	int		prefixed;
-	char	*param;
+	int		end;
+	int		state;
+	char	*name;
 
-	if (!(param = ft_strdup(*parameter)))
-		return (ERROR);
 	i = 0;
-	prefixed = 0;
-	status = SUCCESS;
-	while (OK(status) && param[i])
+	if (!(name = ft_strdup(*parameter)))
+		return (ERROR);
+	state = SUCCESS;
+	while (OK(state) && name[i])
 	{
-		if (param[i] == '$' && (i += 1))
-			prefixed += 1;
-		else if (prefixed == 1 && param[i] == '(' && (i += 1))
-			prefixed += 1;
-		else if (prefixed == 2 && param[i] == '(')
-		{
-			if (!OK((status = process_arithmetic_expansion(&param[i], &i))))
-				break ;
-		}
-		else if ((i += 1))
-			prefixed = 0;
+		if (name[i] == '$' && TWO_PARENS(name, i)
+			&& OK((state = arith_exp(&name, i, &end, arith_exp_err))))
+			i += end + 1;
+		else if (OK(state))
+			i += 1;
 	}
-	free(param);
-	return (status);
+	free(*parameter);
+	*parameter = name;
+	return (state);
 }

@@ -58,7 +58,7 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 	free(*parameter);
 	*parameter = tmp[NEXT];
 	*i = *i + len[FULL_PARAM];
-	ft_freearr(param);
+	ft_freearr(param, FALSE);
 	return (SUCCESS);
 }
 
@@ -105,7 +105,7 @@ int		use_defaults_param_expansion(char **parameter, char *var, size_t *i)
 	else
 		status = ERROR;
 	*i = *i + len[FULL_PARAM];
-	ft_freearr(param);
+	ft_freearr(param, FALSE);
 	return (status);
 }
 
@@ -153,7 +153,7 @@ int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i)
 	else
 		status = ERROR;
 	*i = *i + len[FULL_PARAM];
-	ft_freearr(param);
+	ft_freearr(param, FALSE);
 	return (status);
 }
 
@@ -202,7 +202,7 @@ int		error_unset_param_expansion(char **parameter, char *var, size_t *i)
 	else
 		status = ERROR;
 	*i = *i + len[FULL_PARAM];
-	ft_freearr(param);
+	ft_freearr(param, FALSE);
 	return (status);
 }
 
@@ -249,6 +249,6 @@ int		alternative_param_expansion(char **parameter, char *var, size_t *i)
 	else
 		status = NIL;
 	*i = *i + len[FULL_PARAM];
-	ft_freearr(param);
+	ft_freearr(param, FALSE);
 	return (status);
 }

@@ -70,6 +70,7 @@ enum	e_parse_ops
 # define IS_NL(x) (_NEXT(x) == '\n')
 # define NEXT_(ctx) (_NEXT(ctx) == ' ' || _NEXT(ctx) == '\t' || IS_NL(ctx))
 # define IS_QUOTED(c, ctx) (_IS_Q(c) && _NEXT(ctx) && !NEXT_(ctx))
+# define IS_QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
 
 /*
 ** Used within the lexing to track types of quotes/substitutions

@@ -20,12 +20,8 @@ char	**ft_strjoinarrs(char **arr_1, char **arr_2)
 
 	i = 0;
 	arr_1_len = 0;
-	while (arr_1 && arr_1[i])
-	{
-		i += 1;
+	while (arr_1 && arr_1[arr_1_len])
 		arr_1_len += 1;
-	}
-	i = 0;
 	while (arr_2[i])
 		i += 1;
 	if (!(new = ft_memalloc(sizeof(char*) * (arr_1_len + i + 1))))

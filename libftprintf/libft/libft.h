@@ -229,7 +229,7 @@ char					*ft_strfilter(int (*f)(char elem
 												, char *str
 												, int *stop)
 									, char *str);
-void					ft_freearr(char **arr);
+void					ft_freearr(char **arr, int free_parent);
 char					*ft_strsum(char **strings, char *fill);
 char					**ft_strappend(char **strings, char *string);
 

@@ -31,7 +31,7 @@ char	**push_pointer_back(char **pointers, t_ast_node *node)
 	word = (char*)node->val[0];
 	if (!(tmp[i == -1 ? 0 : i] = ft_strdup(word)))
 	{
-		ft_freearr(tmp);
+		ft_freearr(tmp, TRUE);
 		return (NULL);
 	}
 	return (tmp);

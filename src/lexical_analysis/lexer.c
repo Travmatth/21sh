@@ -32,10 +32,9 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 		ctx->i += 1;
 	else if (ctx->op_state)
 		rule_3(token, tokens, ctx);
-	else if (!escaped(ctx->input, ctx->i)
-		&& (c == '\\' || c == '\'' || c == '"'))
+	else if (IS_QUOTE_CHAR(c) && !escaped(ctx->input, ctx->i))
 		rule_4(c, ctx->input, token, ctx);
-	else if (!escaped(ctx->input, ctx->i) && IS_QUOTED(c, ctx))
+	else if (IS_QUOTED(c, ctx) && !escaped(ctx->input, ctx->i))
 		rule_5(c, token, ctx);
 	else if (can_form_op(c))
 		rule_6(c, token, tokens, ctx);

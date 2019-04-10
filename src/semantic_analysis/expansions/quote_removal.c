@@ -32,13 +32,17 @@ int		remove_quotes(char **str)
 		return (ERROR);
 	i = 0;
 	j = 0;
-	if ((*str)[i] == '"' || (*str)[i] == '\'')
-		quote = (*str)[i];
+	quote = 0;
 	while ((*str)[i])
 	{
-		if ((*str)[i] == quote)
+		if (!quote && ((*str)[i] == '"' || (*str)[i] == '\''))
+			quote = (*str)[i++];
+		else if (quote && (*str)[i] == quote)
+		{
 			i += 1;
-		else if ((*str)[i] == '\\')
+			quote = 0;
+		}
+		else if (quote != '\'' && (*str)[i] == '\\')
 		{
 			i += 1;
 			new[j++] = (*str)[i++];
