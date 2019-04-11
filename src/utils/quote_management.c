@@ -12,12 +12,14 @@
 
 #include "../../includes/shell.h"
 
-int		quote(char **str, int start, int *end, t_quote f)
+int		quote(char **str, size_t start, size_t *end, t_quote f)
 {
-	int		i;
+	size_t	i;
 	int		status;
 	char	*string;
+	int		found;
 
+	found = FALSE;
 	string = *str;
 	i = start;
 	*end = ERROR;
@@ -25,20 +27,23 @@ int		quote(char **str, int start, int *end, t_quote f)
 	{
 		if (string[i] == '\'')
 		{
+			found = TRUE;
 			*end = i - start;
 			break ;
 		}
 	}
-	status = ERR(*end) ? NIL : SUCCESS;
+	status = found ? NIL : SUCCESS;
 	return (f ? f(str, start, *end) : status);
 }
 
-int		backtick(char **str, int start, int *end, t_quote f)
+int		backtick(char **str, size_t start, size_t *end, t_quote f)
 {
-	int		i;
+	size_t	i;
 	int		status;
 	char	*string;
+	int		found;
 
+	found = FALSE;
 	string = *str;
 	i = start;
 	*end = ERROR;
@@ -46,20 +51,23 @@ int		backtick(char **str, int start, int *end, t_quote f)
 	{
 		if (string[i] == '`')
 		{
+			found = TRUE;
 			*end = i - start;
 			break ;
 		}
 	}
-	status = ERR(*end) ? NIL : SUCCESS;
+	status = found ? NIL : SUCCESS;
 	return (f ? f(str, start, *end) : status);
 }
 
-int		dbl_quote(char **str, int start, int *end, t_quote f)
+int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 {
-	int		i;
+	size_t	i;
 	int		s;
 	int		status;
+	int		found;
 
+	found = FALSE;
 	i = start;
 	while ((*str)[++i])
 	{
@@ -80,27 +88,31 @@ int		dbl_quote(char **str, int start, int *end, t_quote f)
 			*end = ERROR;
 		}
 	}
-	status = ERR(*end) ? NIL : SUCCESS;
+	status = found ? NIL : SUCCESS;
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }
 
-int		param_exp(char **str, int start, int *end, t_quote f)
+int		param_exp(char **str, size_t start, size_t *end, t_quote f)
 {
-	int		i;
+	size_t	i;
+	size_t	tmp;
 	int		s;
 	int		status;
+	int		found;
 
+	found = FALSE;
 	i = start;
 	if ((*str)[i + 1] != '{')
 	{
 		i += 1;
-		while (IS_VAR_CHAR((*str)[i]))
+		while (IS_VAR_CHAR((*str)[i]) && IS_VAR_CHAR((*str)[i + 1]))
 			i += 1;
+		found = TRUE;
 		*end = i - start;
 		return (SUCCESS);
 	}
-	while (!escaped(*str, i) && (*str)[++i])
+	while (!escaped(*str, i) && (*str)[i])
 	{
 		if ((*str)[i] == '}')
 		{
@@ -109,34 +121,38 @@ int		param_exp(char **str, int start, int *end, t_quote f)
 		}
 		else if (!escaped(*str, i) && ((*str)[i] == '\'' || (*str)[i] == '$'))
 		{
-			if ((SNGL_QUOTE(*str, i) && !OK((s = quote(str, i, end, f))))
-				|| (DBL_QUOTE(*str, i) && !OK((s = dbl_quote(str, i, end, f))))
-				|| (ARITH_EXP(*str, i) && !OK((s = arith_exp(str, i, end, f))))
-				|| (PARAM_EXP(*str, i) && !OK((s = param_exp(str, i, end, f))))
-				|| (CMD_SUB(*str, i) && !OK((s = command_sub(str, i, end, f))))
-				|| (BACKTICK(*str, i) && !OK((s = backtick(str, i, end, f)))))
+			if ((SNGL_QUOTE(*str, i) && !OK((s = quote(str, i, &tmp, f))))
+				|| (DBL_QUOTE(*str, i) && !OK((s = dbl_quote(str, i, &tmp, f))))
+				|| (ARITH_EXP(*str, i) && !OK((s = arith_exp(str, i, &tmp, f))))
+				|| (PARAM_EXP(*str, i) && !OK((s = param_exp(str, i, &tmp, f))))
+				|| (CMD_SUB(*str, i) && !OK((s = command_sub(str, i, &tmp, f))))
+				|| (BACKTICK(*str, i) && !OK((s = backtick(str, i, &tmp, f)))))
 				break ;
-			i += *end + 1;
-			*end = ERROR;
+			i += tmp + 1;
 		}
+		else
+			i += 1;
 	}
-	status = ERR(*end) ? NIL : SUCCESS;
+	status = found ? NIL : SUCCESS;
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }
 
-int		command_sub(char **str, int start, int *end, t_quote f)
+int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 {
-	int		i;
+	size_t	i;
 	int		s;
 	int		status;
+	int		found;
 
-	i = ++start;
+	found = FALSE;
+	i = start + 1;
 	while ((*str)[i])
 	{
 		if ((*str)[i] == ')' && !escaped(*str, i))
 		{
 			*end = i - start;
+			found = TRUE;
 			break ;
 		}
 		else if (((*str)[i] == '\'' || (*str)[i] == '$') && !escaped(*str, i))
@@ -148,38 +164,41 @@ int		command_sub(char **str, int start, int *end, t_quote f)
 				|| (BACKTICK((*str), i) && !OK((s = backtick(str, i, end, f))))
 				|| ((*str)[i] == '$' && !OK((s = param_exp(str, i, end, f)))))
 				break ;
-			i += *end;
+			i += *end + 1;
 			*end = ERROR;
 		}
 		else
 			i += 1;
 	}
-	status = ERR(*end) ? NIL : SUCCESS;
+	status = found ? NIL : SUCCESS;
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }
 
-int		arith_exp(char **str, int start, int *end, t_quote f)
+int		arith_exp(char **str, size_t start, size_t *end, t_quote f)
 {
-	int		i;
+	size_t	i;
 	int		s;
+	size_t	count;
 	int		status;
-	int		count;
+	int		found;
 
 	i = start + 3;
 	count = 0;
+	found = FALSE;
 	while ((*str)[i])
 	{
 		if ((*str)[i] == '(')
 			count += 1;
 		else if (count && (*str)[i] == ')')
 			count -= 1;
-		else if ((*str)[i] == ')' && (*str)[i + 1] == ')' && !escaped(*str, i))
+		else if (TWO_CLOSING((*str), i) && !escaped(*str, i))
 		{
+			found = TRUE;
 			*end = i - start + 1;
 			break ;
 		}
-		else if (((*str)[i] == '\'' || (*str)[i] == '$') && !escaped(*str, i))
+		else if (((*str)[i] == '"' || (*str)[i] == '\'' || (*str)[i] == '$') && !escaped(*str, i))
 		{
 			if ((ARITH_EXP((*str), i) && !OK((s = arith_exp(str, i, end, f))))
 				|| (CMD_SUB((*str), i) && !OK((s = command_sub(str, i, end, f))))
@@ -189,10 +208,9 @@ int		arith_exp(char **str, int start, int *end, t_quote f)
 			i += *end + 1;
 			*end = ERROR;
 		}
-		else
-			i += 1;
+		i += 1;
 	}
-	status = ERR(*end) ? NIL : SUCCESS;
+	status = found ? NIL : SUCCESS;
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }

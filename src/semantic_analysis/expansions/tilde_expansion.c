@@ -38,23 +38,21 @@ char	*ft_quotestr(char *str)
 
 int		tilde_expansion(char **parameter)
 {
-	char	*str;
-	char	*var;
 	char	*tmp;
+	char	*var;
 
-	if (TILDE_PREFIX(*parameter) && !(str = ft_quotestr(ft_strdup(*parameter))))
-		return (ERROR);
-	else if (TILDE_PREFIX(*parameter))
+	if (TILDE_PREFIX(*parameter))
 	{
-		if (!(var = get_env_var("HOME"))
-			|| !(tmp = ft_swap(str, "~", var)))
+		var = get_env_var("HOME");
+		if (!var)
 			return (NIL);
-		free(str);
-		str = tmp;
+		if (!(var = ft_quotestr(var))
+			|| !(tmp = ft_swap(*parameter, "~", var)))
+			return (ERROR);
 	}
-	else if (!TILDE_PREFIX(*parameter) && !(str = ft_strdup(*parameter)))
+	else if (!(tmp = ft_strdup(*parameter)))
 		return (ERROR);
 	free(*parameter);
-	*parameter = str;
+	*parameter = tmp;
 	return (SUCCESS);
 }

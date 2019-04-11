@@ -70,7 +70,7 @@ int		arith_exp_err(char **str, int start, int end)
 int		arithmetic_expansion(char **parameter)
 {
 	int		i;
-	int		end;
+	size_t	end;
 	int		state;
 	char	*name;
 

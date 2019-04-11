@@ -76,12 +76,13 @@ int		init_param_state(char *param[6], size_t len[4], char sep, char *str)
 	if (NONE(sep))
 	{
 		i = 0;
-		while (IS_VAR_CHAR(str[i + 1]))
+		test = str[1] == '{' ? TRUE : FALSE;
+		while (IS_VAR_CHAR(str[i + (test == TRUE ? 2 : 1)]))
 			i += 1;
-		len[FULL_PARAM] = i + 1;
+		len[FULL_PARAM] = i + (test == TRUE ? 3 : 1);
 		param[FULL_PARAM] = str;
 		len[NAME] = i;
-		param[NAME] = &str[1];
+		param[NAME] = &str[test == TRUE ? 2 : 1];
 		len[WORD] = 0;
 		param[WORD] = NULL;
 		len[TEST] = FALSE;

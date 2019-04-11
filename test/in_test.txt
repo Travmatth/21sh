@@ -1,16 +1,10 @@
-echo $(echo $HOME)
-echo ${HOME}
-echo $(((1 + 2) + 1))
-echo $HOME
-echo "HOME"
-echo 'echo $HOME'
+echo asdf'echo $HOME'$HOME'ignore$HOME'$HOME
 echo `echo $HOME`
 cat << EOF
 cat foo || echo foo
 cat author && echo foo
 ./test/read_from_fd.py 0 <<EOF
 cat	< author
-# LEXES
 echo \n; cat "foo";
 	 	echo 	 	 "\nthis should"	 	"work";
 echo	"\"this should"		\"too		;
@@ -32,3 +26,10 @@ echo 	 	 "'\nthis should not';
 echo "this\n"	|| echo "	not this";
 echo "this\n"	&& echo "	not this";
 echo "to stderr" 1>&2;
+
+# quotes managed correctly
+echo $(echo $HOME)
+echo ${HOME}
+echo $(((1 + 2) + 1))
+echo $HOME
+echo "HOME"

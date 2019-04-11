@@ -60,7 +60,6 @@ int		lexical_analysis(char *input, t_list **tokens, t_list **missing)
 	t_lctx	ctx;
 	t_token	token;
 
-	(void)missing;
 	if (!init_lexer_ctx(input, &ctx, &token))
 		return (NIL);
 	while (!ctx.stop && OK(ctx.status))

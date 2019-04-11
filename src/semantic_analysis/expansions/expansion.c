@@ -13,59 +13,6 @@
 #include "../../../includes/shell.h"
 
 /*
-** Parameter Expansion
-** The format for parameter expansion is as follows:
-**
-** ${expression}
-** where expression consists of all characters until the matching '}'. Any '}'
-** escaped by a <backslash> or within a quoted string, and characters in
-** embedded arithmetic expansions, command substitutions, and variable
-** expansions, shall not be examined in determining the matching '}'.
-** If the parameter is not enclosed in braces, and is a name, the expansion
-** shall use the longest valid name (see XBD Name), whether or not the variable
-** represented by that name exists. Otherwise, the parameter is a
-** single-character symbol, and behavior is unspecified if that character is
-** neither a digit nor one of the special parameters (see Special Parameters).
-**
-** If a parameter expansion occurs inside double-quotes:
-** Pathname expansion shall not be performed on the results of the expansion.
-** Field splitting shall not be performed on the results of the expansion.
-*/
-
-int		parameter_expansion(char **parameter)
-{
-	size_t	i;
-	char	*new;
-	char	*param;
-	int		status;
-
-	if (!(param = ft_strdup(*parameter))
-		|| !(new = ft_strdup(*parameter)))
-		return (ERROR);
-	i = 0;
-	status = SUCCESS;
-	while (OK(status) && (param = ft_strchr(&param[i], '$')))
-	{
-		if (!ft_strncmp("$(", param, 2))
-			status = skip_parens(param, &i);
-		else if (enclosed(param, '-'))
-			status = use_defaults_param_expansion(&new, param, &i);
-		else if (enclosed(param, '='))
-			status = assign_defaults_param_expansion(&new, param, &i);
-		else if (enclosed(param, '?'))
-			status = error_unset_param_expansion(&new, param, &i);
-		else if (enclosed(param, '+'))
-			status = alternative_param_expansion(&new, param, &i);
-		else
-			status = plain_param_expansion(&new, param, &i);
-	}
-	free(param);
-	free(*parameter);
-	*parameter = new;
-	return (status);
-}
-
-/*
 ** Not all expansions are performed on every word, as explained in the following
 ** sections.
 ** The order of word expansion shall be as follows:

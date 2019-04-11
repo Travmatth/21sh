@@ -240,9 +240,12 @@ int		command_substitution(char **parameter);
 ** src/semantic_analysis/expansions/expansion.c
 */
 
-int		parameter_expansion(char **parameter);
 int		full_word_expansion(char ***new, char *old);
 int		sub_expansion(char **new, char *old);
+
+/*
+** src/semantic_analysis/expansions/expansion_.c
+*/
 
 /*
 ** src/semantic_analysis/expansions/field_splitting.c
@@ -251,7 +254,15 @@ int		sub_expansion(char **new, char *old);
 int		field_splitting(char ***fields, char **parameter);
 
 /*
-** src/semantic_analysis/expansions/paramater_expansion.c
+** src/semantic_analysis/expansions/parameter_expansion.c
+*/
+
+int		join_unexpanded(char **new, char **str);
+int		manage_expansions(char **new, char **str);
+int		parameter_expansion(char **parameter);
+
+/*
+** src/semantic_analysis/expansions/expansion_subtypes.c
 */
 
 enum	e_plain_vars

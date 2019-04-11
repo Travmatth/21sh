@@ -91,7 +91,7 @@ int		cmd_sub_err(char **str, int start, int end)
 int		command_substitution(char **parameter)
 {
 	int		i;
-	int		end;
+	size_t	end;
 	int		state;
 	char	*name;
 
@@ -107,7 +107,7 @@ int		command_substitution(char **parameter)
 			&& OK((state = arith_exp(&name, i, &end, NULL))))
 			i += end + 1;
 		else if (name[i] == '$' && NEXT_PAREN(name, i)
-			&& OK((state = arith_exp(&name, i, &end, cmd_sub_err))))
+			&& OK((state = command_sub(&name, i, &end, cmd_sub_err))))
 			i += end + 1;
 		else if (OK(state))
 			i += 1;

@@ -51,7 +51,7 @@
 int		count_fields(char **str)
 {
 	int		i;
-	int		skip;
+	size_t	skip;
 	int		status;
 	int		count;
 
@@ -81,7 +81,7 @@ int		count_fields(char **str)
 int		field_splitting(char ***fields, char **parameter)
 {
 	int		i;
-	int		skip;
+	size_t	skip;
 	int		status;
 	int		start;
 	int		size;

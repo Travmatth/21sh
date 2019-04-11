@@ -25,6 +25,7 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define NEXT_BRACE(s, i) (s[i + 1] && s[i + 1] == '{')
 # define NEXT_PAREN(s, i) (s[i + 1] && s[i + 1] == '(')
 # define TWO_PARENS(s, i) (NEXT_PAREN(s, i) && NEXT_PAREN(s, i + 1))
+# define TWO_CLOSING(s, i) (s[i] == ')' && s[i + 1] == ')')
 
 # define SNGL_QUOTE(s, i) (s[i] == '\'')
 # define DBL_QUOTE(s, i) (s[i] == '"')
@@ -131,12 +132,12 @@ typedef struct	s_token_cnv
 ** src/utils/quote_management.c
 */
 
-int		quote(char **str, int start, int *end, t_quote f);
-int		backtick(char **str, int start, int *end, t_quote f);
-int		dbl_quote(char **str, int start, int *end, t_quote f);
-int		param_exp(char **str, int start, int *end, t_quote f);
-int		command_sub(char **str, int start, int *end, t_quote f);
-int		arith_exp(char **str, int start, int *end, t_quote f);
+int		quote(char **str, size_t start, size_t *end, t_quote f);
+int		backtick(char **str, size_t start, size_t *end, t_quote f);
+int		dbl_quote(char **str, size_t start, size_t *end, t_quote f);
+int		param_exp(char **str, size_t start, size_t *end, t_quote f);
+int		command_sub(char **str, size_t start, size_t *end, t_quote f);
+int		arith_exp(char **str, size_t start, size_t *end, t_quote f);
 
 /*
 ** src/lexical_analysis/lexer.c

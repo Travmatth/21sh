@@ -97,7 +97,7 @@ void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx)
 
 void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 {
-	int		skip;
+	size_t	skip;
 	int		status;
 
 	skip = 0;
@@ -145,7 +145,7 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 
 void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
-	int		skip;
+	size_t	skip;
 	int		status;
 	char	**in;
 
@@ -163,8 +163,12 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 			|| (NEXT_BRACE(ctx->input, ctx->i)
 				&& OK((status = param_exp(in, ctx->i, &skip, lex_quote)))))
 			skip += 1;
-		else if (IS_VAR_CHAR(ctx->input[ctx->i + 1]))	
+		else
+		{
 			skip = 1;
+			while (IS_VAR_CHAR(ctx->input[ctx->i + skip]))	
+				skip += 1;
+		}
 	}
 	if (NONE(ctx->status))	
 		ctx->missing = g_missing;
