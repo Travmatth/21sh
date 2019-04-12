@@ -12,33 +12,6 @@
 
 #include "../../../includes/shell.h"
 
-int		skip_parens(char *param, size_t *skip)
-{
-	int		count;
-	int		prefixed;
-	size_t	i;
-
-	i = -1;
-	count = 0;
-	prefixed = FALSE;
-	param = &param[2];
-	while (param[++i])
-	{
-		if (!count && param[i] == ')')
-		{
-			*skip += i + 1;
-			return (SUCCESS);
-		}
-		else if (count  && param[i] == ')')
-			count -= 1;
-		else if (prefixed && param[i] == '(')
-			count += 1;
-		else if (prefixed && param[i] != '$')
-			prefixed = FALSE;
-	}
-	return (NIL);
-}
-
 char	*find_end_brace(char *param)
 {
 	int		count;

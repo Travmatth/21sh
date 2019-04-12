@@ -172,8 +172,8 @@ int		command(t_simple_command *cmd, t_ast_node *root, int bg);
 */
 
 int		substitute_word(char **parameter, char *param[3]);
-int		substitute_parameter(char **parameter, char *param[3], char *env_lookup);
-int		substitute_null(char **parameter, char *param[3]);
+int		substitute_parameter(char **parameter, char *env_lookup);
+int		substitute_null(char **parameter);
 int		assign_word(char **parameter, char *param[3]);
 int		error_exit(char **parameter, char *param[3]);
 
@@ -257,8 +257,8 @@ int		field_splitting(char ***fields, char **parameter);
 ** src/semantic_analysis/expansions/parameter_expansion.c
 */
 
-int		join_unexpanded(char **new, char **str);
-int		manage_expansions(char **new, char **str);
+int		join_unexpanded(char **new, char **str, size_t *i);
+int		manage_expansions(char **new, char **str, size_t *skip);
 int		parameter_expansion(char **parameter);
 
 /*
@@ -281,7 +281,6 @@ int		alternative_param_expansion(char **parameter, char *var, size_t *i);
 ** src/semantic_analysis/expansions/parameter_expansion_utils.c
 */
 
-int		skip_parens(char *param, size_t *skip);
 char	*find_end_brace(char *param);
 int		init_param_state(char *param[3], size_t len[4], char sep, char *str);
 int		create_param_state(char *param[3], size_t len[3]);

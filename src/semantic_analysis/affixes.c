@@ -139,7 +139,6 @@ int		suffix(t_simple_command *cmd, t_ast_node *root)
 			return (status);
 		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
 			return (ERROR);
-		// ft_freearr(cmd->command);
 		free(cmd->command);
 		cmd->command = tmp;
 	}
@@ -151,7 +150,6 @@ int		suffix(t_simple_command *cmd, t_ast_node *root)
 			return (status);
 		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
 			return (ERROR);
-		// ft_freearr(cmd->command);
 		free(cmd->command);
 		cmd->command = tmp;
 	}

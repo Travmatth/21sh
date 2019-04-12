@@ -18,30 +18,30 @@
 ** unmodified 
 */
 
-int		join_unexpanded(char **new, char **str)
+int		join_unexpanded(char **new, char **str, size_t *i)
 {
-	size_t	i;
-	int		in;
-	char	*string;
+	size_t	end;
+	size_t	start;
+	int		s;
 	char	*next;
 	char	*tmp;
 
-	i = 0;
-	in = FALSE;
-	string = *str;
-	while (string[i])
+	s = SUCCESS;
+	start = *i;
+	while ((*str)[*i])
 	{
-		if (in && string[i] == '\'')
-			in = FALSE;
-		else if (string[i] == '\'')
-			in = TRUE;
-		else if (!in && string[i] == '$')
+		if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
+			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
+			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
+			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL)))))
+			*i += end + 1;
+		else if ((*str)[*i] == '$')
 			break ;
-		i += 1;
+		else
+			*i += 1;
 	}
-	if (!(tmp = ft_strsub(string, 0, i)))
+	if (!(tmp = ft_strsub(*str, start, *i - start)))
 		return (ERROR);
-	*str += i;
 	if (!*new)
 	{
 		*new = tmp;
@@ -60,39 +60,43 @@ int		join_unexpanded(char **new, char **str)
 ** should be performed and its result appended to the expanded output.
 */
 
-int		manage_expansions(char **new, char **str)
+int		manage_expansions(char **new, char **str, size_t *skip)
 {
 	int		status;
 	char	*next;
+	char	*param;
 	char	*tmp;
 	size_t	i;
 
 	i = 0;
-	if (!ft_strncmp("$$", *str, 2) || !ft_strncmp("${${", *str, 2))
+	next = NULL;
+	param = *str + *skip;
+	if (!ft_strncmp("$$", param, 2) || !ft_strncmp("${${", param, 4))
 	{
 		ft_printf("Semantic Error: Bad Parameter Expansion");
 		status = NIL;
 	}
-	else if (!ft_strncmp("$(", *str, 2))
-		status = skip_parens(*str, &i);
-	else if (enclosed(*str, '-'))
-		status = use_defaults_param_expansion(&next, *str, &i);
-	else if (enclosed(*str, '='))
-		status = assign_defaults_param_expansion(&next, *str, &i);
-	else if (enclosed(*str, '?'))
-		status = error_unset_param_expansion(&next, *str, &i);
-	else if (enclosed(*str, '+'))
-		status = alternative_param_expansion(&next, *str, &i);
+	else if (enclosed(param, '-'))
+		status = use_defaults_param_expansion(&next, param, &i);
+	else if (enclosed(param, '='))
+		status = assign_defaults_param_expansion(&next, param, &i);
+	else if (enclosed(param, '?'))
+		status = error_unset_param_expansion(&next, param, &i);
+	else if (enclosed(param, '+'))
+		status = alternative_param_expansion(&next, param, &i);
 	else
-		status = plain_param_expansion(&next, *str, &i);
-	if (OK(status) && !(tmp = ft_strjoin(*new, next)))
+		status = plain_param_expansion(&next, param, &i);
+	if (OK(status) && *new && !(tmp = ft_strjoin(*new, next)))
 		return (ERROR);
+	else if (OK(status) && !*new)
+		*new = next;
 	else if (OK(status))
 	{
 		free(*new);
+		free(next);
 		*new = tmp;
 	}
-	*str += i + 1;
+	*skip += i;
 	return (status);
 }
 
@@ -119,33 +123,18 @@ int		manage_expansions(char **new, char **str)
 int		parameter_expansion(char **parameter)
 {
 	char	*new;
-	char	*single;
-	char	*param;
-	char	*str;
 	int		status;
+	size_t	i;
 
+	i = 0;
 	new = NULL;
 	status = SUCCESS;
-	str = *parameter;
-	while (OK(status) && *str)
+	while (OK(status) && (*parameter)[i])
 	{
-		single = ft_strchr(str, '\'');
-		param = ft_strchr(str, '$');
-		// if plain string, append remaining string to new
-		if (!single && !param)
-			status = join_unexpanded(&new, &str);
-		// if no more quote left, process next parameter expansion onto new
-		else if (!single && param)
-			status = manage_expansions(&new, &str);
-		// if no parameters left, append remaining string to new
-		else if (single && !param)
-			status = join_unexpanded(&new, &str);
-		// if quotes precedes next expansion, append quote to new  
-		else if (single < param)
-			status = join_unexpanded(&new, &str);
-		// if expansion precedes next quote, append expansion to new  
+		if ((*parameter)[i] == '$')
+			status = manage_expansions(&new, parameter, &i);
 		else
-			status = manage_expansions(&new, &str);
+			status = join_unexpanded(&new, parameter, &i);
 	}
 	free(*parameter);
 	*parameter = new;

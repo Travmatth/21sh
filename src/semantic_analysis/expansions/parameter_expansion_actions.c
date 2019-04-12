@@ -15,33 +15,33 @@
 int		substitute_word(char **parameter, char *param[3])
 {
 	int		status;
-	char	*tmp;
 	char	*expanded;
 
+	expanded = NULL;
 	if (!OK((status = sub_expansion(&expanded, param[FULL_PARAM]))))
 		return (status);
-	tmp = ft_swap(*parameter, param[FULL_PARAM], expanded);
-	free(expanded);
+	free(*parameter);
+	*parameter = expanded;
+	return (SUCCESS);
+}
+
+int		substitute_parameter(char **parameter, char *env_lookup)
+{
+	char	*tmp;
+
+	if (!(tmp = ft_strdup(env_lookup)))
+		return (ERROR);
 	free(*parameter);
 	*parameter = tmp;
 	return (SUCCESS);
 }
 
-int		substitute_parameter(char **parameter, char *param[3], char *env_lookup)
+int		substitute_null(char **parameter)
 {
 	char	*tmp;
 
-	tmp = ft_swap(*parameter, param[FULL_PARAM], env_lookup);
-	free(*parameter);
-	*parameter = tmp;
-	return (SUCCESS);
-}
-
-int		substitute_null(char **parameter, char *param[3])
-{
-	char	*tmp;
-
-	tmp = ft_swap(*parameter, param[FULL_PARAM], "");
+	if (!(tmp = ft_strnew(0)))
+		return (ERROR);
 	free(*parameter);
 	*parameter = tmp;
 	return (SUCCESS);
@@ -51,7 +51,8 @@ int		assign_word(char **parameter, char *param[3])
 {
 	char	*tmp;
 
-	tmp = ft_swap(*parameter, param[FULL_PARAM], param[WORD]);
+	if (!(tmp = ft_strdup(param[WORD])))
+		return (ERROR);
 	set_env_var(param[NAME], param[WORD]);
 	free(*parameter);
 	*parameter = tmp;

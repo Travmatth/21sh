@@ -36,7 +36,7 @@ int		ft_safeatoi(char *num, int *number)
 
 int		plain_param_expansion(char **parameter, char *var, size_t *i)
 {
-	char	*tmp[2];
+	char	*tmp;
 	char	*env_lookup;
 	char	*param[3];
 	int		position;
@@ -52,11 +52,10 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 	}
 	else
 		env_lookup = get_env_var(param[NAME]);
-	tmp[NEW] = env_lookup ? env_lookup : "";
-	if (!(tmp[NEXT] = ft_swap(*parameter, param[FULL_PARAM], tmp[NEW])))
+	if (!(tmp = ft_strdup(env_lookup ? env_lookup : "")))
 		return (ERROR);
 	free(*parameter);
-	*parameter = tmp[NEXT];
+	*parameter = tmp;
 	*i = *i + len[FULL_PARAM];
 	ft_freearr(param, FALSE);
 	return (SUCCESS);
@@ -97,11 +96,11 @@ int		use_defaults_param_expansion(char **parameter, char *var, size_t *i)
 	if (!env_lookup)
 		status = substitute_word(parameter, param);
 	else if (env_lookup[0])
-		status = substitute_parameter(parameter, param, env_lookup);
+		status = substitute_parameter(parameter, env_lookup);
 	else if (!env_lookup[0] && len[TEST])
 		status = substitute_word(parameter, param);
 	else if (!env_lookup[0] && !len[TEST])
-		status = substitute_null(parameter, param);
+		status = substitute_null(parameter);
 	else
 		status = ERROR;
 	*i = *i + len[FULL_PARAM];
@@ -145,11 +144,11 @@ int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i)
 	if (!env_lookup)
 		status = assign_word(parameter, param);
 	else if (env_lookup[0])
-		status = substitute_parameter(parameter, param, env_lookup);
+		status = substitute_parameter(parameter, env_lookup);
 	else if (!env_lookup[0] && len[TEST])
 		status = assign_word(parameter, param);
 	else if (!env_lookup[0] && !len[TEST])
-		status = substitute_null(parameter, param);
+		status = substitute_null(parameter);
 	else
 		status = ERROR;
 	*i = *i + len[FULL_PARAM];
@@ -194,11 +193,11 @@ int		error_unset_param_expansion(char **parameter, char *var, size_t *i)
 	if (!env_lookup)
 		status = error_exit(parameter, param);
 	else if (env_lookup[0])
-		status = substitute_parameter(parameter, param, env_lookup);
+		status = substitute_parameter(parameter, env_lookup);
 	else if (!env_lookup[0] && len[TEST])
 		status = assign_word(parameter, param);
 	else if (!env_lookup[0] && !len[TEST])
-		status = substitute_null(parameter, param);
+		status = substitute_null(parameter);
 	else
 		status = ERROR;
 	*i = *i + len[FULL_PARAM];
@@ -239,11 +238,11 @@ int		alternative_param_expansion(char **parameter, char *var, size_t *i)
 		return (ERROR);
 	env_lookup = get_env_var(param[NAME]);
 	if (!env_lookup)
-		status = substitute_null(parameter, param);
+		status = substitute_null(parameter);
 	else if (env_lookup[0])
 		status = substitute_word(parameter, param);
 	else if (!env_lookup[0] && len[TEST])
-		status = substitute_null(parameter, param);
+		status = substitute_null(parameter);
 	else if (!env_lookup[0] && !len[TEST])
 		status = substitute_word(parameter, param);
 	else

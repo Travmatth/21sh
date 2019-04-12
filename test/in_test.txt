@@ -1,16 +1,4 @@
-echo asdf'echo $HOME'$HOME'ignore$HOME'$HOME
 echo `echo $HOME`
-cat << EOF
-cat foo || echo foo
-cat author && echo foo
-./test/read_from_fd.py 0 <<EOF
-cat	< author
-echo \n; cat "foo";
-	 	echo 	 	 "\nthis should"	 	"work";
-echo	"\"this should"		\"too		;
-ls -l -R | grep "\.txt$";
-echo "foo bar" > test/out_file;
-echo ${ENV};
 echo $(echo foo);
 echo "simple";
 echo "\"less\
@@ -26,6 +14,17 @@ echo 	 	 "'\nthis should not';
 echo "this\n"	|| echo "	not this";
 echo "this\n"	&& echo "	not this";
 echo "to stderr" 1>&2;
+cat << EOF
+cat foo || echo foo
+cat author && echo foo
+./test/read_from_fd.py 0 <<EOF
+cat	< author
+echo \n; cat "foo";
+	 	echo 	 	 "\nthis should"	 	"work";
+echo	"\"this should"		\"too		;
+ls -l -R | grep "\.txt$";
+echo "foo bar" > test/out_file;
+echo ${ENV};
 
 # quotes managed correctly
 echo $(echo $HOME)
@@ -33,3 +32,4 @@ echo ${HOME}
 echo $(((1 + 2) + 1))
 echo $HOME
 echo "HOME"
+echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME

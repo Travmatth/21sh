@@ -31,7 +31,7 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define DBL_QUOTE(s, i) (s[i] == '"')
 # define PARAM_EXP(s, i) (s[i] == '$' && NEXT_BRACE(s, i))
 # define ARITH_EXP(s, i) (s[i] == '$' && TWO_PARENS(s, i))
-# define CMD_SUB(s, i) (s[i] == '$' && NEXT_BRACE(s, i))
+# define CMD_SUB(s, i) (s[i] == '$' && NEXT_PAREN(s, i))
 # define BACKTICK(s, i) (s[i] == '`')
 
 /*
