@@ -80,11 +80,11 @@ int		arithmetic_expansion(char **parameter)
 	state = SUCCESS;
 	while (OK(state) && name[i])
 	{
-		if (name[i] == '$' && TWO_PARENS(name, i)
-			&& OK((state = arith_exp(&name, i, &end, arith_exp_err))))
-			i += end + 1;
-		else if (OK(state))
+		if (name[i] == '\\')
 			i += 1;
+		else if (ARITH_EXP(name, i) && OK((state = arith_exp(&name, i, &end, arith_exp_err))))
+			i += end;
+		i += 1;
 	}
 	free(*parameter);
 	*parameter = name;

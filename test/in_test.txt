@@ -1,3 +1,9 @@
+echo $(echo $HOME)
+echo ${HOME}
+echo $(((1 + 2) + 1))
+echo $HOME
+echo "HOME"
+echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
 echo `echo $HOME`
 echo $(echo foo);
 echo "simple";
@@ -27,9 +33,9 @@ echo "foo bar" > test/out_file;
 echo ${ENV};
 
 # quotes managed correctly
-echo $(echo $HOME)
-echo ${HOME}
-echo $(((1 + 2) + 1))
-echo $HOME
-echo "HOME"
-echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
+echo $
+echo \$HOME
+echo \$(invalid)
+echo \$((invalid))
+echo \`invalid`
+echo ""

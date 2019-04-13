@@ -71,21 +71,24 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 	i = start;
 	while ((*str)[++i])
 	{
-		if ((*str)[i] == '"' && !escaped(*str, i))
+		if ((*str)[i] == '\\' && (*str)[i + 1])
+			i += 1;
+		else if ((*str)[i] == '"')
 		{
 			found = TRUE;
 			*end = i - start;
 			break ;
 		}
-		else if (((*str)[i] == '\'' || (*str)[i] == '$') && !escaped(*str, i))
+		else if (
+			(ARITH_EXP((*str), i) && ANY((s = arith_exp(str, i, end, f))))
+			// || (CMD_SUB((*str), i) && ANY((s = command_sub(str, i, end, f))))
+			// || (BACKTICK((*str), i) && ANY((s = backtick(str, i, end, f))))
+			// || (PARAM_EXP((*str), i) && ANY((s = param_exp(str, i, end, f))))
+		)
 		{
-			if ((SNGL_QUOTE(*str, i) && !OK((s = quote(str, i, end, f))))
-				|| (PARAM_EXP(*str, i) && !OK((s = param_exp(str, i, end, f))))
-				|| (ARITH_EXP(*str, i) && !OK((s = arith_exp(str, i, end, f))))
-				|| (CMD_SUB(*str, i) && !OK((s = command_sub(str, i, end, f))))
-				|| (BACKTICK(*str, i) && !OK((s = backtick(str, i, end, f)))))
+			if (!OK(s))
 				break ;
-			i += *end + 1;
+			i += *end;
 			*end = ERROR;
 		}
 	}
@@ -97,10 +100,9 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 int		param_exp(char **str, size_t start, size_t *end, t_quote f)
 {
 	size_t	i;
-	size_t	tmp;
+	int		found;
 	int		s;
 	int		status;
-	int		found;
 
 	found = FALSE;
 	i = start;
@@ -111,34 +113,38 @@ int		param_exp(char **str, size_t start, size_t *end, t_quote f)
 			i += 1;
 		found = TRUE;
 		*end = i - start;
-		return (SUCCESS);
+		return (f ? f(str, start, *end) : SUCCESS);
 	}
 	i += 2;
-	while ((*str)[i] && !escaped(*str, i))
+	while ((*str)[i])
 	{
+		if ((*str)[i] == '\\' && (*str)[i + 1])
+			i += 1;
 		if ((*str)[i] == '}')
 		{
 			*end = i - start;
 			break ;
 		}
-		else if (!escaped(*str, i) && ((*str)[i] == '\'' || (*str)[i] == '$'))
+		else if (
+			(DBL_QUOTE((*str), i) && ANY((s = dbl_quote(str, i, end, f))))
+			|| (SNGL_QUOTE((*str), i) && ANY((s = quote(str, i, end, f))))
+			|| (ARITH_EXP((*str), i) && ANY((s = arith_exp(str, i, end, f))))
+			|| (CMD_SUB((*str), i) && ANY((s = command_sub(str, i, end, f))))
+			|| (BACKTICK((*str), i) && ANY((s = backtick(str, i, end, f))))
+			|| (PARAM_EXP((*str), i) && ANY((s = param_exp(str, i, end, f)))))
 		{
-			if ((SNGL_QUOTE((*str), i) && !OK((s = quote(str, i, &tmp, f))))
-				|| (DBL_QUOTE((*str), i) && !OK((s = dbl_quote(str, i, &tmp, f))))
-				|| (ARITH_EXP((*str), i) && !OK((s = arith_exp(str, i, &tmp, f))))
-				|| (PARAM_EXP((*str), i) && !OK((s = param_exp(str, i, &tmp, f))))
-				|| (CMD_SUB((*str), i) && !OK((s = command_sub(str, i, &tmp, f))))
-				|| (BACKTICK((*str), i) && !OK((s = backtick(str, i, &tmp, f)))))
+			if (!OK(s))
 				break ;
-			i += tmp + 1;
+			i += *end;
+			*end = ERROR;
 		}
-		else
-			i += 1;
+		i += 1;
 	}
 	status = found ? SUCCESS : NIL;
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }
+
 
 int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 {
@@ -151,26 +157,28 @@ int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 	i = start + 2;
 	while ((*str)[i])
 	{
-		if ((*str)[i] == ')' && !escaped(*str, i))
+		if ((*str)[i] == '\\' && (*str)[i + 1])
+			i += 1;
+		if ((*str)[i] == ')')
 		{
 			*end = i - start;
 			found = TRUE;
 			break ;
 		}
-		else if (((*str)[i] == '\'' || (*str)[i] == '$') && !escaped(*str, i))
+		else if (
+			(DBL_QUOTE((*str), i) && ANY((s = dbl_quote(str, i, end, f))))
+			|| (SNGL_QUOTE((*str), i) && ANY((s = quote(str, i, end, f))))
+			|| (ARITH_EXP((*str), i) && ANY((s = arith_exp(str, i, end, f))))
+			|| (CMD_SUB((*str), i) && ANY((s = command_sub(str, i, end, f))))
+			|| (BACKTICK((*str), i) && ANY((s = backtick(str, i, end, f))))
+			|| (PARAM_EXP((*str), i) && ANY((s = param_exp(str, i, end, f)))))
 		{
-			if ((SNGL_QUOTE((*str), i) && !OK((s = quote(str, i, end, f))))
-				|| (DBL_QUOTE((*str), i) && !OK((s = dbl_quote(str, i, end, f))))
-				|| (ARITH_EXP((*str), i) && !OK((s = arith_exp(str, i, end, f))))
-				|| (CMD_SUB((*str), i) && !OK((s = command_sub(str, i, end, f))))
-				|| (BACKTICK((*str), i) && !OK((s = backtick(str, i, end, f))))
-				|| ((*str)[i] == '$' && !OK((s = param_exp(str, i, end, f)))))
+			if (!OK(s))
 				break ;
-			i += *end + 1;
+			i += *end;
 			*end = ERROR;
 		}
-		else
-			i += 1;
+		i += 1;
 	}
 	status = found ? SUCCESS : NIL;
 	status = ERR(s) ? ERROR : status;
@@ -190,24 +198,27 @@ int		arith_exp(char **str, size_t start, size_t *end, t_quote f)
 	found = FALSE;
 	while ((*str)[i])
 	{
-		if ((*str)[i] == '(')
+		if ((*str)[i] == '\\' && (*str)[i + 1])
+			i += 1;
+		else if ((*str)[i] == '(')
 			count += 1;
 		else if (count && (*str)[i] == ')')
 			count -= 1;
-		else if (TWO_CLOSING((*str), i) && !escaped(*str, i))
+		else if (TWO_CLOSING((*str), i))
 		{
 			found = TRUE;
 			*end = i - start + 1;
 			break ;
 		}
-		else if (((*str)[i] == '"' || (*str)[i] == '\'' || (*str)[i] == '$') && !escaped(*str, i))
+		else if (
+			(ARITH_EXP((*str), i) && ANY((s = arith_exp(str, i, end, f))))
+			|| (CMD_SUB((*str), i) && ANY((s = command_sub(str, i, end, f))))
+			|| (BACKTICK((*str), i) && ANY((s = backtick(str, i, end, f))))
+			|| (PARAM_EXP((*str), i) && ANY((s = param_exp(str, i, end, f)))))
 		{
-			if ((ARITH_EXP((*str), i) && !OK((s = arith_exp(str, i, end, f))))
-				|| (CMD_SUB((*str), i) && !OK((s = command_sub(str, i, end, f))))
-				|| (BACKTICK((*str), i) && !OK((s = backtick(str, i, end, f))))
-				|| ((*str)[i] == '$' && !OK((s = param_exp(str, i, end, f)))))
+			if (!OK(s))
 				break ;
-			i += *end + 1;
+			i += *end;
 			*end = ERROR;
 		}
 		i += 1;

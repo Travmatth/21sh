@@ -15,10 +15,28 @@
 extern t_list	*g_missing;
 int		lex_quote(char **str, int start, int end)
 {
-	(void)str;
-	(void)start;
-	(void)end;
-	return (SUCCESS);
+	int		status;
+	short	type;
+
+	type = 0;
+	status = ERR(end) ? NIL : SUCCESS;
+	if (NONE(status))
+	{
+		if (SNGL_QUOTE((*str), start))
+			type = QUOTE;
+		else if (DBL_QUOTE((*str), start))
+			type = DQUOTE;
+		else if (PARAM_EXP((*str), start))
+			type = BRACE_SUB;
+		else if (ARITH_EXP((*str), start))
+			type = MATH_SUB;
+		else if (CMD_SUB((*str), start))
+			type = CMD_SUB;
+		else if (BACKTICK((*str), start))
+			type = BQUOTE;
+		push_missing_symbol(type, &g_missing);
+	}
+	return (status);
 }
 
 /*
@@ -98,32 +116,27 @@ void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx)
 void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 {
 	size_t	skip;
-	int		status;
 
 	skip = 0;
-	status = SUCCESS;
 	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
-	if (c == '\\')
-		skip = 2;
-	else if (c == '"')
+	if (OK(ctx->status) && c == '\\')
+		skip = 1;
+	else if (OK(ctx->status) && c == '"')
+		ctx->status = dbl_quote(&ctx->input, ctx->i, &skip, lex_quote);
+	else if (OK(ctx->status) && c == '\'')
+		ctx->status = quote(&ctx->input, ctx->i, &skip, lex_quote);
+	if (OK(ctx->status))
 	{
-		if (ERR((status = dbl_quote(&ctx->input, ctx->i, &skip, lex_quote))))
-			ctx->status = ERROR;
+		ft_bufappend(token->value, &input[ctx->i], skip + 1);
+		ctx->i += skip + 1;
+		ctx->status = SUCCESS;
 	}
-	else if (c == '\'')
-	{
-		if (ERR((status = quote(&ctx->input, ctx->i, &skip, lex_quote))))
-			ctx->status = ERROR;
-	}
-	if (NONE(status))	
+	else if (NONE(ctx->status))	
 	{
 		ctx->status = NIL;
 		ctx->missing = g_missing;
 	}
-	ft_bufappend(token->value, &input[ctx->i], skip + 1);
-	ctx->i += skip + 1;
-	ctx->status = SUCCESS;
 }
 
 /*
@@ -146,13 +159,11 @@ void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
 void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
 	size_t	skip;
-	int		status;
 	char	**in;
 
 	skip = ERROR;
-	status = SUCCESS;
 	in = &ctx->input;
-	if (c == '`' && OK((status = backtick(in, ctx->i, &skip, lex_quote))))
+	if (c == '`' && OK((ctx->status = backtick(in, ctx->i, &skip, lex_quote))))
 		skip += 1;
 	else if (c == '$')
 	{
@@ -161,7 +172,7 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 			|| (NEXT_PAREN(ctx->input, ctx->i)
 				&& OK((ctx->status = command_sub(in, ctx->i, &skip, lex_quote))))
 			|| (NEXT_BRACE(ctx->input, ctx->i)
-				&& OK((status = param_exp(in, ctx->i, &skip, lex_quote)))))
+				&& OK((ctx->status = param_exp(in, ctx->i, &skip, lex_quote)))))
 			skip += 1;
 		else
 		{
@@ -175,7 +186,7 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 	if ((!token->type && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		|| ERR(append_to_tok(c, token)))
 		ctx->status = ERROR;
-	if (!ft_bufappend(token->value, &(*in)[ctx->i + 1], skip - 1))
+	if (OK(ctx->status) && !ft_bufappend(token->value, &(*in)[ctx->i + 1], skip - 1))
 		ctx->status = ERROR;
 	ctx->i += OK(ctx->status) ? skip : 0;
 }

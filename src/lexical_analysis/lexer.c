@@ -34,7 +34,7 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 		rule_3(token, tokens, ctx);
 	else if (IS_QUOTE_CHAR(c) && !escaped(ctx->input, ctx->i))
 		rule_4(c, ctx->input, token, ctx);
-	else if (IS_QUOTED(c, ctx) && !escaped(ctx->input, ctx->i))
+	else if (IS_QUOTED(c) && !escaped(ctx->input, ctx->i))
 		rule_5(c, token, ctx);
 	else if (can_form_op(c))
 		rule_6(c, token, tokens, ctx);

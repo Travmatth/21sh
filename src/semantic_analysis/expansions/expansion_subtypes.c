@@ -41,10 +41,18 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 	char	*param[3];
 	int		position;
 	size_t	len[4];
+	int		quoted;
 
 	if (ERR(init_param_state(param, len, NIL, var))
 		|| ERR(create_param_state(param, len)))
 		return (ERROR);
+	if ((quoted = param[NAME][0] == '"' ? TRUE : FALSE))
+	{
+		if (!(tmp = ft_stripquote(param[NAME])))
+			return (ERROR);
+		free(param[NAME]);
+		param[NAME] = tmp;
+	}
 	if (OK(ft_safeatoi(param[NAME], &position)))
 	{
 		ft_printf("Semantic Error: Positional Parameters not implemented");
@@ -55,7 +63,14 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 	if (!(tmp = ft_strdup(env_lookup ? env_lookup : "")))
 		return (ERROR);
 	free(*parameter);
-	*parameter = tmp;
+	if (quoted)
+	{
+		if (!(*parameter = ft_quotestr(tmp, '"')))
+			return (ERROR);
+		free(tmp);
+	}
+	else
+		*parameter = tmp;
 	*i = *i + len[FULL_PARAM];
 	ft_freearr(param, FALSE);
 	return (SUCCESS);
@@ -84,6 +99,7 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 
 int		use_defaults_param_expansion(char **parameter, char *var, size_t *i)
 {
+	int		quoted;
 	int		status;
 	char	*env_lookup;
 	char	*param[3];
@@ -92,6 +108,13 @@ int		use_defaults_param_expansion(char **parameter, char *var, size_t *i)
 	if (ERR(init_param_state(param, len, '-', var))
 		|| ERR(create_param_state(param, len)))
 		return (ERROR);
+	if ((quoted = param[NAME][0] == '"' ? TRUE : FALSE))
+	{
+		if (!(env_lookup = ft_stripquote(param[NAME])))
+			return (ERROR);
+		free(param[NAME]);
+		param[NAME] = env_lookup;
+	}
 	env_lookup = get_env_var(param[NAME]);
 	if (!env_lookup)
 		status = substitute_word(parameter, param);
@@ -103,6 +126,13 @@ int		use_defaults_param_expansion(char **parameter, char *var, size_t *i)
 		status = substitute_null(parameter);
 	else
 		status = ERROR;
+	if (quoted)
+	{
+		if (!(env_lookup = ft_quotestr(*parameter, '"')))
+			return (ERROR);
+		free(*parameter);
+		*parameter = env_lookup;
+	}
 	*i = *i + len[FULL_PARAM];
 	ft_freearr(param, FALSE);
 	return (status);
@@ -136,10 +166,18 @@ int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i)
 	char	*env_lookup;
 	char	*param[3];
 	size_t	len[4];
+	int		quoted;
 
 	if (ERR(init_param_state(param, len, '-', var))
 		|| ERR(create_param_state(param, len)))
 		return (ERROR);
+	if ((quoted = param[NAME][0] == '"' ? TRUE : FALSE))
+	{
+		if (!(env_lookup = ft_stripquote(param[NAME])))
+			return (ERROR);
+		free(param[NAME]);
+		param[NAME] = env_lookup;
+	}
 	env_lookup = get_env_var(param[NAME]);
 	if (!env_lookup)
 		status = assign_word(parameter, param);
@@ -151,6 +189,13 @@ int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i)
 		status = substitute_null(parameter);
 	else
 		status = ERROR;
+	if (quoted)
+	{
+		if (!(env_lookup = ft_quotestr(*parameter, '"')))
+			return (ERROR);
+		free(*parameter);
+		*parameter = env_lookup;
+	}
 	*i = *i + len[FULL_PARAM];
 	ft_freearr(param, FALSE);
 	return (status);
@@ -185,10 +230,18 @@ int		error_unset_param_expansion(char **parameter, char *var, size_t *i)
 	char	*env_lookup;
 	char	*param[3];
 	size_t	len[4];
+	int		quoted;
 
 	if (ERR(init_param_state(param, len, '-', var))
 		|| ERR(create_param_state(param, len)))
 		return (ERROR);
+	if ((quoted = param[NAME][0] == '"' ? TRUE : FALSE))
+	{
+		if (!(env_lookup = ft_stripquote(param[NAME])))
+			return (ERROR);
+		free(param[NAME]);
+		param[NAME] = env_lookup;
+	}
 	env_lookup = get_env_var(param[NAME]);
 	if (!env_lookup)
 		status = error_exit(parameter, param);
@@ -200,6 +253,13 @@ int		error_unset_param_expansion(char **parameter, char *var, size_t *i)
 		status = substitute_null(parameter);
 	else
 		status = ERROR;
+	if (quoted)
+	{
+		if (!(env_lookup = ft_quotestr(*parameter, '"')))
+			return (ERROR);
+		free(*parameter);
+		*parameter = env_lookup;
+	}
 	*i = *i + len[FULL_PARAM];
 	ft_freearr(param, FALSE);
 	return (status);
@@ -232,10 +292,18 @@ int		alternative_param_expansion(char **parameter, char *var, size_t *i)
 	char	*env_lookup;
 	char	*param[3];
 	size_t	len[4];
+	int		quoted;
 
 	if (ERR(init_param_state(param, len, '-', var))
 		|| ERR(create_param_state(param, len)))
 		return (ERROR);
+	if ((quoted = param[NAME][0] == '"' ? TRUE : FALSE))
+	{
+		if (!(env_lookup = ft_stripquote(param[NAME])))
+			return (ERROR);
+		free(param[NAME]);
+		param[NAME] = env_lookup;
+	}
 	env_lookup = get_env_var(param[NAME]);
 	if (!env_lookup)
 		status = substitute_null(parameter);
@@ -247,6 +315,13 @@ int		alternative_param_expansion(char **parameter, char *var, size_t *i)
 		status = substitute_word(parameter, param);
 	else
 		status = NIL;
+	if (quoted)
+	{
+		if (!(env_lookup = ft_quotestr(*parameter, '"')))
+			return (ERROR);
+		free(*parameter);
+		*parameter = env_lookup;
+	}
 	*i = *i + len[FULL_PARAM];
 	ft_freearr(param, FALSE);
 	return (status);

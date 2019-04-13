@@ -21,8 +21,6 @@
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define TILDE_PREFIX(x) (x && x[0] == '~')
 # define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"
-# define UPPER(x) (x >= 'A' && x <= 'Z')
-# define IS_VAR_CHAR(x) ((UPPER(x)) || (x >= '0' && x <= '9') || x == '_')
 # define CMD_SUB_ERR "Semantic Error: Command Substitution not implemented\n"
 # define IS_IFS(x) (x == ' ' || x == '\t' || x == '\n')
 
@@ -302,5 +300,8 @@ int		quote_removal(char ***fields);
 ** src/semantic_analysis/expansions/tilde_expansion.c
 */
 
+
+char	*ft_stripquote(char *str);
+char	*ft_quotestr(char *str, char quote);
 int		tilde_expansion(char **parameter);
 #endif

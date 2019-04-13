@@ -26,6 +26,7 @@
 # include "../libftprintf/srcs/includes/ft_printf.h"
 # include "execution.h"
 
+# define ANY(x) (x || !x)
 # define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
 # define IS_QTE(x) (x == '\'' || x== '"')
 # define IS_SEP(x) (IS_WS(x) || IS_QTE(x))

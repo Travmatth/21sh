@@ -27,12 +27,14 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define TWO_PARENS(s, i) (NEXT_PAREN(s, i) && NEXT_PAREN(s, i + 1))
 # define TWO_CLOSING(s, i) (s[i] == ')' && s[i + 1] == ')')
 
-# define SNGL_QUOTE(s, i) (s[i] == '\'')
-# define DBL_QUOTE(s, i) (s[i] == '"')
-# define PARAM_EXP(s, i) (s[i] == '$' && NEXT_BRACE(s, i))
-# define ARITH_EXP(s, i) (s[i] == '$' && TWO_PARENS(s, i))
-# define CMD_SUB(s, i) (s[i] == '$' && NEXT_PAREN(s, i))
-# define BACKTICK(s, i) (s[i] == '`')
+# define UPPER(x) ((x >= 'A' && x <= 'Z'))
+# define IS_VAR_CHAR(x) (((UPPER(x)) || (x >= '0' && x <= '9') || x == '_'))
+# define SNGL_QUOTE(s, i) ((s[i] == '\''))
+# define DBL_QUOTE(s, i) ((s[i] == '"'))
+# define PARAM_EXP(s, i) ((s[i] == '$' && (NEXT_BRACE(s, i) || IS_VAR_CHAR(s[i + 1]))))
+# define ARITH_EXP(s, i) ((s[i] == '$' && TWO_PARENS(s, i)))
+# define CMD_SUB(s, i) ((s[i] == '$' && NEXT_PAREN(s, i)))
+# define BACKTICK(s, i) ((s[i] == '`'))
 
 /*
 ** Operator DFA symbols used to match input to specific bash operator
@@ -65,12 +67,7 @@ enum	e_parse_ops
 # define ACCEPTING(x) ((x >= 1) && (x <= 15))
 # define NOT_ERR(x) (x != 16)
 
-
-# define _IS_Q(c) ((c == '$' || c == '`'))
-# define _NEXT(ctx) (ctx->input[ctx->i + 1])
-# define IS_NL(x) (_NEXT(x) == '\n')
-# define NEXT_(ctx) (_NEXT(ctx) == ' ' || _NEXT(ctx) == '\t' || IS_NL(ctx))
-# define IS_QUOTED(c, ctx) (_IS_Q(c) && _NEXT(ctx) && !NEXT_(ctx))
+# define IS_QUOTED(c) ((c == '$' || c == '`'))
 # define IS_QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
 
 /*
@@ -188,15 +185,6 @@ int		pop_missing_symbol(t_list **missing);
 
 int		can_form_op(char c);
 int		next_op_state(char c, int current);
-
-/*
-** src/lexical_analysis/quotes.c
-*/
-
-int		find_subst(char *input, int x, t_lctx *ctx);
-int		find_quote(char *input, int x, t_lctx *ctx);
-int		find_dquote(char *input, int x, t_lctx *ctx);
-int		find_bquote(char *input, int x, t_lctx *ctx);
 
 /*
 ** src/lexical_analysis/reserved_dfa.c

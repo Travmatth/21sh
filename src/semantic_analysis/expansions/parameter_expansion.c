@@ -30,15 +30,15 @@ int		join_unexpanded(char **new, char **str, size_t *i)
 	start = *i;
 	while ((*str)[*i])
 	{
+		if ((*str)[*i] == '\\')
+			*i += 1;
 		if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
 			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
-			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
 			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL)))))
-			*i += end + 1;
-		else if ((*str)[*i] == '$')
+			*i += end;
+		else if ((*str)[*i] == '$' && start != *i && !escaped(*str, *i))
 			break ;
-		else
-			*i += 1;
+		*i += 1;
 	}
 	if (!(tmp = ft_strsub(*str, start, *i - start)))
 		return (ERROR);
@@ -70,21 +70,24 @@ int		manage_expansions(char **new, char **str, size_t *skip)
 
 	i = 0;
 	next = NULL;
+	status = SUCCESS;
 	param = *str + *skip;
 	if (!ft_strncmp("$$", param, 2) || !ft_strncmp("${${", param, 4))
 	{
 		ft_printf("Semantic Error: Bad Parameter Expansion");
 		status = NIL;
 	}
-	else if (enclosed(param, '-'))
+	if (CMD_SUB((*str), i) && OK((status = command_sub(str, 0, &i, NULL))))
+		i += 1;
+	else if (OK(status) && enclosed(param, '-'))
 		status = use_defaults_param_expansion(&next, param, &i);
-	else if (enclosed(param, '='))
+	else if (OK(status) && enclosed(param, '='))
 		status = assign_defaults_param_expansion(&next, param, &i);
-	else if (enclosed(param, '?'))
+	else if (OK(status) && enclosed(param, '?'))
 		status = error_unset_param_expansion(&next, param, &i);
-	else if (enclosed(param, '+'))
+	else if (OK(status) && enclosed(param, '+'))
 		status = alternative_param_expansion(&next, param, &i);
-	else
+	else if (OK(status))
 		status = plain_param_expansion(&next, param, &i);
 	if (OK(status) && *new && !(tmp = ft_strjoin(*new, next)))
 		return (ERROR);
@@ -120,7 +123,7 @@ int		manage_expansions(char **new, char **str, size_t *skip)
 ** Field splitting shall not be performed on the results of the expansion.
 */
 
-int		parameter_expansion(char **parameter)
+int		parameter_expansion(char **str)
 {
 	char	*new;
 	int		status;
@@ -129,14 +132,14 @@ int		parameter_expansion(char **parameter)
 	i = 0;
 	new = NULL;
 	status = SUCCESS;
-	while (OK(status) && (*parameter)[i])
+	while (OK(status) && (*str)[i])
 	{
-		if ((*parameter)[i] == '$')
-			status = manage_expansions(&new, parameter, &i);
+		if (PARAM_EXP((*str), i) || CMD_SUB((*str), i) || ARITH_EXP((*str), i))
+			status = manage_expansions(&new, str, &i);
 		else
-			status = join_unexpanded(&new, parameter, &i);
+			status = join_unexpanded(&new, str, &i);
 	}
-	free(*parameter);
-	*parameter = new;
+	free(*str);
+	*str = new;
 	return (status);
 }

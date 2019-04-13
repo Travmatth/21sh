@@ -142,7 +142,7 @@ int		push_missing_symbol(short type, t_list **missing)
 
 	if (!(node = ft_lstnew(&type, sizeof(short))))
 		return (ERROR);
-	ft_lstadd(missing, node);
+	ft_lstpushfront(missing, node);
 	return (SUCCESS);
 }
 

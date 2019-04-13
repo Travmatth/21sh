@@ -12,7 +12,19 @@
 
 #include "../../../includes/shell.h"
 
-char	*ft_quotestr(char *str)
+char	*ft_stripquote(char *str)
+{
+	size_t	len;
+	char	*new;
+
+	len = LEN(str, 0);
+	new = ft_strnew(len - 2);
+	ft_memcpy(new, &str[1], len - 2);
+	return (new);
+
+}
+
+char	*ft_quotestr(char *str, char quote)
 {
 	size_t	len;
 	char	*new;
@@ -22,8 +34,8 @@ char	*ft_quotestr(char *str)
 	len = LEN(str, 0);
 	if (!(new = ft_strnew(len + 2)))
 		return (NULL);
-	new[0] = '"';
-	return (ft_strcat(ft_strcat(new, str), "\""));
+	new[0] = quote;
+	return (ft_strncat(ft_strcat(new, str), &quote, 1));
 }
 
 /*
@@ -45,8 +57,8 @@ int		tilde_expansion(char **parameter)
 	{
 		var = get_env_var("HOME");
 		if (!var)
-			return (NIL);
-		if (!(var = ft_quotestr(var))
+			var = "";
+		if (!(var = ft_quotestr(var, '"'))
 			|| !(tmp = ft_swap(*parameter, "~", var)))
 			return (ERROR);
 	}
