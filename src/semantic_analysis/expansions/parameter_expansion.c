@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expansion.c                                        :+:      :+:    :+:   */
+/*   parameter_expansion.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/07 17:43:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/13 17:46:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
 
 /*
-** If a string does not beginjwith a param start ($), it should be appended
+** If a string does not begin with a param start ($), it should be appended
 ** to the expanded output. Text containing single quotes should be appended
 ** unmodified 
 */
@@ -32,8 +32,9 @@ int		join_unexpanded(char **new, char **str, size_t *i)
 	{
 		if ((*str)[*i] == '\\')
 			*i += 1;
-		if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
+		else if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
 			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
+			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
 			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL)))))
 			*i += end;
 		else if ((*str)[*i] == '$' && start != *i && !escaped(*str, *i))
@@ -72,14 +73,7 @@ int		manage_expansions(char **new, char **str, size_t *skip)
 	next = NULL;
 	status = SUCCESS;
 	param = *str + *skip;
-	if (!ft_strncmp("$$", param, 2) || !ft_strncmp("${${", param, 4))
-	{
-		ft_printf("Semantic Error: Bad Parameter Expansion");
-		status = NIL;
-	}
-	if (CMD_SUB((*str), i) && OK((status = command_sub(str, 0, &i, NULL))))
-		i += 1;
-	else if (OK(status) && enclosed(param, '-'))
+	if (OK(status) && enclosed(param, '-'))
 		status = use_defaults_param_expansion(&next, param, &i);
 	else if (OK(status) && enclosed(param, '='))
 		status = assign_defaults_param_expansion(&next, param, &i);
@@ -134,10 +128,15 @@ int		parameter_expansion(char **str)
 	status = SUCCESS;
 	while (OK(status) && (*str)[i])
 	{
-		if (PARAM_EXP((*str), i) || CMD_SUB((*str), i) || ARITH_EXP((*str), i))
-			status = manage_expansions(&new, str, &i);
+		if (!ft_strncmp("$$", (*str), 2) || !ft_strncmp("${${", (*str), 4))
+		{
+			ft_printf("Semantic Error: Bad Parameter Expansion");
+			status = NIL;
+		}
 		else
-			status = join_unexpanded(&new, str, &i);
+			status = PARAM_EXP((*str), i)
+				? manage_expansions(&new, str, &i)
+				: join_unexpanded(&new, str, &i);
 	}
 	free(*str);
 	*str = new;

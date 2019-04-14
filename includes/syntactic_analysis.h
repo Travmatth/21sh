@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/01 14:36:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/13 18:08:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ enum			e_parse_sym
 {
 	PARSE_END,
 	PARSE_AMPERSAND,
-	PARSE_L_BRACE,
-	PARSE_R_BRACE,
+	PARSE_L_PAREN,
+	PARSE_R_PAREN,
 	PARSE_SEMICOLON,
 	PARSE_LT,
 	PARSE_GT,

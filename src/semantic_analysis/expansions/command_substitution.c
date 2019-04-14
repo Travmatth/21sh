@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 17:11:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/13 17:06:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ int		cmd_sub_err(char **str, int start, int end)
 	(void)str;
 	(void)start;
 	(void)end;
-	ft_printf("Semantic Error: command substitution not implemented\n");
+	if (!ERR(end) && (BACKTICK((*str), start) || CMD_SUB((*str), start)))
+		ft_printf("Semantic Error: command substitution not implemented\n");
 	return (NIL);
 }
 
@@ -103,7 +104,7 @@ int		command_substitution(char **parameter)
 	{
 		if (name[i] == '\\')
 			i += 1;
-		if (BACKTICK(name, i) && OK((state = backtick(&name, i, &end, cmd_sub_err))))
+		else if (BACKTICK(name, i) && OK((state = backtick(&name, i, &end, cmd_sub_err))))
 			i += end;
 		else if (ARITH_EXP(name, i) && OK((state = arith_exp(&name, i, &end, NULL))))
 			i += end;

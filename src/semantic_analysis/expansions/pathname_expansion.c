@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:44:02 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 13:51:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/13 16:44:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,13 @@ int		find_pathname_end(char *str, int *skip)
 	while (str[i])
 	{
 		if (str[i] == '\\')
-			i += 2;
+			i += 1;
 		else if (str[i] == '}')
 		{
 			ft_printf("Semantic Error: pathname expansion not implemented\n");
 			return (NIL);
 		}
-		else
-			i += 1;
+		i += 1;
 	}
 	*skip = *skip + i;
 	return (SUCCESS);
@@ -53,14 +52,13 @@ int		expand_pathname(char **field)
 	while (str[i])
 	{
 		if (str[i] == '\\')
-			i += 2;
+			i += 1;
 		else if (str[i] == '{')
 		{
 			if (!OK((status = find_pathname_end(&str[i], &i))))
 				break ;
 		}
-		else
-			i += 1;
+		i += 1;
 	}
 	return (status);
 }

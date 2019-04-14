@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/01 15:18:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/13 19:09:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,17 @@ enum	e_parse_ops
 	LESSGREAT = 13,
 	DLESSDASH = 14,
 	CLOBBER = 15,
-	LEXER_WORD = 17,
-	IO_NUMBER = 18
+	L_PAREN = 16,
+	R_PAREN = 17,
+	L_BRACE = 18,
+	R_BRACE = 19,
+	LEXER_WORD = 20,
+	IO_NUMBER = 21
 };
 
-# define TOKEN_CONVERSIONS 17
-# define ACCEPTING(x) ((x >= 1) && (x <= 15))
-# define NOT_ERR(x) (x != 16)
+# define TOKEN_CONVERSIONS 21
+# define ACCEPTING(x) ((x >= 1) && (x <= 20))
+# define NOT_ERR(x) (x != 20)
 
 # define IS_QUOTED(c) ((c == '$' || c == '`'))
 # define IS_QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
