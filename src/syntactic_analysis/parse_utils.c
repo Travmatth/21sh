@@ -60,7 +60,7 @@ int		assign_type(char *lhs, t_ast_node *node)
 	int		i;
 
 	i = -1;
-	while (++i < TOTAL_PARSE_SYMS)
+	while (++i <= TOTAL_PARSE_SYMS)
 	{
 		if (!ft_strcmp(lhs, g_sym_lookup[i].lhs))
 		{

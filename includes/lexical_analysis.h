@@ -68,7 +68,7 @@ enum	e_parse_ops
 };
 
 # define TOKEN_CONVERSIONS 21
-# define ACCEPTING(x) ((x >= 1) && (x <= 20))
+# define ACCEPTING(x) ((x >= 1) && (x <= 19))
 # define NOT_ERR(x) (x != 20)
 
 # define IS_QUOTED(c) ((c == '$' || c == '`'))

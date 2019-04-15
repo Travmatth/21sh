@@ -114,7 +114,8 @@ int		can_form_op(char c)
 
 	category = g_operator_char_table[(int)c];
 	next = g_operator_transition_table[0][category];
-	return (ACCEPTING(next));
+	next = ACCEPTING(next);
+	return (next);
 }
 
 /*
