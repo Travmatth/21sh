@@ -1,16 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   paramater_expansion.c                              :+:      :+:    :+:   */
+/*   expansion_subtypes.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:46:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/07 17:44:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:56:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+/*
+** Traditional atoi function returns 0 on error, which introduces the possibilty
+** that invalid strings may be confused for "0"
+*/
 
 int		ft_safeatoi(char *num, int *number)
 {

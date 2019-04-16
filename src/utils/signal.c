@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 19:33:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:30:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Intercept ctrl-c signals and exit processes
+*/
 
 void	child_sig_handler(int sig)
 {
@@ -19,6 +23,10 @@ void	child_sig_handler(int sig)
 	g_processes -= 1;
 	_exit(1);
 }
+
+/*
+** Intercept ctrl-c signals and ignore in parent process
+*/
 
 void	sig_handler(int sig)
 {

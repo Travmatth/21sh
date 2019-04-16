@@ -6,11 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:51:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 12:37:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:58:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+/*
+** Determine ending brace for given parameter expansion, allowing for nested
+** parameter expansions
+*/
 
 char	*find_end_brace(char *param)
 {

@@ -6,17 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/27 13:52:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:29:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/shell.h"
 
 /*
-** http://pubs.opengroup.org/onlinepubs/009695399
-** /utilities/xcu_chap02.html#tag_02_03
-** Shell grammar parsing steps
-** 1: read from input
+** Initialize environment and parse data structures, Accept next line
+** from STDIN and execute. Exit on ERROR, NIL will fail gracefully and accept
+** next line of input
 */
 
 int		main(int argc, char **argv, char **environ)

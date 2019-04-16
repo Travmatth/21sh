@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/12 18:16:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:41:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Array listing nonterminals and their equivalent type
+*/
 
 t_parse_sym_lookup	g_sym_lookup[27] =
 {
@@ -43,6 +47,10 @@ t_parse_sym_lookup	g_sym_lookup[27] =
 	{ "term", PARSE_TERM }
 };
 
+/*
+** Determine state at top of syntactic parse table
+*/
+
 int		peek_state(t_list **stack, int *state)
 {
 	t_list	*top;
@@ -54,6 +62,11 @@ int		peek_state(t_list **stack, int *state)
 	*state = ((t_stack*)top->content)->item.state;
 	return (SUCCESS);
 }
+
+/*
+** Once tokens are successfully reduced into parent nonterminal, assigns
+** the type of parent onto ast_node
+*/
 
 int		assign_type(char *lhs, t_ast_node *node)
 {
@@ -70,6 +83,12 @@ int		assign_type(char *lhs, t_ast_node *node)
 	}
 	return (ERROR);
 }
+
+/*
+** Reduces a given sequence of [non]terminals to the parent nonterminal
+** specified by the handle, embeds this ast_node into a stack token to be pushed
+** back onto the syntactic parse stack
+*/
 
 t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 {

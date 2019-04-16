@@ -6,14 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 18:47:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:11:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
 /*
-** find the next token in the complete_command
+** Determine whether the current character index in the given string is
+** preceded by an escape character `\`
 */
 
 int		escaped(char *input, size_t i)
@@ -24,6 +25,10 @@ int		escaped(char *input, size_t i)
 		return (TRUE);
 	return (FALSE);
 }
+
+/*
+** Set initial state of lexical state struct
+*/
 
 int		init_lexer_ctx(char *input, t_lctx *ctx, t_token *token)
 {
@@ -42,12 +47,10 @@ int		init_lexer_ctx(char *input, t_lctx *ctx, t_token *token)
 	return (SUCCESS);
 }
 
-int		append_to_tok(char c, t_token *token)
-{
-	if (!ft_bufappend(token->value, &c, sizeof(char)))
-		return (ERROR);
-	return (SUCCESS);
-}
+/*
+** Create a new blank to which lexical parsing can alter to store next
+** token to be created.
+*/
 
 int		create_new_tok(t_token *token, t_lctx *ctx, int type)
 {
@@ -63,71 +66,21 @@ int		create_new_tok(t_token *token, t_lctx *ctx, int type)
 	return (SUCCESS);
 }
 
-t_token_cnv	g_tok_cnv[TOKEN_CONVERSIONS] =
+/*
+** Append given character from command to the current token
+*/
+
+int		append_to_tok(char c, t_token *token)
 {
-	{ EOI, PARSE_END },
-	{ LEXER_WORD, PARSE_WORD },
-	{ IO_NUMBER, PARSE_IO_NUMBER },
-	{ L_PAREN, PARSE_L_PAREN },
-	{ R_PAREN, PARSE_R_PAREN },
-	{ AMPERSAND, PARSE_AMPERSAND },
-	{ AND_IF, PARSE_AND_IF },
-	{ PIPE, PARSE_PIPE },
-	{ OR_IF, PARSE_OR_IF },
-	{ SEMICOLON, PARSE_SEMICOLON },
-	{ LESS, PARSE_LT },
-	{ DLESS, PARSE_DLESS },
-	{ GREAT, PARSE_GT },
-	{ DGREAT, PARSE_DGREAT },
-	{ LESSAND, PARSE_LESSAND },
-	{ GREATAND, PARSE_GREATAND },
-	{ LESSGREAT, PARSE_LESSGREAT },
-	{ DLESSDASH, PARSE_DLESSDASH },
-	{ L_BRACE, PARSE_LBRACE },
-	{ R_BRACE, PARSE_RBRACE },
-	{ CLOBBER, PARSE_CLOBBER }
-};
-
-int		convert_token(t_token *token)
-{
-	int		i;
-
-	i = -1;
-	while (++i < TOKEN_CONVERSIONS)
-	{
-		if (token->type == g_tok_cnv[i].lex_tok)
-		{
-			token->type = g_tok_cnv[i].parse_tok;
-			return (SUCCESS);
-		}
-	}
-	return (ERROR);
-}
-
-int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
-{
-	t_ast_node	*ast_node;
-	t_stack		*stack_node;
-
-	if (ERR(convert_token(token))
-		|| !(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node)))
-		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2))
-		|| !(ast_node->val[0] = ft_strdup((char*)token->value->buf)))
+	if (!ft_bufappend(token->value, &c, sizeof(char)))
 		return (ERROR);
-	ast_node->type = token->type;
-	if (!(stack_node = (t_stack*)ft_memalloc(sizeof(t_stack))))
-		return (ERROR);
-	stack_node->type = STACK_TOKEN;
-	stack_node->item.token = ast_node;
-	if (!(node = ft_lstnew(stack_node, sizeof(t_stack))))
-		return (ERROR);
-	ft_lstpushback(tokens, node);
-	ctx->in_word = FALSE;
-	ctx->op_state = FALSE;
-	token->type = NIL;
-	token->value = NULL;
 	return (SUCCESS);
 }
+
+/*
+** Returns next closing character sequence needed to correctly close
+** given command
+*/
 
 int		next_missing_symbol(t_list *missing)
 {
@@ -140,6 +93,12 @@ int		next_missing_symbol(t_list *missing)
 	return (type);
 }
 
+/*
+** When given command has elements that are not properly closed, the sequence
+** of quotes or command substitutions are saved so as to allow correct sequence
+** of closing characters needed.
+*/
+
 int		push_missing_symbol(short type, t_list **missing)
 {
 	t_list	*node;
@@ -149,6 +108,12 @@ int		push_missing_symbol(short type, t_list **missing)
 	ft_lstpushfront(missing, node);
 	return (SUCCESS);
 }
+
+/*
+** When needed closing character detected, it's corresponding opening sequence
+** can be popped from the stack. When stack is empty command is correctly
+** closed.
+*/
 
 int		pop_missing_symbol(t_list **missing)
 {

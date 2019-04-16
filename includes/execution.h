@@ -13,14 +13,41 @@
 #ifndef semantic_analysis_H
 # define semantic_analysis_H
 
+#ifndef LIBFT_H
+# include "../libftprintf/srcs/includes/ft_printf.h"
+#endif
+
 # include "semantic_analysis.h"
 
+/*
+** Character sent by terminal line discipline in response to BACKSPACE key
+*/
+
 # define DEL 0x7f
+
+/*
+** Character sent by terminal line discipline in response to ctrl-c
+*/
+
 # define INTR 0x03
+
+/*
+** Character sent by terminal line discipline in response to ctrl-d
+*/
+
 # define EOT 0x04
 # define EXIT_OK(x) (x == 0)
+
+/*
+** Used in HEREDOC processing to detect signals sent to terminal
+*/
+
 # define IS_DONE(state, c) (state[STATE] == state[ACCEPT] && buf == '\n')
 # define IS_SIG(state) (state[STATE] == state[SIG])
+
+/*
+** enums used by HEREDOC processing
+*/
 
 enum			e_here_end_buf
 {

@@ -1,3 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_table.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/04/15 18:37:27 by tmatthew          #+#    #+#             */
+/*   Updated: 2019/04/15 18:37:29 by tmatthew         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/*
+** Action / GOTO table used in lr_1 parsing to determine, given a state and
+** word, the next appropriate action. Entries of the form r# are meant to be
+** passed to reduce function, where # is the index of the production rule to
+** used. Entries of the form s# are shifts, meant to push current word and
+** state given by # onto the stack. Entries of - denote an invalid parse, and
+** the 'a' entry denotes the successful parsing of a given sentence.
+*/
+
 char *g_parse_table[][53] = {
 	{
 		"-", "-", "s19", "-", "-", "s23", "s25", "-", "s16", "s6", "s29",

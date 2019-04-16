@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 16:01:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:13:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** push given pointer to back of given array
+*/
 
 char	**push_pointer_back(char **pointers, t_ast_node *node)
 {
@@ -37,6 +41,10 @@ char	**push_pointer_back(char **pointers, t_ast_node *node)
 	return (tmp);
 }
 
+/*
+** push given pointer to front of given array
+*/
+
 void	**push_pointer_front(void **pointers, void *ptr)
 {
 	int		i;
@@ -58,6 +66,10 @@ void	**push_pointer_front(void **pointers, void *ptr)
 	}
 	return (tmp);
 }
+
+/*
+** Process and_or ast_nodes into and_or nodes in the t_program struct
+*/
 
 int		and_or(t_operator *op, t_ast_node *root, int is_bg)
 {
@@ -99,6 +111,11 @@ int		and_or(t_operator *op, t_ast_node *root, int is_bg)
 	return (pipeline(pipe, root->val[3], FALSE));
 }
 
+/*
+** Process commands seprated by separators (;/&) as consecutive indexes
+** in the final t_program struct
+*/
+
 int		list(t_program *p, t_ast_node *root, int last_is_bg)
 {
 	int			status;
@@ -125,6 +142,13 @@ int		list(t_program *p, t_ast_node *root, int last_is_bg)
 	else
 		return (NIL);
 }
+
+/*
+** Semantic analysis descends the given ast and processes child nodes to
+** construct a t_program struct. A program struct contains an array of pipe,
+** logical and simple nodes, where pipe nodes may contain logical, pipe, or 
+** simple nodes and logical nodes may contain logical or simple nodes
+*/
 
 int		semantic_analysis(t_ast *ast, t_program *program)
 {

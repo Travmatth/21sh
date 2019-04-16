@@ -6,11 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 16:44:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:08:49 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Process pipe sequence into t_pipe struct, setting both sides of pipe
+** if a command is in the form `command_1 | command_2`
+*/
 
 int		pipe_sequence(t_pipe *pipe, t_ast_node *root, int bg)
 {
@@ -47,6 +52,10 @@ int		pipe_sequence(t_pipe *pipe, t_ast_node *root, int bg)
 		pipe->left = pipe_child;
 	return (command(s_command, root->val[position], bg));
 }
+
+/*
+** Process pipeline into t_pipe struct
+*/
 
 int		pipeline(t_pipe *pipe, t_ast_node *root, int bg)
 {

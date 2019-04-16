@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 18:08:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 16:55:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ enum			e_parse_sym
 };
 
 /*
-** used in src/parse/parse.c to hold tokens pushed onto parse stack
+** t_prod structs used by init_prods to store grammar productions listed
+** in misc/productions.txt
 */
 
 typedef struct	s_handle
@@ -87,13 +88,23 @@ typedef struct	s_handle
 	char		**rhs;
 }				t_prod;
 
+/*
+** hold productions used in src/syntactic_analysis/parse.c reduce function
+** to map given sequence of tokens to the respective token they constitute
+*/
+
 t_prod			*g_prods;
+
+/*
+** parse table used by lr1 parser in src/syntactic_analysis/parse.c
+** syntactic analysis function   
+*/
 
 extern char		*g_parse_table[][53];
 
 /*
 ** AST structures used to contain terminal and nonterminal tokens
-** by the syntactic parser
+** used by the syntactic parser
 */
 
 typedef struct	s_ast_node
@@ -105,7 +116,7 @@ typedef struct	s_ast_node
 }				t_ast_node;
 
 /*
-** struct used to hold parsed ast
+** struct used to hold parsed ast for later use in semantic analysis
 */
 
 typedef struct	s_ast
@@ -116,16 +127,13 @@ typedef struct	s_ast
 }				t_ast;
 
 /*
-** After tokens are lexed, token are placed into stack nodes to allow
+** After tokens are lexed, tokens are placed into stack nodes to allow
 ** syntactic analyis to interchangeably manage tokens and parse states
 */
 
-enum			e_stack_token_type
-{
-	STACK_END,
-	STACK_TOKEN,
-	STACK_STATE
-};
+/*
+** 
+*/
 
 typedef union	u_item
 {
@@ -140,7 +148,19 @@ typedef struct	s_stack
 }				t_stack;
 
 /*
-** Used by syntactic parser to match given token name to it's type
+** enums used by `type` member of t_stack structs to identify type of
+** stack token a given struct contains
+*/
+
+enum			e_stack_token_type
+{
+	STACK_END,
+	STACK_TOKEN,
+	STACK_STATE
+};
+
+/*
+** Used by syntactic parser to match given token name to equivalent type
 */
 
 # define TOTAL_PARSE_SYMS 26

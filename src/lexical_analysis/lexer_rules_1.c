@@ -6,21 +6,26 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/15 13:53:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:51:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
 extern t_list	*g_missing;
+
+/*
+** When rule 4 of lex_switch determines that a given command is not properly
+** closed the opening sequence should be saved so that it may the necessary
+** closing characters can be later determined
+*/
+
 int		lex_quote(char **str, int start, int end)
 {
 	int		status;
 	short	type;
 
-	type = 0;
-	status = ERR(end) ? NIL : SUCCESS;
-	if (NONE(status))
+	if (NONE((status = ERR(end) ? NIL : SUCCESS)))
 	{
 		if (SNGL_QUOTE((*str), start))
 			type = QUOTE;
@@ -34,6 +39,11 @@ int		lex_quote(char **str, int start, int end)
 			type = CMD_SUB;
 		else if (BACKTICK((*str), start))
 			type = BQUOTE;
+		else
+		{
+			ft_printf(ERR_UNCLOSED_STR, *str);
+			type = NIL;
+		}
 		push_missing_symbol(type, &g_missing);
 	}
 	return (status);
@@ -71,7 +81,7 @@ int		rule_2(char c, t_token *token, t_lctx *ctx)
 {
 	int		next;
 
-	if (!ACCEPTING((next = next_op_state(c, ctx->op_state))))
+	if (!OP_DFA_ACCEPTING((next = next_op_state(c, ctx->op_state))))
 		return (ctx->status = NIL);
 	if (!(ft_bufappend(token->value, &c, sizeof(char))))
 		return (ctx->status = ERROR);

@@ -13,6 +13,10 @@
 #ifndef SHELL_H
 # define SHELL_H
 
+#ifndef LIBFT_H
+# include "../libftprintf/srcs/includes/ft_printf.h"
+#endif
+
 # include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <unistd.h>
@@ -23,19 +27,51 @@
 # include <signal.h>
 # include <sys/syslimits.h>
 
-# include "../libftprintf/srcs/includes/ft_printf.h"
 # include "execution.h"
 
-# define ANY(x) (x || !x)
-# define IS_WS(x) (x == ' ' || x == '\t' || x == '\n')
-# define IS_QTE(x) (x == '\'' || x== '"')
-# define IS_SEP(x) (IS_WS(x) || IS_QTE(x))
-# define ESCAPABLE_CHAR(x) ()
-# define END 1
-# define BEGIN 0
+/*
+** Used in lexical analysis to when unclosed quoted
+** strings, command substitutions detected
+*/
+
+t_list		*g_missing;
+
+/*
+** Stores the {name=val} pairs of environment variables for the shell
+*/
 
 char			**g_environ;
+
+/*
+** Track # of current processes, used by signal handlers to determine whether
+** shell should exit current child process or catch exit
+** signal of parent process
+*/
+
 int				g_processes;
+
+/*
+** Signature of shell builtin functions
+*/
+
+typedef int		(*t_builtinf)(int argc, char **argv);
+
+/*
+** Structs used to match name of builtin to its function pointer
+*/
+
+typedef struct	s_builtin
+{
+	char		*cmd;
+	t_builtinf	f;
+	int			len;
+}				t_builtin;
+
+/*
+** Global variable holding structs mapping builtin names to function pointers
+*/
+
+extern t_builtin	g_builtins[];
 
 /*
 ** src/main.c
@@ -67,19 +103,4 @@ int				builtin_setenv(int argc, char **argv);
 int				builtin_unsetenv(int argc, char **argv);
 int				builtin_env(int argc, char **argv);
 char			*get_env_var(char *var);
-
-/*
-** Structures used to store and execute shell builtins
-*/
-
-typedef int		(*t_builtinf)(int argc, char **argv);
-
-typedef struct	s_builtin
-{
-	char		*cmd;
-	t_builtinf	f;
-	int			len;
-}				t_builtin;
-
-extern t_builtin	g_builtins[];
 #endif

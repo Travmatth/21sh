@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 16:32:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:07:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Create a new char* array by joing two arrays into one
+*/
 
 char	**ft_strjoinarrs(char **arr_1, char **arr_2)
 {
@@ -36,6 +40,11 @@ char	**ft_strjoinarrs(char **arr_1, char **arr_2)
 	return (new);
 }
 
+/*
+** Process word token to be used as basis of t_simple_command. Word is subjected
+** to full expansion before appending to command
+*/
+
 int		cmd_name(t_simple_command *command, t_ast_node *root)
 {
 	char	*name;
@@ -52,6 +61,11 @@ int		cmd_name(t_simple_command *command, t_ast_node *root)
 	command->command = tmp;
 	return (SUCCESS);
 }
+
+/*
+** Process given simple command to extract command name, arguements and
+** any redirections. Builds a t_simple_command struct to later be executed
+*/
 
 int		simple_command(t_simple_command *command, t_ast_node *root, int bg)
 {
@@ -88,6 +102,11 @@ int		simple_command(t_simple_command *command, t_ast_node *root, int bg)
 	command->bg = bg;
 	return (status);
 }
+
+/*
+** Differentiate simple commands to be processed from
+** unimplemented compound commands to be gracefully exited from
+*/
 
 int		command(t_simple_command *cmd, t_ast_node *root, int bg)
 {

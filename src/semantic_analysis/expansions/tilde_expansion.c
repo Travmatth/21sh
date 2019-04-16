@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:48:07 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 12:37:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:02:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+/*
+** Create copy of given string, less the beginning and ending characters
+*/
 
 char	*ft_stripquote(char *str)
 {
@@ -21,8 +25,11 @@ char	*ft_stripquote(char *str)
 	new = ft_strnew(len - 2);
 	ft_memcpy(new, &str[1], len - 2);
 	return (new);
-
 }
+
+/*
+** Enclosed given string with specified quote character
+*/
 
 char	*ft_quotestr(char *str, char quote)
 {

@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 16:01:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:14:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Set whether given separator is a process background `&`
+*/
 
 int		separator_op_is_linebreak(int *is_bg, t_ast_node *root)
 {
@@ -22,6 +26,10 @@ int		separator_op_is_linebreak(int *is_bg, t_ast_node *root)
 	*is_bg = FALSE;
 	return (ERROR);
 }
+
+/*
+** Detect whether given separator is a process background `&`
+*/
 
 int		separator(int *is_bg, t_ast_node *root)
 {

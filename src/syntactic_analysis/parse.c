@@ -6,14 +6,35 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/31 16:01:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:22:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
+/*
+** Action / GOTO table used in lr_1 parsing to determine, given a state and
+** word, the next appropriate action. Entries of the form r# are meant to be
+** passed to reduce function, where # is the index of the production rule to
+** used. Entries of the form s# are shifts, meant to push current word and
+** state given by # onto the stack. Entries of - denote an invalid parse, and
+** the 'a' entry denotes the successful parsing of a given sentence.
+*/
+
 extern char		*g_parse_table[][53];
+
+/*
+** Structs of productions in the form of { char *lhs; char **rhs },
+** which give the nonterminal and the array of [non]terminals it is composed by.
+*/
+
 extern t_prod	*g_prods;
+
+/*
+** If given series of tokens on the end of the stack constitute a greater
+** nonterminal symbol, these tokens should be popped of the stack and reduced
+** to the children of the given nonterminal, which is then pushed onto the stack
+*/
 
 int		reduce(int state, t_list **stack, t_ast_node *word)
 {
@@ -39,6 +60,12 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 	return (SUCCESS);
 }
 
+/*
+** LR_1 parsing uses shift in instances where the current word is a member
+** of some greater nonterminal symbol, shifting pushes this word onto the
+** stack so it may be later reduced into parent nonterminal 
+*/
+
 int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 {
 	int		next_state;
@@ -49,6 +76,12 @@ int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 	*word = pop_token(tokens);
 	return (SUCCESS);
 }
+
+/*
+** Successful lr_1 syntactic parsing results in a single `accept` token on end
+** of stack, where token contains the ast to be used in semantic parsing.
+** This root of the ast is stored in the ast struct
+*/
 
 int		accept_ast(t_list **stack, t_ast *ast)
 {
@@ -66,6 +99,8 @@ int		accept_ast(t_list **stack, t_ast *ast)
 }
 
 /*
+** syntactic_analysis performs lr_1 parsing of given token stream by determining
+** current state of parse, and whether to shift or reduce current word and stack
 ** (char*)((t_stack*)((t_stack*)stack->next->next->content)->item.token->val[0])
 ** ->item.token->val[0]
 */
@@ -76,25 +111,30 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 	t_ast_node	*word;
 	int			state;
 	char		*action;
+	int			status;
 
 	stack = NULL;
+	status = SUCCESS;
 	if (!ft_lstpushfront(&stack, create_end_stack_token())
 		|| !ft_lstpushback(&stack, create_stack_token(STACK_STATE, NULL, 0))
 		|| !(word = pop_token(tokens)))
 		return (ERROR);
-	while (42)
+	while (OK(status))
 	{
 		if (!(peek_state(&stack, &state)))
 			return (ERROR);
 		action = g_parse_table[state][word->type];
-		if (action[0] == 'r' && ERR(reduce(state, &stack, word)))
-			return (ERROR);
-		else if (action[0] == 's' && ERR(shift(state, &stack, &word, tokens)))
-			return (ERROR);
+		if (action[0] == 'r')
+			status = reduce(state, &stack, word);
+		else if (action[0] == 's')
+			status = shift(state, &stack, &word, tokens);
 		else if (action[0] == 'a')
-			return (accept_ast(&stack, ast));
-		else if (action[0] != 'r' && action[0] != 's' && action[0] != 'a')
-			return (ERROR);
+			status = accept_ast(&stack, ast);
+		else if (action[0] != '-')
+		{
+			ft_putendl("Syntactic Error: Unrecognized command syntax");
+			status = NIL;
+		}
 	}
-	return (NIL);
+	return (status);
 }

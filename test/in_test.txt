@@ -1,3 +1,5 @@
+(c)
+{c}
 echo `echo $HOME`
 echo $(echo foo);
 echo "simple";
@@ -39,5 +41,3 @@ echo $(((1 + 2) + 1))
 echo $HOME
 echo "HOME"
 echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
-(c)
-{c}

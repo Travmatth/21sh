@@ -6,11 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/08 12:59:41 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/08 14:49:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:36:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Process single quotes of form '', calls specified callback with *end set to
+** ERROR if expansion not properly closed
+*/
 
 int		quote(char **str, size_t start, size_t *end, t_quote f)
 {
@@ -36,6 +41,11 @@ int		quote(char **str, size_t start, size_t *end, t_quote f)
 	return (f ? f(str, start, *end) : status);
 }
 
+/*
+** Process backticks ``, calls specified callback with *end set to ERROR if
+** expansion not properly closed
+*/
+
 int		backtick(char **str, size_t start, size_t *end, t_quote f)
 {
 	size_t	i;
@@ -60,6 +70,13 @@ int		backtick(char **str, size_t start, size_t *end, t_quote f)
 	return (f ? f(str, start, *end) : status);
 }
 
+/*
+** Process double quotes of form "", allows embedded arithmetic
+** expansions, command substitution, backticks and parameter expansions.
+** Calls specified callback with *end set to ERROR if expansion
+** not properly closed
+*/
+
 int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 {
 	size_t	i;
@@ -81,9 +98,9 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 		}
 		else if (
 			(ARITH_EXP((*str), i) && ANY((s = arith_exp(str, i, end, f))))
-			// || (CMD_SUB((*str), i) && ANY((s = command_sub(str, i, end, f))))
-			// || (BACKTICK((*str), i) && ANY((s = backtick(str, i, end, f))))
-			// || (PARAM_EXP((*str), i) && ANY((s = param_exp(str, i, end, f))))
+			|| (CMD_SUB((*str), i) && ANY((s = command_sub(str, i, end, f))))
+			|| (BACKTICK((*str), i) && ANY((s = backtick(str, i, end, f))))
+			|| (PARAM_EXP((*str), i) && ANY((s = param_exp(str, i, end, f))))
 		)
 		{
 			if (!OK(s))
@@ -96,6 +113,13 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }
+
+/*
+** Process parameter expansions of form ${} and $_, allows embedded arithmetic
+** expansions, command substitution, backticks and parameter expansions, single
+** and double quotes. Calls specified callback with *end set to ERROR if expansion
+** not properly closed
+*/
 
 int		param_exp(char **str, size_t start, size_t *end, t_quote f)
 {
@@ -146,6 +170,13 @@ int		param_exp(char **str, size_t start, size_t *end, t_quote f)
 }
 
 
+/*
+** Process command substitution of form $(), allows embedded arithmetic
+** expansions, command substitution, backticks and parameter expansions, single
+** and double quotes. Calls specified callback with *end set to ERROR if expansion
+** not properly closed
+*/
+
 int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 {
 	size_t	i;
@@ -184,6 +215,12 @@ int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 	status = ERR(s) ? ERROR : status;
 	return (f ? f(str, start, *end) : status);
 }
+
+/*
+** Process arithmetic expansions of form $(()), allows embedded arithmetic
+** expansions, command substitution, backticks and parameter expansions. Calls
+** specified callback with *end set to ERROR if expansion not properly closed
+*/
 
 int		arith_exp(char **str, size_t start, size_t *end, t_quote f)
 {

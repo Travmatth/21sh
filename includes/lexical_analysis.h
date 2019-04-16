@@ -6,89 +6,25 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 19:09:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 16:37:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEXICAL_ANALYSIS_H
 # define LEXICAL_ANALYSIS_H
 
-/*
-** Used by quote management functions to give context pecific functionality to
-** functions as they parse different quote types - lexical analysis needs to
-** store unclosed quotes, word expansion needs to execute closed quoted strings
-*/
+# include "quote_management.h"
+# include "reserved_word.h"
+# include "operator_dfa.h"
 
-t_list		*g_missing;
-typedef	int	(*t_quote)(char **str, int start, int end);
-
-# define NEXT_BRACE(s, i) (s[i + 1] && s[i + 1] == '{')
-# define NEXT_PAREN(s, i) (s[i + 1] && s[i + 1] == '(')
-# define TWO_PARENS(s, i) (NEXT_PAREN(s, i) && NEXT_PAREN(s, i + 1))
-# define TWO_CLOSING(s, i) (s[i] == ')' && s[i + 1] == ')')
-
-# define UPPER(x) ((x >= 'A' && x <= 'Z'))
-# define IS_VAR_CHAR(x) (((UPPER(x)) || (x >= '0' && x <= '9') || x == '_'))
-# define SNGL_QUOTE(s, i) ((s[i] == '\''))
-# define DBL_QUOTE(s, i) ((s[i] == '"'))
-# define PARAM_EXP(s, i) ((s[i] == '$' && (NEXT_BRACE(s, i) || IS_VAR_CHAR(s[i + 1]))))
-# define ARITH_EXP(s, i) ((s[i] == '$' && TWO_PARENS(s, i)))
-# define CMD_SUB(s, i) ((s[i] == '$' && NEXT_PAREN(s, i)))
-# define BACKTICK(s, i) ((s[i] == '`'))
+# define ERR_UNCLOSED_STR "Lex Warning: Unrecognized string is not closed %s"
 
 /*
-** Operator DFA symbols used to match input to specific bash operator
+** Used in lex_switch to determine current character in given input
 */
-
-enum	e_parse_ops
-{
-	EOI = -1,
-	START = 0,
-	AMPERSAND = 1,
-	AND_IF = 2,
-	PIPE = 3,
-	OR_IF = 4,
-	SEMICOLON = 5,
-	DSEMI = 6,
-	LESS = 7,
-	DLESS = 8,
-	GREAT = 9,
-	DGREAT = 10,
-	LESSAND = 11,
-	GREATAND = 12,
-	LESSGREAT = 13,
-	DLESSDASH = 14,
-	CLOBBER = 15,
-	L_PAREN = 16,
-	R_PAREN = 17,
-	L_BRACE = 18,
-	R_BRACE = 19,
-	LEXER_WORD = 20,
-	IO_NUMBER = 21
-};
-
-# define TOKEN_CONVERSIONS 21
-# define ACCEPTING(x) ((x >= 1) && (x <= 19))
-# define NOT_ERR(x) (x != 20)
 
 # define IS_QUOTED(c) ((c == '$' || c == '`'))
 # define IS_QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
-
-/*
-** Used within the lexing to track types of quotes/substitutions
-** in given command and whether all are properly closed
-*/
-
-enum			e_missing_sym
-{
-	CMD_SUB = 1,
-	MATH_SUB = 2,
-	BRACE_SUB = 3,
-	VAR_SUB = 4,
-	BQUOTE = 5,
-	QUOTE = 6,
-	DQUOTE = 7
-};
 
 /*
 ** Central state struct of lexical analysis, state of lexer when
@@ -130,17 +66,6 @@ typedef struct	s_token_cnv
 }				t_token_cnv;
 
 /*
-** src/utils/quote_management.c
-*/
-
-int		quote(char **str, size_t start, size_t *end, t_quote f);
-int		backtick(char **str, size_t start, size_t *end, t_quote f);
-int		dbl_quote(char **str, size_t start, size_t *end, t_quote f);
-int		param_exp(char **str, size_t start, size_t *end, t_quote f);
-int		command_sub(char **str, size_t start, size_t *end, t_quote f);
-int		arith_exp(char **str, size_t start, size_t *end, t_quote f);
-
-/*
 ** src/lexical_analysis/lexer.c
 */
 
@@ -177,22 +102,14 @@ int		escaped(char *input, size_t i);
 int		init_lexer_ctx(char *input, t_lctx *ctx, t_token *token);
 int		append_to_tok(char c, t_token *token);
 int		create_new_tok(t_token *token, t_lctx *ctx, int type);
-int		convert_token(t_token *token);
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx);
 int		next_missing_symbol(t_list *missing);
 int		push_missing_symbol(short type, t_list **missing);
 int		pop_missing_symbol(t_list **missing);
 
 /*
-** src/lexical_analysis/operator_dfa.c
+** src/lexical_analysis/process_token.c
 */
 
-int		can_form_op(char c);
-int		next_op_state(char c, int current);
-
-/*
-** src/lexical_analysis/reserved_dfa.c
-*/
-
-int				process_reserved(char c, t_token *token, t_lctx *ctx);
+int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx);
 #endif

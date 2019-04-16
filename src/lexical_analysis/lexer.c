@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 19:07:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:30:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,11 @@ void	rule_11(char c, t_lctx *ctx, t_token *token)
 	if (OK(ctx->status))
 		ctx->status = append_to_tok(c, token);
 }
+
+/*
+** Lexes the given character in accordance with the rules
+** given in section 2.3, Token Recognition
+*/
 
 void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 {
@@ -51,6 +56,16 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 }
 
 /*
+** Lexical analysis is performed by in-order processing of a given inputted 
+** command. Command is processed from beginning to end, where each given
+** character may alter the state of processing and be added to the current
+** token, delimit the current token, start a new token, or denote an opening
+** sequence of quote/command substitution characters that need to be included
+** in the current token and skipped over during lexical processing. The 
+** end-of-string null character `\0' is processed twice, once to allow any
+** current tokens to be delimited and finally to push the end-of-input to the
+** list of tokens. Result is a list of tokens suitable for use in syntactic
+** analysis 
 ** -exec p (char*)((t_token*)(*tokens)->content)->value->buf
 */
 

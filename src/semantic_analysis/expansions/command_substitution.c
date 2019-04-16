@@ -6,12 +6,17 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 17:06:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:54:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../../../includes/shell.h"
+
+/*
+** 21sh does not support command substitution, so on detection of an command
+** substitution shell should fail gracefully so that next command may be inputted
+*/
 
 int		cmd_sub_err(char **str, int start, int end)
 {

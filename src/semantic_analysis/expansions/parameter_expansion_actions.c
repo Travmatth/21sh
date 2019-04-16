@@ -6,11 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 17:05:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 12:33:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:34:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+/*
+** If specified by the parameter expansion type, substitute given word
+** for the parameter expansion after performing subset of expansion operations
+*/
 
 int		substitute_word(char **parameter, char *param[3])
 {
@@ -25,6 +30,11 @@ int		substitute_word(char **parameter, char *param[3])
 	return (SUCCESS);
 }
 
+/*
+** If specified by the parameter expansion type, substitute environment variable
+** for the parameter expansion
+*/
+
 int		substitute_parameter(char **parameter, char *env_lookup)
 {
 	char	*tmp;
@@ -35,6 +45,11 @@ int		substitute_parameter(char **parameter, char *env_lookup)
 	*parameter = tmp;
 	return (SUCCESS);
 }
+
+/*
+** If specified by the parameter expansion type, substitute null for
+** the parameter expansion
+*/
 
 int		substitute_null(char **parameter)
 {
@@ -47,6 +62,12 @@ int		substitute_null(char **parameter)
 	return (SUCCESS);
 }
 
+/*
+** If specified by the parameter expansion type, set name/word combination
+** as new environment variable, and substitute given word for the parameter
+** expansion
+*/
+
 int		assign_word(char **parameter, char *param[3])
 {
 	char	*tmp;
@@ -58,6 +79,12 @@ int		assign_word(char **parameter, char *param[3])
 	*parameter = tmp;
 	return (SUCCESS);
 }
+
+/*
+** If specified by the parameter expansion type, print error message
+** and gracefully fail the current command processing to allow next
+** command to be entered
+*/
 
 int		error_exit(char **parameter, char *param[3])
 {

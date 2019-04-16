@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/07 17:41:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:27:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,47 @@
 
 # include "syntactic_analysis.h"
 
-# define EXECUTABLE 1
-# define BUILTIN 2
+/*
+** Used by redirection processing to differentiate between valid, optional file
+** descriptors from defaults
+*/
+
 # define IO(x, y) (ERR(x) ? y : x)
+
 # define IS_A(type, node) (!ft_strcmp(type, node))
+
+/*
+** Used by tilde_expansion to detect correctly-prefixed strings
+** to be tilde expanded
+*/
+
 # define TILDE_PREFIX(x) (x && x[0] == '~')
+
+/*
+** Used by field_splitting to detect chars the given word should be split on
+*/
+
+# define IS_IFS(x) (x == ' ' || x == '\t' || x == '\n')
+
 # define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"
 # define CMD_SUB_ERR "Semantic Error: Command Substitution not implemented\n"
-# define IS_IFS(x) (x == ' ' || x == '\t' || x == '\n')
+
+/*
+** Symbols used by verify_command to differentiate shell builtin program
+** from executable programs
+*/
+
+enum	e_executable_type 
+{
+	EXECUTABLE = 1,
+	BUILTIN = 2
+};
+
+/*
+** Symbols used in parameter expansion to identify given part of
+** paramter, as given by the syntax
+** FULL_PARAM = {NAME[TEST][SUBTYPE]WORD} 
+*/
 
 enum						e_expansion_symbol
 {
@@ -33,7 +66,7 @@ enum						e_expansion_symbol
 };
 
 /*
-** Used by execution to differentiate types of redirections 
+** Types used by execution to differentiate types of redirections specified
 */
 
 enum						e_redir_type
@@ -48,7 +81,7 @@ enum						e_redir_type
 };
 
 /*
-** Used by execution to differentiate types of nodes tree contains 
+** Types used by execution to differentiate types of nodes tree contains 
 */
 
 enum						e_exec_token_type
@@ -262,12 +295,6 @@ int		parameter_expansion(char **parameter);
 /*
 ** src/semantic_analysis/expansions/expansion_subtypes.c
 */
-
-enum	e_plain_vars
-{
-	NEW,
-	NEXT
-};
 
 int		plain_param_expansion(char **parameter, char *var, size_t *i);
 int		use_defaults_param_expansion(char **parameter, char *var, size_t *i);

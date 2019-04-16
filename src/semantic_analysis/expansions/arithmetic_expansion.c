@@ -6,11 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:40:09 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/05 18:43:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:53:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+/*
+** 21sh does not support arithmetic expansion, so on detection of an arithmetic
+** expansion shell should fail gracefully so that next command may be inputted
+*/
 
 int		arith_exp_err(char **str, int start, int end)
 {

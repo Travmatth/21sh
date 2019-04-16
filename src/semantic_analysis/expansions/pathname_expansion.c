@@ -6,18 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:44:02 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 16:44:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:00:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
 
 /*
-** Pathname Expansion
-** After field splitting, if set -f is not in effect, each field in the
-** resulting command line shall be expanded using the algorithm described in
-** Pattern Matching Notation, qualified by the rules in Patterns Used for
-** Filename Expansion.
+** Pathname expansion is not implemented in 21sh, should gracefully fail and
+** allow shell to accept next given command
 */
 
 int		find_pathname_end(char *str, int *skip)
@@ -39,6 +36,10 @@ int		find_pathname_end(char *str, int *skip)
 	*skip = *skip + i;
 	return (SUCCESS);
 }
+
+/*
+** Determine starting point of any embedded pathname expansions
+*/
 
 int		expand_pathname(char **field)
 {
@@ -62,6 +63,14 @@ int		expand_pathname(char **field)
 	}
 	return (status);
 }
+
+/*
+** Pathname Expansion
+** After field splitting, if set -f is not in effect, each field in the
+** resulting command line shall be expanded using the algorithm described in
+** Pattern Matching Notation, qualified by the rules in Patterns Used for
+** Filename Expansion.
+*/
 
 int		pathname_expansion(char ***fields)
 {

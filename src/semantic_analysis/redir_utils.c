@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 16:33:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:47:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@ char	*ft_strarrjoin(char **arr, char delim)
 	return (joined);
 }
 
+/*
+** Push a given t_redir to the end of the list of t_redir's on the given command
+*/
 
 int		push_redir(t_simple_command *cmd, t_redir *redir)
 {
@@ -58,6 +61,10 @@ int		push_redir(t_simple_command *cmd, t_redir *redir)
 	return (SUCCESS);
 }
 
+/*
+** Extract the char *string contained within a child ast_node
+*/
+
 int		get_filename(char **filename, t_ast_node *root)
 {
 	char	*name;
@@ -68,6 +75,11 @@ int		get_filename(char **filename, t_ast_node *root)
 	*filename = name;
 	return (name && name[0] ? SUCCESS : NIL);
 }
+
+/*
+** Process given simple redirection operation to set t_redir, simple
+** redirections do not duplicate an existing file descriptor
+*/
 
 int		simple_redir(t_redir *redir, int io_num, char *filename, int type)
 {
@@ -82,6 +94,11 @@ int		simple_redir(t_redir *redir, int io_num, char *filename, int type)
 	redir->type = type;
 	return (SUCCESS);
 }
+
+/*
+** Process given duplicate redirection operation to set t_redir, duplicate
+** redirections duplicate an existing file descriptor
+*/
 
 int		dup_redir(t_redir *redir, int io_num, char *filename, int type)
 {
@@ -109,6 +126,10 @@ int		dup_redir(t_redir *redir, int io_num, char *filename, int type)
 	redir->type = type;
 	return (SUCCESS);
 }
+
+/*
+** Create redirection struct that will set and pushed onto t_simple_command struct
+*/
 
 int		create_redir(t_redir **redir, t_ast_node *root, char **file)
 {

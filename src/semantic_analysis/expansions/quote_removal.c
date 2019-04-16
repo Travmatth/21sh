@@ -6,17 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:55:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 13:56:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 18:01:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
 
 /*
-** Quote Removal
-** The quote characters (<backslash>, single-quote, and double-quote) that were
-** present in the original word shall be removed unless they have
-** themselves been quoted.
+** Iterate through string and create new string, skipping any escape characters
+** and unescaped quote characters
 */
 
 int		remove_quotes(char **str)
@@ -54,6 +52,13 @@ int		remove_quotes(char **str)
 	*str = new;
 	return (SUCCESS);
 }
+
+/*
+** Quote Removal
+** The quote characters (<backslash>, single-quote, and double-quote) that were
+** present in the original word shall be removed unless they have
+** themselves been quoted.
+*/
 
 int		quote_removal(char ***fields)
 {

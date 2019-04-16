@@ -6,11 +6,45 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:47:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 13:49:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:56:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+/*
+** Determine number of fields contained in string, for use in field-splitting
+*/
+
+int		count_fields(char **str)
+{
+	int		i;
+	size_t	skip;
+	int		status;
+	int		count;
+
+	i = 0;
+	count = 0;
+	status = SUCCESS;
+	while (OK(status) && ((*str)[i]))
+	{
+		skip = 0;
+		while (IS_IFS((*str)[i]))
+			i += 1;
+		count += 1;
+		while ((*str)[i] && (!IS_IFS((*str)[i]) || escaped(*str, i)))
+		{
+			if ((SNGL_QUOTE((*str), i)
+					&& OK((status = quote(str, i, &skip, NULL))))
+				|| (DBL_QUOTE((*str), i)
+					&& OK((status = dbl_quote(str, i, &skip, NULL)))))
+				i += skip + 1;
+			else
+				i += 1;
+		}
+	}
+	return (count);
+}
 
 /*
 ** Field Splitting
@@ -47,36 +81,6 @@
 **
 ** Non-zero-length IFS white space shall delimit a field.
 */
-
-int		count_fields(char **str)
-{
-	int		i;
-	size_t	skip;
-	int		status;
-	int		count;
-
-	i = 0;
-	count = 0;
-	status = SUCCESS;
-	while (OK(status) && ((*str)[i]))
-	{
-		skip = 0;
-		while (IS_IFS((*str)[i]))
-			i += 1;
-		count += 1;
-		while ((*str)[i] && (!IS_IFS((*str)[i]) || escaped(*str, i)))
-		{
-			if ((SNGL_QUOTE((*str), i)
-					&& OK((status = quote(str, i, &skip, NULL))))
-				|| (DBL_QUOTE((*str), i)
-					&& OK((status = dbl_quote(str, i, &skip, NULL)))))
-				i += skip + 1;
-			else
-				i += 1;
-		}
-	}
-	return (count);
-}
 
 int		field_splitting(char ***fields, char **parameter)
 {

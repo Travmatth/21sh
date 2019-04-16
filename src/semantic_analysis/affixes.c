@@ -6,11 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/06 18:21:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 17:40:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Process given redirection in order to push correct t_redir struct onto
+** the t_simple_command struct
+*/
 
 int		io_file(t_simple_command *cmd, int io_num, t_ast_node *root)
 {
@@ -40,6 +45,11 @@ int		io_file(t_simple_command *cmd, int io_num, t_ast_node *root)
 	return (SUCCESS);
 }
 
+/*
+** redirections may optionally specify a number, the fd
+** to be used by the given redirection
+*/
+
 int		io_number(int *io_num, t_ast_node *root)
 {
 	char	*io;
@@ -54,6 +64,10 @@ int		io_number(int *io_num, t_ast_node *root)
 	}
 	return (SUCCESS);
 }
+
+/*
+** io_here denote heredocs
+*/
 
 int		io_here(t_simple_command *cmd, int io_num, t_ast_node *root)
 {
@@ -73,6 +87,10 @@ int		io_here(t_simple_command *cmd, int io_num, t_ast_node *root)
 		push_redir(cmd, redir);
 	return (status);
 }
+
+/*
+** Redirections specify alterations to the default input output of a command
+*/
 
 int		io_redirect(t_simple_command *cmd, t_ast_node *root)
 {
@@ -100,6 +118,11 @@ int		io_redirect(t_simple_command *cmd, t_ast_node *root)
 	return (status);
 }
 
+/*
+** Prefixes denote either variable assigments (not implemented in 21sh)
+** or io redirections to be performed on the given command
+*/
+
 int		prefix(t_simple_command *cmd, t_ast_node *root)
 {
 	int		status;
@@ -119,6 +142,11 @@ int		prefix(t_simple_command *cmd, t_ast_node *root)
 	}
 	return (NIL);
 }
+
+/*
+** Suffixes denote either arguments to be added to command to be executed,
+** or redirections to be performed on the given command
+*/
 
 int		suffix(t_simple_command *cmd, t_ast_node *root)
 {

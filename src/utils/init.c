@@ -6,11 +6,18 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/26 18:27:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/15 16:55:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Given the file descriptor of the productions.txt file, process lines of
+** productions by creating a struct containing left hand side of
+** nonterminal symbols and an array containing the right hand side each
+** nonterminal is derived by the given production rule
+*/
 
 t_prod	*init_prods(int fd, t_prod *prods, char **line)
 {
@@ -36,6 +43,12 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 	}
 }
 
+/*
+** Process existing environment variables of environment 21sh was launched in
+** and store internally for use as internal environment, for use in builtins
+** and launching child processes with execve
+*/
+
 void	init_environ(int argc, char **argv, char **environ)
 {
 	int			i;
@@ -58,6 +71,12 @@ void	init_environ(int argc, char **argv, char **environ)
 			return ;
 }
 
+/*
+** If 21sh is launched in an environment with `SHELL_TTY` set to a valid ttyid
+** the value of this environment variable is used as the tty that 21sh
+** will write/read to/from
+*/
+
 int		init_shell(void)
 {
 	int		fd;
@@ -73,6 +92,11 @@ int		init_shell(void)
 		return (ERROR);
 	return (SUCCESS);
 }
+
+/*
+** Initialize variables needed by syntactic parser by opening production rules
+** and setting global g_prods to processed grammar production rules
+*/
 
 void	init_parser(void)
 {
