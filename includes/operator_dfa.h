@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:44:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 13:11:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ enum	e_parse_ops
 */
 
 # define OP_TOKEN_CONVERSIONS 19
-# define OP_DFA_ACCEPTING(x) ((x >= 1) && (x <= 19))
+# define OP_DFA_ACCEPTING(x) ((x >= 1) && (x <= 17))
 # define OP_DFA_NOT_ERR(x) (x != 20)
 
 /*

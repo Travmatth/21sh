@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:51:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 15:36:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,15 @@ int		lex_quote(char **str, int start, int end)
 			type = CMD_SUB;
 		else if (BACKTICK((*str), start))
 			type = BQUOTE;
+		else if (BACKSLASH((*str), start))
+			type = BACKSLASH_ESC;
 		else
 		{
 			ft_printf(ERR_UNCLOSED_STR, *str);
 			type = NIL;
 		}
-		push_missing_symbol(type, &g_missing);
+		if (ERR(push_missing_symbol(type, &g_missing)))
+			status = ERROR;
 	}
 	return (status);
 }
@@ -123,18 +126,18 @@ void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx)
 ** quoted text. The token shall not be delimited by the end of the quoted field.
 */
 
-void	rule_4(char c, char *input, t_token *token, t_lctx *ctx)
+void	rule_4(char *input, t_token *token, t_lctx *ctx)
 {
 	size_t	skip;
 
 	skip = 0;
 	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
-	if (OK(ctx->status) && c == '\\')
-		skip = 1;
-	else if (OK(ctx->status) && c == '"')
+	if (OK(ctx->status) && BACKSLASH(ctx->input, ctx->i))
+		ctx->status = backslash(&ctx->input, ctx->i, &skip, lex_quote);
+	else if (OK(ctx->status) && DBL_QUOTE(ctx->input, ctx->i))
 		ctx->status = dbl_quote(&ctx->input, ctx->i, &skip, lex_quote);
-	else if (OK(ctx->status) && c == '\'')
+	else if (OK(ctx->status) && SNGL_QUOTE(ctx->input, ctx->i))
 		ctx->status = quote(&ctx->input, ctx->i, &skip, lex_quote);
 	if (OK(ctx->status))
 	{
@@ -170,27 +173,20 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 {
 	size_t	skip;
 	char	**in;
+	short	i;
 
 	skip = ERROR;
+	i = ctx->i;
 	in = &ctx->input;
-	if (c == '`' && OK((ctx->status = backtick(in, ctx->i, &skip, lex_quote))))
+	if (
+		(BACKTICK((*in), i) && OK((ctx->status = backtick(in, i, &skip, lex_quote))))
+		|| (ARITH_EXP((*in), i) && OK((ctx->status = arith_exp(in, i, &skip, lex_quote))))
+		|| (CMD_SUB((*in), i) && OK((ctx->status = command_sub(in, i, &skip, lex_quote))))
+		|| (PARAM_EXP((*in), i) && OK((ctx->status = param_exp(in, i, &skip, lex_quote))))
+	)
 		skip += 1;
 	else if (c == '$')
-	{
-		if ((TWO_PARENS(ctx->input, ctx->i)
-				&& OK((ctx->status = arith_exp(in, ctx->i, &skip, lex_quote))))
-			|| (NEXT_PAREN(ctx->input, ctx->i)
-				&& OK((ctx->status = command_sub(in, ctx->i, &skip, lex_quote))))
-			|| (NEXT_BRACE(ctx->input, ctx->i)
-				&& OK((ctx->status = param_exp(in, ctx->i, &skip, lex_quote)))))
-			skip += 1;
-		else
-		{
-			skip = 1;
-			while (IS_VAR_CHAR(ctx->input[ctx->i + skip]))	
-				skip += 1;
-		}
-	}
+		skip = 1;
 	if (NONE(ctx->status))	
 		ctx->missing = g_missing;
 	if ((!token->type && ERR(create_new_tok(token, ctx, LEXER_WORD)))

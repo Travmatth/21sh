@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 16:39:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 13:26:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int		convert_token(t_token *token)
 	int		i;
 
 	i = -1;
-	while (++i < OP_TOKEN_CONVERSIONS)
+	while (++i <= OP_TOKEN_CONVERSIONS)
 	{
 		if (token->type == g_tok_cnv[i].lex_tok)
 		{

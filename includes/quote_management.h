@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:44:22 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 16:04:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@
 
 typedef	int	(*t_quote)(char **str, int start, int end);
 
-# define ANY(x) (x || !x)
-
 # define NEXT_BRACE(s, i) (s[i + 1] && s[i + 1] == '{')
 # define NEXT_PAREN(s, i) (s[i + 1] && s[i + 1] == '(')
 # define TWO_PARENS(s, i) (NEXT_PAREN(s, i) && NEXT_PAREN(s, i + 1))
@@ -40,6 +38,7 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define ARITH_EXP(s, i) ((s[i] == '$' && TWO_PARENS(s, i)))
 # define CMD_SUB(s, i) ((s[i] == '$' && NEXT_PAREN(s, i)))
 # define BACKTICK(s, i) ((s[i] == '`'))
+# define BACKSLASH(s, i) ((s[i] == '\\'))
 
 /*
 ** Used within the lexing to track types of quotes/substitutions
@@ -54,13 +53,15 @@ enum			e_missing_sym
 	VAR_SUB = 4,
 	BQUOTE = 5,
 	QUOTE = 6,
-	DQUOTE = 7
+	DQUOTE = 7,
+	BACKSLASH_ESC = 8
 };
 
 /*
 ** src/utils/quote_management.c
 */
 
+int		backslash(char **str, size_t start, size_t *end, t_quote f);
 int		quote(char **str, size_t start, size_t *end, t_quote f);
 int		backtick(char **str, size_t start, size_t *end, t_quote f);
 int		dbl_quote(char **str, size_t start, size_t *end, t_quote f);

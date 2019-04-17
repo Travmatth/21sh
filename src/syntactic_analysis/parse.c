@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:22:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 13:30:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,8 +129,8 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 		else if (action[0] == 's')
 			status = shift(state, &stack, &word, tokens);
 		else if (action[0] == 'a')
-			status = accept_ast(&stack, ast);
-		else if (action[0] != '-')
+			return (accept_ast(&stack, ast));
+		else if (action[0] == '-')
 		{
 			ft_putendl("Syntactic Error: Unrecognized command syntax");
 			status = NIL;

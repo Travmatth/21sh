@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 16:37:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 15:24:33 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int		lexical_analysis(char *input, t_list **tokens, t_list **missing);
 void	rule_1(t_token *token, t_lctx *ctx, t_list **tokens);
 int		rule_2(char c, t_token *token, t_lctx *ctx);
 void	rule_3(t_token *token, t_list **tokens, t_lctx *ctx);
-void	rule_4(char c, char *input, t_token *token, t_lctx *ctx);
+void	rule_4(char *input, t_token *token, t_lctx *ctx);
 void	rule_5(char c, t_token *token, t_lctx *ctx);
 
 /*

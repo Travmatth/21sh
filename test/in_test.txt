@@ -1,23 +1,5 @@
-(c)
-{c}
-echo `echo $HOME`
-echo $(echo foo);
-echo "simple";
-echo "\"less\
-$($("foo"));
-$((1 + 1));
-echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
-echo ${echo foo};
-echo $FOO;
-echo $(echo bar);
-echo 	 	 "\nthis should not;
-echo 	 	 "\nthis should not" ';
-echo 	 	 "'\nthis should not';
-echo "this\n"	|| echo "	not this";
-echo "this\n"	&& echo "	not this";
 echo "to stderr" 1>&2;
 cat << EOF
-cat foo || echo foo
 cat author && echo foo
 ./test/read_from_fd.py 0 <<EOF
 cat	< author
@@ -29,15 +11,31 @@ echo "foo bar" > test/out_file;
 echo ${ENV};
 
 # quotes managed correctly
+(c)
+{c}
+echo `echo $HOME`
 echo $
-echo \$(invalid)
-echo \$((invalid))
-echo \`invalid`
+echo $(echo $)
 echo ""
-echo \$HOME
 echo $(echo $HOME)
 echo ${HOME}
 echo $(((1 + 2) + 1))
 echo $HOME
 echo "HOME"
 echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
+echo \$HOME
+echo \$(invalid)
+echo \$((invalid))
+echo \`invalid`
+echo $(echo foo);
+echo "simple";
+echo "\"l\
+$($("foo"));
+$((1 + 1));
+echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
+echo ${echo foo};
+echo $FOO;
+echo $(echo bar);
+echo 	 	 "\nthis should not;
+echo 	 	 "\nthis should not" ';
+echo 	 	 "'\nthis should not';

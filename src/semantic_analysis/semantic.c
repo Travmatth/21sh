@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:13:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 17:39:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int		and_or(t_operator *op, t_ast_node *root, int is_bg)
 		return (ERROR);
 	if (IS_A("and_or AND_IF linebreak pipeline", root->rhs))
 		op->type = EXEC_AND;
-	else if (IS_A("and_or AND_IF linebreak pipeline", root->rhs))
+	else if (IS_A("and_or OR_IF linebreak pipeline", root->rhs))
 		op->type = EXEC_OR;
 	else
 		return (NIL);

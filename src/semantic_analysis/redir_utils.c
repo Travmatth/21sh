@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:47:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 17:46:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ char	*ft_strarrjoin(char **arr, char delim)
 		else
 			joined = tmp;
 		tmp = NULL;
+		i += 1;
 	}
 	return (joined);
 }

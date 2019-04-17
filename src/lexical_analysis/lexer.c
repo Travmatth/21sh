@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:30:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 15:24:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	else if (ctx->op_state)
 		rule_3(token, tokens, ctx);
 	else if (IS_QUOTE_CHAR(c) && !escaped(ctx->input, ctx->i))
-		rule_4(c, ctx->input, token, ctx);
+		rule_4(ctx->input, token, ctx);
 	else if (IS_QUOTED(c) && !escaped(ctx->input, ctx->i))
 		rule_5(c, token, ctx);
 	else if (can_form_op(c))
