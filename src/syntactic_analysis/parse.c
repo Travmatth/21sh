@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 13:30:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 17:50:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,11 +114,11 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 	int			status;
 
 	stack = NULL;
-	status = SUCCESS;
 	if (!ft_lstpushfront(&stack, create_end_stack_token())
 		|| !ft_lstpushback(&stack, create_stack_token(STACK_STATE, NULL, 0))
 		|| !(word = pop_token(tokens)))
 		return (ERROR);
+	status = word->type == PARSE_END ? NIL : SUCCESS;
 	while (OK(status))
 	{
 		if (!(peek_state(&stack, &state)))

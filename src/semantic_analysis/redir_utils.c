@@ -6,47 +6,17 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 17:46:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 18:02:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
 /*
-** Join a null terminated array of strings with given delimiter
-*/
-
-char	*ft_strarrjoin(char **arr, char delim)
-{
-	int		i;
-	char	*tmp;
-	char	*joined;
-
-	i = 0;
-	if (!(joined = ft_strnew(0)))
-		return (NULL);
-	while (arr[i])
-	{
-		tmp = ft_strjoin(joined, arr[i]);
-		if (arr[i + 1])
-		{
-			if (!(joined = ft_strjoin(tmp, &delim)))
-				return (NULL);
-			free(tmp);
-		}
-		else
-			joined = tmp;
-		tmp = NULL;
-		i += 1;
-	}
-	return (joined);
-}
-
-/*
 ** Push a given t_redir to the end of the list of t_redir's on the given command
 */
 
-int		push_redir(t_simple_command *cmd, t_redir *redir)
+int		push_redir(t_simple *cmd, t_redir *redir)
 {
 	t_redir	*r;
 
@@ -78,58 +48,65 @@ int		get_filename(char **filename, t_ast_node *root)
 }
 
 /*
-** Process given simple redirection operation to set t_redir, simple
-** redirections do not duplicate an existing file descriptor
+** Array listing parse symbols signifying redirection and their
+** equivalent REDIR_{} type
 */
 
-int		simple_redir(t_redir *redir, int io_num, char *filename, int type)
+t_redir_cnv	g_redirs[TOTAL_REDIRS] =
 {
-	char	*name;
-	char	**arr;
-
-	if (ERR(full_word_expansion(&arr, filename))
-		|| !(name = ft_strarrjoin(arr, ' ')))
-		return (NIL);
-	redir->replacement = io_num;
-	redir->word = name;
-	redir->type = type;
-	return (SUCCESS);
-}
+	{ PARSE_GT, REDIR_GT },
+	{ PARSE_LT, REDIR_LT },
+	{ PARSE_DLESS, REDIR_DLESS },
+	{ PARSE_DGREAT, REDIR_DGREAT },
+	{ PARSE_LESSAND, REDIR_LESSAND },
+	{ PARSE_GREATAND, REDIR_GREATAND },
+	{ PARSE_LESSGREAT, REDIR_LESSGREAT },
+	{ PARSE_DLESSDASH, REDIR_DLESSDASH },
+	{ PARSE_CLOBBER, REDIR_CLOBBER }
+};
 
 /*
-** Process given duplicate redirection operation to set t_redir, duplicate
-** redirections duplicate an existing file descriptor
+** Process given redirection into a struct to be pushed onto simple command
+** redir queue, for later redirection during execution. Heredoc here_end words
+** are subject to quote removal, while all other redirections subjected to
+** tilde expansion, param expansion, command substitution, arithmetic expansion,
+** and quote removal. >| and <<- redirections not supported. 
 */
 
-int		dup_redir(t_redir *redir, int io_num, char *filename, int type)
+int		process_redir(t_redir *redir, int io_num, char *filename, int type)
 {
+	int		i;
 	int		status;
-	char	*fd;
-	char	**arr;
+	char	*name;
 
-	if (!OK((status = full_word_expansion(&arr, filename)))
-		|| !(fd = ft_strarrjoin(arr, ' ')))
-		return (OK(status) ? ERROR : status);
-	if (IS_A("-", fd))
-		redir->word = fd;
-	else if (IS_A("0", fd) && !ft_atoi(fd))
+	if (type == PARSE_CLOBBER || type == PARSE_DLESSDASH)
 	{
-		ft_printf("Error: invalid fd in [n]<&[fd]");
-		free(fd);
-		return (NIL);
+		name = type == PARSE_CLOBBER ? ">|" : "<<-";
+		ft_printf("Semantic Error: Redirection %s not implemented", name);
 	}
-	else
+	i = -1;
+	while (++i < TOTAL_REDIRS)
 	{
-		redir->replacement = ft_atoi(fd);
-		free(fd);
+		if (g_redirs[i].parse_tok == type)
+		{
+			type = g_redirs[i].redir_tok;
+			break ;
+		}
 	}
-	redir->original = io_num;
-	redir->type = type;
-	return (SUCCESS);
+	status = (type == REDIR_DLESS || type == REDIR_DLESSDASH)
+		? heredoc_expansion(&name, filename)
+		: redir_expansion(&name, filename);
+	if (OK(status))
+	{
+		redir->word = name;
+		redir->original = io_num;
+		redir->type = type;
+	}
+	return (status);
 }
 
 /*
-** Create redirection struct that will set and pushed onto t_simple_command struct
+** Create redirection struct that will set and pushed onto t_simple struct
 */
 
 int		create_redir(t_redir **redir, t_ast_node *root, char **file)

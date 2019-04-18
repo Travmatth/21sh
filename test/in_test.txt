@@ -1,4 +1,3 @@
-echo "to stderr" 1>&2;
 cat << EOF
 cat author && echo foo
 ./test/read_from_fd.py 0 <<EOF
@@ -10,6 +9,7 @@ ls -l -R | grep "\.txt$";
 echo "foo bar" > test/out_file;
 echo ${ENV};
 
+# LEX / PARSE / SEMANTIC CORRECTLY - HAVENT EXECUTED
 # quotes managed correctly
 (c)
 {c}
@@ -39,3 +39,20 @@ echo $(echo bar);
 echo 	 	 "\nthis should not;
 echo 	 	 "\nthis should not" ';
 echo 	 	 "'\nthis should not';
+echo "to stderr" 1>&2;
+cat foo || echo not this
+echo this && echo and this
+echo this && echo and this || echo not this
+echo this && cat foo || echo and this
+cat foo || echo this && echo and this
+echo hello && echo world | tr a-z A-Z
+# then you'll get
+# hello
+# WORLD
+# back: tr a-z A-Z upper-cases its input, and you can see that
+# only echo world was piped into it
+# while echo hello went through on its own.
+echo \2>a
+# write character 2 into file a
+echo 2\>a
+# write characters 2>a to STDOUT

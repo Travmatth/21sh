@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:41:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/16 18:08:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_parse_sym_lookup	g_sym_lookup[27] =
 };
 
 /*
-** Determine state at top of syntactic parse table
+** Determine state at top of syntactic parse stack
 */
 
 int		peek_state(t_list **stack, int *state)

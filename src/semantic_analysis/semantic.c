@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 17:39:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 14:27:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,44 +71,32 @@ void	**push_pointer_front(void **pointers, void *ptr)
 ** Process and_or ast_nodes into and_or nodes in the t_program struct
 */
 
-int		and_or(t_operator *op, t_ast_node *root, int is_bg)
+int		and_or(t_exec_node *container, t_ast_node *root, int is_bg)
 {
-	t_operator	*tmp;
-	t_op_child	*op_child;
-	t_pipe		*pipe;
+	int			position;
+	int			status;
+	t_operator	*op;
+	t_exec_node	*left;
+	t_exec_node	*right;
 
-	if (!(op_child = ft_memalloc(sizeof(t_op_child)))
-		|| !(pipe = ft_memalloc(sizeof(t_pipe))))
-		return (ERROR);
-	if (IS_A("pipeline", root->rhs))
+	position = 0;
+	if (!IS_A("pipeline", root->rhs))
 	{
-		op_child->type = EXEC_PIPE;
-		op_child->pipe = pipe;
-		op->type = EXEC_NONE;
-		op->left = op_child;
-		return (pipeline(pipe, root->val[0], is_bg));
+		if (!(op = ft_memalloc(sizeof(t_operator)))
+			|| !(left = ft_memalloc(sizeof(t_exec_node)))
+			|| !(right  = ft_memalloc(sizeof(t_exec_node))))
+			return (ERROR);
+		container->type = CONTAINS("AND_IF", root->rhs) ? EXEC_AND : EXEC_OR;
+		container->operator = op;
+		op->left = left;
+		op->right = right;
+		op->bg = is_bg;
+		container = right;
+		position = 3;
+		if (!OK((status = and_or(left, root->val[0], FALSE))))
+			return (status );
 	}
-	if (!(tmp = ft_memalloc(sizeof(t_operator))))
-		return (ERROR);
-	if (IS_A("and_or AND_IF linebreak pipeline", root->rhs))
-		op->type = EXEC_AND;
-	else if (IS_A("and_or OR_IF linebreak pipeline", root->rhs))
-		op->type = EXEC_OR;
-	else
-		return (NIL);
-	op->bg = is_bg;
-	op_child->type = EXEC_OP;
-	op_child->operator = tmp;
-	op->left = op_child;
-	if (ERR(and_or(tmp, root->val[0], FALSE)))
-		return (ERROR);
-	if (!(op_child = ft_memalloc(sizeof(t_op_child)))
-		|| !(tmp = ft_memalloc(sizeof(t_operator))))
-		return (ERROR);
-	op_child->type = EXEC_PIPE;
-	op_child->pipe = pipe;
-	op->right = op_child;
-	return (pipeline(pipe, root->val[3], FALSE));
+	return (pipeline(container, root->val[position], position ? FALSE : is_bg));
 }
 
 /*
@@ -120,27 +108,24 @@ int		list(t_program *p, t_ast_node *root, int last_is_bg)
 {
 	int			status;
 	int			is_bg;
-	t_operator	*op;
-	t_operator	**tmp;
+	t_exec_node	*child;
+	void		**tmp;
+	int			position;
 
-	is_bg = FALSE;
-	if (!(op = ft_memalloc(sizeof(t_operator)))
-		|| !(tmp = (t_operator**)push_pointer_front((void**)p->commands, (void*)op)))
+	if (!(child = ft_memalloc(sizeof(t_exec_node)))
+		|| !(tmp = push_pointer_front((void**)p->commands, (void*)child)))
 		return (ERROR);
 	free(p->commands);
-	p->commands = tmp;
+	p->commands = (t_exec_node**)tmp;
+	position = 0;
 	if (IS_A("list separator_op and_or", root->rhs))
 	{
-		if (!OK((status = separator_op_is_linebreak(&is_bg, root->val[1]))))
+		if (!OK((status = separator_op_is_linebreak(&is_bg, root->val[1])))
+			|| !OK((status = list(p, root->val[0], is_bg))))
 			return (status);
-		if (!OK((status = list(p, root->val[0], is_bg))))
-			return (status);
-		return (and_or(op, root->val[0], last_is_bg));
+		position = 2;
 	}
-	else if (IS_A("and_or", root->rhs))
-		return (and_or(op, root->val[0], last_is_bg));
-	else
-		return (NIL);
+	return (and_or(child, root->val[position], last_is_bg));
 }
 
 /*
@@ -150,23 +135,18 @@ int		list(t_program *p, t_ast_node *root, int last_is_bg)
 ** simple nodes and logical nodes may contain logical or simple nodes
 */
 
-int		semantic_analysis(t_ast *ast, t_program *program)
+int		semantic_analysis(t_ast *ast, t_program *p)
 {
 	int			status;
 	t_ast_node	*root;
 	int			is_bg;
 
-	is_bg = FALSE;
-	if (!program->commands
-		&& !(program->commands = ft_memalloc(sizeof(t_operator*))))
+	if (!p->commands && !(p->commands = ft_memalloc(sizeof(t_operator*))))
 		return (ERROR);
-	if (IS_A("complete_command $end", ast->root->rhs))
-	{
-		root = (t_ast_node*)ast->root->val[0];
-		if (IS_A("list separator", root->rhs)
-			&& !OK((status = separator(&is_bg, root->val[1]))))
-			return (status);
-		return (list(program, root->val[0], is_bg));
-	}
-	return (NIL);
+	is_bg = FALSE;
+	root = (t_ast_node*)ast->root->val[0];
+	if (IS_A("list separator", root->rhs)
+		&& !OK((status = separator(&is_bg, root->val[1]))))
+		return (status);
+	return (list(p, root->val[0], is_bg));
 }

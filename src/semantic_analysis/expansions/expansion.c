@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/07 17:43:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 16:23:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int		full_word_expansion(char ***new, char *old)
 ** expansion, command substitution, and arithmetic expansion.
 */
 
-int		sub_expansion(char **new, char *old)
+int		param_expansion(char **new, char *old)
 {
 	int		status;
 	char	*parameter;
@@ -81,6 +81,49 @@ int		sub_expansion(char **new, char *old)
 		&& OK((status = parameter_expansion(&parameter)))
 		&& OK((status = command_substitution(&parameter)))
 		&& OK((status = arithmetic_expansion(&parameter))))
+		*new = parameter;
+	return (status);
+}
+
+/*
+** If the redirection operator is "<<" or "<<-", the word that follows the
+** redirection operator shall be subjected to quote removal; it is unspecified
+** whether any of the other expansions occur.
+*/
+
+int		heredoc_expansion(char **new, char *old)
+{
+	int		status;
+
+	if (!OK((status = remove_quotes(&old))))
+		return (status);
+	*new = old;
+	return (status);
+}
+
+/*
+** For the other redirection operators, the word that follows the redirection
+** operator shall be subjected to tilde expansion, parameter expansion, command
+** substitution, arithmetic expansion, and quote removal. Pathname expansion
+** shall not be performed on the word by a non-interactive shell; an interactive
+** shell may perform it, but shall do so only when the expansion would result in
+** one word.
+*/
+
+int		redir_expansion(char **new, char *old)
+{
+	int		status;
+	char	*parameter;
+	char	**fields;
+
+	fields = NULL;
+	parameter = old;
+	if (OK((status = tilde_expansion(&parameter)))
+		&& OK((status = parameter_expansion(&parameter)))
+		&& OK((status = command_substitution(&parameter)))
+		&& OK((status = arithmetic_expansion(&parameter)))
+		&& OK((status = expand_pathname(&parameter)))
+		&& OK((status = remove_quotes(&parameter))))
 		*new = parameter;
 	return (status);
 }

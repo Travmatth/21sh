@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/15 15:58:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 17:47:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void	rule_9(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 
 void	rule_10(t_lctx *ctx)
 {
-	while (ctx->input[ctx->i] && ctx->input[ctx->i] != '\n')
+	while (ctx->input[ctx->i] && ctx->input[ctx->i + 1] != '\n')
 		ctx->i += 1;
 	ctx->status = SUCCESS;
 }

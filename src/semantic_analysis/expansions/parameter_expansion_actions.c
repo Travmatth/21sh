@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 17:05:04 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:34:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 15:08:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int		substitute_word(char **parameter, char *param[3])
 	char	*expanded;
 
 	expanded = NULL;
-	if (!OK((status = sub_expansion(&expanded, param[FULL_PARAM]))))
+	if (!OK((status = param_expansion(&expanded, param[FULL_PARAM]))))
 		return (status);
 	free(*parameter);
 	*parameter = expanded;

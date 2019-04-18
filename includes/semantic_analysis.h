@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:27:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 18:00:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,27 @@
 
 # include "syntactic_analysis.h"
 
+# define IS_A(type, node) (!ft_strcmp(type, node))
+# define CONTAINS(type, node) (ft_strstr(node, type))
+
+/*
+** When processing simple command in its 5 possible forms, we use enum symbols
+** to simplify identifying symbol position in ast
+*/
+
+enum	e_simple_positions
+{
+	PREFIX,
+	COMMAND,
+	SUFFIX
+};
+
 /*
 ** Used by redirection processing to differentiate between valid, optional file
 ** descriptors from defaults
 */
 
 # define IO(x, y) (ERR(x) ? y : x)
-
-# define IS_A(type, node) (!ft_strcmp(type, node))
 
 /*
 ** Used by tilde_expansion to detect correctly-prefixed strings
@@ -69,16 +82,26 @@ enum						e_expansion_symbol
 ** Types used by execution to differentiate types of redirections specified
 */
 
+typedef struct	s_redir_cnv
+{
+	int			parse_tok;
+	int			redir_tok;
+}				t_redir_cnv;
+
 enum						e_redir_type
 {
-	EXEC_DLESS,
-	EXEC_DGREAT,
-	EXEC_LESSAND,
-	EXEC_GREATAND,
-	EXEC_LESSGREAT,
-	EXEC_DLESSDASH,
-	EXEC_CLOBBER
+	REDIR_GT,
+	REDIR_LT,
+	REDIR_DLESS,
+	REDIR_DGREAT,
+	REDIR_LESSAND,
+	REDIR_GREATAND,
+	REDIR_LESSGREAT,
+	REDIR_DLESSDASH,
+	REDIR_CLOBBER
 };
+
+# define TOTAL_REDIRS 9
 
 /*
 ** Types used by execution to differentiate types of nodes tree contains 
@@ -93,6 +116,30 @@ enum						e_exec_token_type
 	EXEC_OR,
 	EXEC_OP
 };
+
+/*
+** The output of the semantic tree is the t_program struct, which contains
+** and array of t_exec_nodes. An exec node may be one of three types -
+** logical (representing && || operations), pipes (representing |), 
+** or simple commands (representing simple commands). These represtive structs
+** are stored in a union, and the type member of the t_exec_node specifies
+** which is contained within
+*/
+
+struct						s_operator;
+struct						s_simple_command;
+struct						s_pipe;
+
+typedef struct				s_exec_node
+{
+	union
+	{
+		struct s_operator		*operator;
+		struct s_simple_command	*simple_command;
+		struct s_pipe			*pipe;
+	};
+	int						type;
+}							t_exec_node;
 
 /*
 ** Every command may have an associated list of redirections
@@ -120,28 +167,17 @@ typedef struct				s_simple_command
 	t_redir					*redirs;
 	int						is_builtin;
 	int						bg;
-}							t_simple_command;
+	int						bang;
+}							t_simple;
 
 /*
 ** pipe tokens represent pipes, where children are pipes or commands
 */
 
-struct						s_pipe;
-
-typedef struct				s_pipe_child
-{
-	union 
-	{
-		struct s_pipe		*pipe;
-		t_simple_command	*simple_command;
-	};
-	int						type;
-}							t_pipe_child;
-
 typedef struct				s_pipe
 {
-	t_pipe_child			*left;
-	t_pipe_child			*right;
+	t_exec_node				*left;
+	t_exec_node				*right;
 	int						type;
 	int						bg;
 	int						bang;
@@ -152,51 +188,39 @@ typedef struct				s_pipe
 ** are other operators, pipes or commands
 */
 
-struct						s_operator;
-
-typedef struct				s_op_child
-{
-	union
-	{
-		struct s_operator	*operator;
-		t_pipe				*pipe;
-		t_simple_command	*simple_command;
-	};
-	int						type;
-}							t_op_child;
-
 typedef struct				s_operator
 {
-	t_op_child				*left;
-	t_op_child				*right;
+	t_exec_node				*left;
+	t_exec_node				*right;
 	int						type;
 	int						bg;
 }							t_operator;
 
 typedef struct				s_program
 {
-	t_operator				**commands;
+	t_exec_node				**commands;
 }							t_program;
 
 /*
 ** src/semantic_analysis/affixes.c
 */
 
-int		io_file(t_simple_command *cmd, int io_num, t_ast_node *root);
+int		io_file(t_simple *cmd, int io_num, t_ast_node *root);
 int		io_number(int *io_num, t_ast_node *root);
-int		io_here(t_simple_command *cmd, int io_num, t_ast_node *root);
-int		io_redirect(t_simple_command *cmd, t_ast_node *root);
-int		prefix(t_simple_command *cmd, t_ast_node *root);
-int		suffix(t_simple_command *cmd, t_ast_node *root);
+int		io_here(t_simple *cmd, int io_num, t_ast_node *root);
+int		io_redirect(t_simple *cmd, t_ast_node *root);
+int		prefix(t_simple *cmd, t_ast_node *root);
+int		suffix(t_simple *cmd, t_ast_node *root);
 
 /*
 ** src/semantic_analysis/command.c
 */
 
 char	**ft_strjoinarrs(char **arr_1, char **arr_2);
-int		cmd_name(t_simple_command *command, t_ast_node *root);
-int		simple_command(t_simple_command *command, t_ast_node *root, int bg);
-int		command(t_simple_command *cmd, t_ast_node *root, int bg);
+int		cmd_name(t_simple *simple, t_ast_node *root);
+void	simple_positions(char *form, int position[3]);
+int		simple_command(t_simple *simple, t_ast_node *root);
+int		command(t_exec_node *container, t_ast_node *root, int bg, int bang);
 
 /*
 ** src/semantic_analysis/parameter_expansion_actions.c
@@ -212,17 +236,16 @@ int		error_exit(char **parameter, char *param[3]);
 ** src/semantic_analysis/pipe.c
 */
 
-int		pipe_sequence(t_pipe *pipe, t_ast_node *root, int bg);
-int		pipeline(t_pipe *pipe, t_ast_node *root, int bg);
+int		pipe_sequence(t_exec_node *container, t_ast_node *root, int bg, int bang);
+int		pipeline(t_exec_node *container, t_ast_node *root, int bg);
 
 /*
 ** src/semantic_analysis/redir_utils.c
 */
 
-int		push_redir(t_simple_command *cmd, t_redir *redir);
+int		push_redir(t_simple *cmd, t_redir *redir);
 int		get_filename(char **filename, t_ast_node *root);
-int		simple_redir(t_redir *redir, int io_num, char *filename, int type);
-int		dup_redir(t_redir *redir, int io_num, char *filename, int type);
+int		process_redir(t_redir *redir, int io_num, char *filename, int type);
 int		create_redir(t_redir **redir, t_ast_node *root, char **file);
 
 /*
@@ -231,7 +254,7 @@ int		create_redir(t_redir **redir, t_ast_node *root, char **file);
 
 char	**push_pointer_back(char **pointers, t_ast_node *node);
 void	**push_pointer_front(void **pointers, void *ptr);
-int		and_or(t_operator *op, t_ast_node *root, int is_bg);
+int		and_or(t_exec_node *container, t_ast_node *root, int is_bg);
 int		list(t_program *p, t_ast_node *root, int last_is_bg);
 int		semantic_analysis(t_ast *ast, t_program *program);
 
@@ -272,11 +295,9 @@ int		command_substitution(char **parameter);
 */
 
 int		full_word_expansion(char ***new, char *old);
-int		sub_expansion(char **new, char *old);
-
-/*
-** src/semantic_analysis/expansions/expansion_.c
-*/
+int		param_expansion(char **new, char *old);
+int		heredoc_expansion(char **new, char *old);
+int		redir_expansion(char **new, char *old);
 
 /*
 ** src/semantic_analysis/expansions/field_splitting.c
@@ -296,6 +317,7 @@ int		parameter_expansion(char **parameter);
 ** src/semantic_analysis/expansions/expansion_subtypes.c
 */
 
+int		ft_safeatoi(char *num, int *number);
 int		plain_param_expansion(char **parameter, char *var, size_t *i);
 int		use_defaults_param_expansion(char **parameter, char *var, size_t *i);
 int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i);
@@ -315,12 +337,14 @@ int		enclosed(char *str, char c);
 ** src/semantic_analysis/expansions/pathname_expansion.c
 */
 
+int		expand_pathname(char **field);
 int		pathname_expansion(char ***fields);
 
 /*
 ** src/semantic_analysis/expansions/quote_removal.c
 */
 
+int		remove_quotes(char **str);
 int		quote_removal(char ***fields);
 
 /*

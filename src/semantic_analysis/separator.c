@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:14:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 14:32:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,8 @@
 
 int		separator_op_is_linebreak(int *is_bg, t_ast_node *root)
 {
-	if (root->type == PARSE_SEPARATOR_OP && IS_A(root->rhs, "&"))
-	{
-		*is_bg = TRUE;
-		return (SUCCESS);
-	}
-	*is_bg = FALSE;
-	return (ERROR);
+	*is_bg = IS_A(root->rhs, "&") ? TRUE : FALSE;
+	return (SUCCESS);
 }
 
 /*
@@ -33,7 +28,5 @@ int		separator_op_is_linebreak(int *is_bg, t_ast_node *root)
 
 int		separator(int *is_bg, t_ast_node *root)
 {
-	if (IS_A("separator_op linebreak", root->rhs))
-		separator_op_is_linebreak(is_bg, (t_ast_node*)root->val[0]);
-	return (SUCCESS);
+	return (separator_op_is_linebreak(is_bg, (t_ast_node*)root->val[0]));
 }

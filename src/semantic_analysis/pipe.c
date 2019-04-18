@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:08:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/17 14:20:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,57 +17,47 @@
 ** if a command is in the form `command_1 | command_2`
 */
 
-int		pipe_sequence(t_pipe *pipe, t_ast_node *root, int bg)
+int		pipe_sequence(t_exec_node *container, t_ast_node *root, int bg, int bang)
 {
-	int					status;
-	int					position;
-	t_pipe_child		*pipe_child;
-	t_pipe				*tmp;
-	t_simple_command	*s_command;
+	int			status;
+	int			position;
+	t_pipe		*pipe;
+	t_exec_node	*left;
+	t_exec_node	*right;
 
 	position = 0;
 	if (IS_A("pipe_sequence | linebreak command", root->rhs))
 	{
-		if (!(pipe_child = ft_memalloc(sizeof(t_pipe_child)))
-			|| !(tmp = ft_memalloc(sizeof(t_pipe))))
+		if (!(pipe = ft_memalloc(sizeof(t_pipe)))
+			|| !(left = ft_memalloc(sizeof(t_exec_node)))
+			|| !(right = ft_memalloc(sizeof(t_exec_node))))
 			return (ERROR);
-		pipe_child->pipe = tmp;
-		pipe->left = pipe_child;
+		container->type = EXEC_PIPE;
+		container->pipe = pipe;
+		pipe->bang = bang;
+		pipe->left = left;
+		pipe->right = right;
 		pipe->bg = bg;
 		position = 3;
-		if (!OK((status = pipe_sequence(tmp, root->val[0], FALSE))))
-			return (ERROR);
+		container = right;
+		if (!OK((status = pipe_sequence(left, root->val[0], FALSE, FALSE))))
+			return (status);
 	}
-	if (!IS_A("command", root->rhs))
-		return (NIL);
-	if (!(pipe_child = ft_memalloc(sizeof(t_pipe_child)))
-		|| !(s_command = ft_memalloc(sizeof(t_simple_command))))
-		return (ERROR);
-	pipe_child->simple_command = s_command;
-	pipe_child->type = EXEC_SIMPLE_COMMAND;
-	pipe->type = position ? EXEC_PIPE : EXEC_NONE;
-	if (position)
-		pipe->right = pipe_child;
-	else
-		pipe->left = pipe_child;
-	return (command(s_command, root->val[position], bg));
+	return (command(container, root->val[position], bg, position ? bang : FALSE));
 }
 
 /*
 ** Process pipeline into t_pipe struct
 */
 
-int		pipeline(t_pipe *pipe, t_ast_node *root, int bg)
+int		pipeline(t_exec_node *container, t_ast_node *root, int bg)
 {
 	int		position;
+	int		bang;
+	int		contains_bang;
 
-	position = 0;
-	if (IS_A("Bang pipe_sequence", root->rhs))
-	{
-		pipe->bang = TRUE;
-		position = 1;
-	}
-	else if (IS_A("pipe_sequence", root->rhs))
-		return pipe_sequence(pipe, root->val[position], bg);
-	return (NIL);
+	contains_bang = IS_A("Bang pipe_sequence", root->rhs);
+	bang = contains_bang ? TRUE : FALSE;
+	position = contains_bang ? 1 : 0;
+	return pipe_sequence(container, root->val[position], bg, bang);
 }
