@@ -65,13 +65,11 @@ enum			e_here_end_dfa
 };
 
 /*
-** src/execution/exec.c
+** src/execution/execute.c
 */
 
-int		builtin_command(char **argv);
-int		execute_command(char **av);
-int		execute(t_program *program);
-int		execute_commands(char *complete_cmd);
+int		execute(int fds[3], t_program *program);
+int		parse_execute_input(int fds[3], char *complete_cmd);
 
 /*
 ** src/execution/here_end.c
@@ -98,4 +96,6 @@ int		restore_here_end(struct termios *tty);
 /*
 ** src/execution/redirs.c
 */
+
+int		perform_redirs(int fds[3], t_simple *simple);
 #endif

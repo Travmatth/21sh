@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:29:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 18:23:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,21 @@
 
 int		main(int argc, char **argv, char **environ)
 {
-	int		stopped;
+	int		fds[3];
 	char	*command;
 
-	stopped = FALSE;
 	init_parser();
 	init_environ(argc, argv, environ);
-	if (!g_prods || !g_environ || ERR(init_shell()))
+	if (!g_prods || !g_environ || ERR(init_shell(fds)))
 		return (1);
-	while (!stopped)
+	while (TRUE)
 	{
 		signal(SIGINT, sig_handler);
 		write(STDOUT, "$> ", 3);
-		if (get_next_line(STDIN, &command) > 0)
-		{
-			if (!ft_strcmp("exit", command) || ERR(execute_commands(command)))
-				stopped = TRUE;
+		if (OK(get_next_line(STDIN, &command))
+			&& !IS_A("exit", command)
+			&& !ERR(parse_execute_input(fds, command)))
 			free(command);
-		}
 		else
 			break ;
 	}

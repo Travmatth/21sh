@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 17:23:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 14:59:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,9 +117,7 @@ int		simple_command(t_simple *simple, t_ast_node *root)
 	if (CONTAINS("cmd_suffix", root->rhs)
 		&& !OK((status = suffix(simple, root->val[position[SUFFIX]]))))
 		return (status);
-	if (OK((status = verify_command(&simple->command[0]))))
-		simple->is_builtin = status == BUILTIN ? TRUE : FALSE;
-	return (status);
+	return (verify_command(simple));
 }
 
 /*

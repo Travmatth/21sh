@@ -51,29 +51,6 @@ char			**g_environ;
 int				g_processes;
 
 /*
-** Signature of shell builtin functions
-*/
-
-typedef int		(*t_builtinf)(int argc, char **argv);
-
-/*
-** Structs used to match name of builtin to its function pointer
-*/
-
-typedef struct	s_builtin
-{
-	char		*cmd;
-	t_builtinf	f;
-	int			len;
-}				t_builtin;
-
-/*
-** Global variable holding structs mapping builtin names to function pointers
-*/
-
-extern t_builtin	g_builtins[];
-
-/*
 ** src/main.c
 */
 
@@ -83,7 +60,7 @@ extern t_builtin	g_builtins[];
 
 void			init_environ(int argc, char **argv, char **environ);
 void			init_parser(void);
-int				init_shell(void);
+int				init_shell(int fds[3]);
 
 /*
 ** signal.c
@@ -96,11 +73,12 @@ void			sig_handler(int sig);
 ** builtins/
 */
 
-void			set_env_var(char *name, char *val);
 int				builtin_echo(int argc, char **argv);
 int				builtin_cd(int argc, char **argv);
 int				builtin_setenv(int argc, char **argv);
 int				builtin_unsetenv(int argc, char **argv);
+int				builtin_exec(int argc, char **argv);
 int				builtin_env(int argc, char **argv);
+void			set_env_var(char *name, char *val);
 char			*get_env_var(char *var);
 #endif

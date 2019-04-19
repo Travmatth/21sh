@@ -6,14 +6,14 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 17:50:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 11:51:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
 /*
-** Action / GOTO table used in lr_1 parsing to determine, given a state and
+** Action / GOTO table used in LR_1 parsing to determine, given a state and
 ** word, the next appropriate action. Entries of the form r# are meant to be
 ** passed to reduce function, where # is the index of the production rule to
 ** used. Entries of the form s# are shifts, meant to push current word and
@@ -25,7 +25,7 @@ extern char		*g_parse_table[][53];
 
 /*
 ** Structs of productions in the form of { char *lhs; char **rhs },
-** which give the nonterminal and the array of [non]terminals it is composed by.
+** which give the nonterminal and the array of [non]terminals it is composed of.
 */
 
 extern t_prod	*g_prods;
@@ -33,7 +33,8 @@ extern t_prod	*g_prods;
 /*
 ** If given series of tokens on the end of the stack constitute a greater
 ** nonterminal symbol, these tokens should be popped of the stack and reduced
-** to the children of the given nonterminal, which is then pushed onto the stack
+** to the children of the given nonterminal and next state of parse stack, both
+** of which are then pushed onto the stack
 */
 
 int		reduce(int state, t_list **stack, t_ast_node *word)
@@ -62,8 +63,8 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 
 /*
 ** LR_1 parsing uses shift in instances where the current word is a member
-** of some greater nonterminal symbol, shifting pushes this word onto the
-** stack so it may be later reduced into parent nonterminal 
+** of some greater nonterminal symbol, shifting pushes this word, along with
+** next onto the stack, so word can be later reduced into parent nonterminal 
 */
 
 int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
@@ -78,7 +79,7 @@ int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 }
 
 /*
-** Successful lr_1 syntactic parsing results in a single `accept` token on end
+** Successful LR_1 syntactic parsing results in a single `accept` token on end
 ** of stack, where token contains the ast to be used in semantic parsing.
 ** This root of the ast is stored in the ast struct
 */
@@ -99,7 +100,7 @@ int		accept_ast(t_list **stack, t_ast *ast)
 }
 
 /*
-** syntactic_analysis performs lr_1 parsing of given token stream by determining
+** syntactic_analysis performs LR_1 parsing of given token stream by determining
 ** current state of parse, and whether to shift or reduce current word and stack
 ** (char*)((t_stack*)((t_stack*)stack->next->next->content)->item.token->val[0])
 ** ->item.token->val[0]

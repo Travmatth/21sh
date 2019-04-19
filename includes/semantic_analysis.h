@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 18:00:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 19:12:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,30 @@
 
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define CONTAINS(type, node) (ft_strstr(node, type))
+
+/*
+** Signature of shell builtin functions
+*/
+
+typedef int		(*t_builtinf)(int argc, char **argv);
+
+# define TOTAL_BUILTINS 6
+
+/*
+** Structs used to match name of builtin to its function pointer
+*/
+
+typedef struct	s_builtin
+{
+	char		*cmd;
+	t_builtinf	f;
+}				t_builtin;
+
+/*
+** Global variable holding structs mapping builtin names to function pointers
+*/
+
+extern t_builtin	g_builtins[];
 
 /*
 ** When processing simple command in its 5 possible forms, we use enum symbols
@@ -154,6 +178,7 @@ typedef struct				s_redir
 	int						type;
 	int						original;
 	int						replacement;
+	int						heredoc_quoted;
 }							t_redir;
 
 /*
@@ -165,9 +190,10 @@ typedef struct				s_simple_command
 {
 	char					**command;
 	t_redir					*redirs;
-	int						is_builtin;
+	t_builtinf				builtin;
 	int						bg;
 	int						bang;
+	int						exit_status;
 }							t_simple;
 
 /*
@@ -181,6 +207,7 @@ typedef struct				s_pipe
 	int						type;
 	int						bg;
 	int						bang;
+	int						exit_status;
 }							t_pipe;
 
 /*
@@ -194,6 +221,7 @@ typedef struct				s_operator
 	t_exec_node				*right;
 	int						type;
 	int						bg;
+	int						exit_status;
 }							t_operator;
 
 typedef struct				s_program
@@ -271,8 +299,8 @@ int		separator(int *is_bg, t_ast_node *root);
 
 int		find_exec(char *command);
 int		find_command(char **command, char **paths, int i, int found);
-int		is_builtin(char *command);
-int		verify_command(char **command);
+int		load_builtin(t_simple *simple);
+int		verify_command(t_simple *simple);
 
 /*
 ** src/semantic_analysis/expansions/arithmetic_expansion.c
@@ -296,7 +324,7 @@ int		command_substitution(char **parameter);
 
 int		full_word_expansion(char ***new, char *old);
 int		param_expansion(char **new, char *old);
-int		heredoc_expansion(char **new, char *old);
+int		heredoc_expansion(t_redir *redir, char **new, char *old);
 int		redir_expansion(char **new, char *old);
 
 /*

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:24:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 18:11:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,33 @@
 
 t_builtin	g_builtins[] =
 {
-	{"echo", builtin_echo, 4},
-	{"cd", builtin_cd, 2},
-	{"setenv", builtin_setenv, 6},
-	{"unsetenv", builtin_unsetenv, 8},
-	{"env", builtin_env, 3},
+	{"echo", builtin_echo},
+	{"cd", builtin_cd},
+	{"setenv", builtin_setenv},
+	{"unsetenv", builtin_unsetenv},
+	{"env", builtin_env},
+	{"exec", builtin_exec}
 };
+
+/*
+** Determine whether given command is a shell builtin function
+*/
+
+int		load_builtin(t_simple *simple)
+{
+	int		i;
+
+	i = -1;
+	while (++i < TOTAL_BUILTINS)
+	{
+		if (IS_A(g_builtins[i].cmd, simple->command[0]))
+		{
+			simple->builtin = g_builtins[i].f;
+			break ;
+		}
+	}
+	return (simple->builtin ? TRUE : FALSE);
+}
 
 /*
 ** Determine whether given command (and its full path) is valid file & correct
@@ -84,31 +105,13 @@ int		find_command(char **command, char **paths, int i, int found)
 }
 
 /*
-** Determine whether given command is a shell builtin function
-*/
-
-int		is_builtin(char *command)
-{
-	int		i;
-
-	i = 0;
-	while (i < 5)
-	{
-		if (ft_strnequ(g_builtins[i].cmd, command, g_builtins[i].len))
-			return (TRUE);
-		i += 1;
-	}
-	return (FALSE);
-}
-
-/*
 ** Determine whether given command array begins with valid command. If command
 ** is builtin, return this information, otherwise determine whether command is
 ** contained within directories specified in the current $PATH. If command is
 ** found, rewrite command to include full path of file.
 */
 
-int		verify_command(char **command)
+int		verify_command(t_simple *simple)
 {
 	int		j;
 	int		found;
@@ -116,17 +119,17 @@ int		verify_command(char **command)
 	int		status;
 
 	found = 0;
-	if (is_builtin(*command))
-		return (BUILTIN);
+	if (load_builtin(simple))
+		return (SUCCESS);
 	if (!(paths = ft_strsplit(get_env_var("PATH"), ':')))
 		return (ERROR);
 	j = 0;
 	while (paths && paths[j])
 		j += 1;
-	if (ERR((status = find_command(command, paths, j, found))))
-		ft_printf("sh: permission denied: %s\n", *command);
+	if (ERR((status = find_command(simple->command, paths, j, found))))
+		ft_printf("sh: permission denied: %s\n", simple->command[0]);
 	else if (NONE(status))
-		ft_printf("sh: command not found: %s\n", *command);
+		ft_printf("sh: command not found: %s\n", simple->command[0]);
 	ft_freearr(paths, TRUE);
 	return (status);
 }

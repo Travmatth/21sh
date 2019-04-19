@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 16:55:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 12:37:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,17 +77,21 @@ void	init_environ(int argc, char **argv, char **environ)
 ** will write/read to/from
 */
 
-int		init_shell(void)
+int		init_shell(int	fds[3])
 {
 	int		fd;
 	char	*tty_id;
 
 	if (!(tty_id = get_env_var("SHELL_TTY")))
-		return (NIL);
+	{
+		fds[STDIN] = STDIN;
+		fds[STDOUT] = STDOUT;
+		fds[STDERR] = STDERR;
+	}
 	else if (ERR((fd = open(tty_id, O_RDWR)))
-		|| ERR(dup2(fd, STDIN))
-		|| ERR(dup2(fd, STDOUT))
-		|| ERR(dup2(fd, STDERR))
+		|| ERR((fds[STDIN] = dup2(fd, STDIN)))
+		|| ERR((fds[STDOUT] = dup2(fd, STDOUT)))
+		|| ERR((fds[STDERR] = dup2(fd, STDERR)))
 		|| ERR(close(fd)))
 		return (ERROR);
 	return (SUCCESS);

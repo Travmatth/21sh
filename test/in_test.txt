@@ -1,39 +1,11 @@
-cat << EOF
-cat author && echo foo
-./test/read_from_fd.py 0 <<EOF
-cat	< author
-echo \n; cat "foo";
-	 	echo 	 	 "\nthis should"	 	"work";
-echo	"\"this should"		\"too		;
-ls -l -R | grep "\.txt$";
-echo "foo bar" > test/out_file;
-echo ${ENV};
-
-# LEX / PARSE / SEMANTIC CORRECTLY - HAVENT EXECUTED
-# quotes managed correctly
-(c)
-{c}
-echo `echo $HOME`
-echo $
-echo $(echo $)
-echo ""
-echo $(echo $HOME)
 echo ${HOME}
-echo $(((1 + 2) + 1))
 echo $HOME
 echo "HOME"
 echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
 echo \$HOME
-echo \$(invalid)
-echo \$((invalid))
-echo \`invalid`
-echo $(echo foo);
+echo $(((1 + 2) + 1))
 echo "simple";
-echo "\"l\
-$($("foo"));
-$((1 + 1));
 echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
-echo ${echo foo};
 echo $FOO;
 echo $(echo bar);
 echo 	 	 "\nthis should not;
@@ -45,6 +17,21 @@ echo this && echo and this
 echo this && echo and this || echo not this
 echo this && cat foo || echo and this
 cat foo || echo this && echo and this
+echo \$(invalid)
+echo \$((invalid))
+echo \`invalid`
+echo $(echo foo);
+echo "\"l\
+$($("foo"));
+$((1 + 1));
+echo ${echo foo};
+(c)
+{c}
+echo `echo $HOME`
+echo $
+echo $(echo $)
+echo ""
+echo $(echo $HOME)
 echo hello && echo world | tr a-z A-Z
 # then you'll get
 # hello
@@ -56,3 +43,14 @@ echo \2>a
 # write character 2 into file a
 echo 2\>a
 # write characters 2>a to STDOUT
+# UNTESTED
+cat author && echo foo
+./test/read_from_fd.py 0 <<EOF
+cat	< author
+echo \n; cat "foo";
+	 	echo 	 	 "\nthis should"	 	"work";
+echo	"\"this should"		\"too		;
+ls -l -R | grep "\.txt$";
+echo "foo bar" > test/out_file;
+echo ${ENV};
+cat << EOF;

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 18:02:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 19:09:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int		process_redir(t_redir *redir, int io_num, char *filename, int type)
 		}
 	}
 	status = (type == REDIR_DLESS || type == REDIR_DLESSDASH)
-		? heredoc_expansion(&name, filename)
+		? heredoc_expansion(redir, &name, filename)
 		: redir_expansion(&name, filename);
 	if (OK(status))
 	{

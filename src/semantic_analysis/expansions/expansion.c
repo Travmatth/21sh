@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 16:23:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/18 19:12:33 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,12 +91,18 @@ int		param_expansion(char **new, char *old)
 ** whether any of the other expansions occur.
 */
 
-int		heredoc_expansion(char **new, char *old)
+int		heredoc_expansion(t_redir *redir, char **new, char *old)
 {
 	int		status;
+	char	*word;
 
+	word = old;
 	if (!OK((status = remove_quotes(&old))))
 		return (status);
+	if (IS_A(word, old))
+		redir->heredoc_quoted = FALSE;
+	else
+		redir->heredoc_quoted = TRUE;
 	*new = old;
 	return (status);
 }
