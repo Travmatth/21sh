@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 19:14:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/20 20:32:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		execute_command(int fds[3], t_simple *simple)
+int		exec_command(int fds[3], t_simple *simple)
 {
 	int		argc;
 	int		status;
@@ -29,50 +29,9 @@ int		execute_command(int fds[3], t_simple *simple)
 		else
 			execve(simple->command[0], simple->command, g_environ);
 	}
-	else
-		status = ERR(simple->exit_status) ? ERROR : SUCCESS;
 	return (status);
 }
 
-int		exec_pipe(int fds[3], t_pipe *pipe)
-{
-	int		new_fds[3];
-	int		status;
-
-	status = SUCCESS;
-	ft_memcpy(new_fds, fds, sizeof(int) * 3);
-	(void)pipe;
-	return (status);
-}
-
-int		exec_and(int fds[3], t_operator *operator)
-{
-	int		new_fds[3];
-	int		status;
-
-	status = SUCCESS;
-	ft_memcpy(new_fds, fds, sizeof(int) * 3);
-	(void)operator;
-	return (status);
-}
-
-int		exec_or(int fds[3], t_operator *operator)
-{
-	int		new_fds[3];
-	int		status;
-
-	status = SUCCESS;
-	ft_memcpy(new_fds, fds, sizeof(int) * 3);
-	(void)operator;
-	return (status);
-}
-
-int		restore_fds(int old_fds[3], int new_fds[3])
-{
-	(void)old_fds;
-	(void)new_fds;
-	return (SUCCESS);
-}
 int		exec_simple_command(int fds[3], t_simple *simple)
 {
 	int		new_fds[3];
@@ -81,11 +40,13 @@ int		exec_simple_command(int fds[3], t_simple *simple)
 
 	status = ERROR;
 	ft_memcpy(new_fds, fds, sizeof(int) * 3);
-	if (simple->builtin == builtin_exec)
-		status = execute_command(new_fds, simple);
+	if (!OK((status = open_redirs(fds, simple))))
+		return (status);
+	else if (simple->builtin == builtin_exec)
+		status = exec_command(new_fds, simple);
 	else if (NONE((pid = fork())))
 	{
-		execute_command(new_fds, simple);
+		exec_command(new_fds, simple);
 		ft_printf("fork error: %s", simple->command[0]);
 		simple->exit_status = ERROR;
 		_exit(1);
@@ -101,6 +62,71 @@ int		exec_simple_command(int fds[3], t_simple *simple)
 	return (status);
 }
 
+int		execute_switch(int fds[3], t_exec_node *node)
+{
+	int		status;
+
+	status = SUCCESS;
+	if (node->type == EXEC_PIPE)
+		status = exec_pipe(fds, node->pipe);
+	else if (node->type == EXEC_AND)
+		status = exec_logical(fds, node->operator);
+	else if (node->type == EXEC_SIMPLE_COMMAND)
+		status = exec_simple_command(fds, node->simple_command);
+	else
+		status = NIL;
+	return (status);
+}
+
+int		exec_pipe(int fds[3], t_pipe *pipe)
+{
+	int		new_fds[3];
+	int		pipe_fd[2];
+	int		status;
+
+	status = SUCCESS;
+	// open in and out
+	if (ERR(pipe(fds, new_fds)))
+		return (ERROR);
+	// save original file descriptors
+	ft_memcpy(new_fds, fds, sizeof(int) * 3);
+	if (ERR((fds[STDOUT] = dup(fds[STDOUT])))
+		|| ERR((fds[STDIN] = dup(fds[STDIN]))))
+		return (ERROR);
+	// replace stdout left half with pipe_in
+	if (ERR((new_fds[STDOUT] = dup2(pipe_fd[PIPE_READ], new_fds[STDOUT]))))
+		return (ERROR);
+	// exec left side
+	if (ERR((pipe->exit_status = execute_switch(new_fds, pipe->left))))
+		return (ERROR);
+	// replace stdin of right half with pipe_out
+	if (ERR((new_fds[STDIN] = dup2(pipe_fd[PIPE_WRITE], new_fds[STDIN]))))
+		return (ERROR);
+	status = OK(status) ? execute_switch(new_fds, pipe->right) : status;
+	// close pipes
+	if (ERR(close(pipe_fd[PIPE_READ])))
+		return (ERROR);
+	if (ERR(close(pipe_fd[PIPE_WRITE])))
+		return (ERROR);
+	// restore original fds, overwrite new
+	if (ERR(dup2(fds[STDIN], new_fds[STDIN]))
+		|| ERR(dup2(fds[STDOUT], new_fds[STDOUT])))
+		return (ERROR);
+	return (status);
+}
+
+int		exec_logical(int fds[3], t_operator *operator)
+{
+	int		status;
+	int		not;
+
+	not = operator->type == EXEC_OR ? TRUE : FALSE;
+	operator->exit_status = execute_switch(fds, pipe->left);
+	operator->exit_status = not && operator->exit_status
+		? SUCCESS
+		: execute_switch(fds, operator->right);
+	return (operator->exit_status);
+}
 
 int		execute(int fds[3], t_program *program)
 {
@@ -110,18 +136,7 @@ int		execute(int fds[3], t_program *program)
 	i = -1;
 	status = SUCCESS;
 	while (OK(status) && program->commands[++i])
-	{
-		if (program->commands[i]->type == EXEC_PIPE)
-			status = exec_pipe(fds, program->commands[i]->pipe);
-		else if (program->commands[i]->type == EXEC_AND)
-			status = exec_and(fds, program->commands[i]->operator);
-		else if (program->commands[i]->type == EXEC_OR)
-			status = exec_or(fds, program->commands[i]->operator);
-		else if (program->commands[i]->type == EXEC_SIMPLE_COMMAND)
-			status = exec_simple_command(fds, program->commands[i]->simple_command);
-		else
-			status = NIL;
-	}
+		status = execute_switch(fds, program->commands[i]);
 	return (status);
 }
 

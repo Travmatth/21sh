@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 19:12:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/20 13:53:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,7 +204,6 @@ typedef struct				s_pipe
 {
 	t_exec_node				*left;
 	t_exec_node				*right;
-	int						type;
 	int						bg;
 	int						bang;
 	int						exit_status;

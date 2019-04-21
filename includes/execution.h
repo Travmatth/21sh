@@ -19,6 +19,11 @@
 
 # include "semantic_analysis.h"
 
+# define NEGATE(x, y) (x ? !y : y)
+
+# define PIPE_READ 0
+# define PIPE_WRITE 1
+
 /*
 ** Character sent by terminal line discipline in response to BACKSPACE key
 */
@@ -97,5 +102,5 @@ int		restore_here_end(struct termios *tty);
 ** src/execution/redirs.c
 */
 
-int		perform_redirs(int fds[3], t_simple *simple);
+int		open_redirs(int fds[3], t_simple *simple);
 #endif

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 19:17:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/20 19:17:40 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ or ">|" formats shall cause the file whose name results from the expansion of
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_out(int fds[3], t_redir *redir)
+int		redir_out(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
-	(void)redir;
 	status = SUCCESS;
+	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_TRUNC | O_CREAT))))
+		status = NIL;
 	return (status);
 }
 
@@ -49,13 +49,13 @@ int		redir_out(int fds[3], t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_input(int fds[3], t_redir *redir)
+int		redir_input(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
-	(void)redir;
 	status = SUCCESS;
+	if (ERR((redir->replacement = open(redir->word, O_RDONLY))))
+		status = NIL;
 	return (status);
 }
 
@@ -87,14 +87,82 @@ int		redir_input(int fds[3], t_redir *redir)
 ** the application and shall be read first by the shell.
 */
 
-int		redir_heredoc(int fds[3], t_redir *redir)
+int		redir_heredoc(t_redir *redir)
 {
+	char	next;
+	char	*buf;
+	char	*tmp;
+	char	*line;
+	size_t	here_end_len;
+	size_t	buf_len;
+	size_t	line_len;
 	int		status;
+	struct termios	tty[2];
+	int		fd[2];
+	int		found;
 
-	(void)fds;
-	(void)redir;
-	status = SUCCESS;
-	return (status);
+	buf_len = 0;
+	line_len = 0;
+	here_end_len = LEN(redir->word, 0);
+	buf = ft_strnew(here_end_len);
+	tmp = NULL;
+	line = NULL;
+	found = FALSE;
+	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : SUCCESS))
+		status = NONE(pipe(fd)) ? SUCCESS : ERROR;
+	redir->replacement = fd[0];
+	while(OK(status))
+	{
+		// read next char
+		// signal encountered, break
+		if (ERR((status = read(STDIN, &next, 1))) == (next == INTR || next == DEL))
+			break ;
+		// no line, create
+		if (!line || (!(line = ft_strnew(here_end_len))))
+			status = ERROR;
+		// if here_end found, stop next iteration
+		if (OK(status) && here_end_len == buf_len && IS_A(redir->word, buf_len))
+			found = TRUE;
+		// if buffer full, write buffer to line
+		if (OK(status) && here_end_len == buf_len)
+		{
+			if (!(tmp = ft_strjoin(line, buf)))
+				status = ERROR;
+			free(line);
+			line = tmp;
+			tmp = NULL;
+			ft_bzero(buf, here_end_len);
+		}
+		// if newline encountered, write line && buffer to pipe
+		if (OK(status) && next == '\n')
+		{
+			ft_putendl("heredoc > ");
+			if (ERR(write(fd[1], line, line_len))
+				|| ERR(write(fd[1], buf, buf_len)))
+				status = ERROR;
+			free(line);
+			line = NULL;
+			line_len = 0;
+			here_end_len = 0;
+		}
+		// if next backspace, remove last char
+		else if (OK(status) && next == DEL)
+		{
+			if (buf_len)
+				buf[buf_len--] = '\0';
+			else if (line_len)
+				line[line_len--] = '\0';
+			status = ERR(write(STDIN, "\b \b", 3)) : ERROR : status;
+		}
+		// if buffer not full, write next to buffer
+		else if (OK(status) && next != DEL)
+		{
+			here_end_len += 1;
+			ft_putchar(next);
+			ft_strncat(buf, &next, 1);
+		}
+	}
+	return (restore_here_end(redir, fd[1], &tty[1]) && ERR(status) ? ERROR : status);
 }
 
 /*
@@ -110,13 +178,13 @@ int		redir_heredoc(int fds[3], t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_out_append(int fds[3], t_redir *redir)
+int		redir_out_append(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
-	(void)redir;
 	status = SUCCESS;
+	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_CREAT | O_APPEND))))
+		status = NIL;
 	return (status);
 }
 
@@ -135,13 +203,15 @@ int		redir_out_append(int fds[3], t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_input_dup(int fds[3], t_redir *redir)
+int		redir_input_dup(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
-	(void)redir;
-	status = SUCCESS;
+	status = NIL;
+	if (IS_A("-", redir->word))
+		status = close(redir->original);
+	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
+		ft_printf("Execution Error: %s: ambiguous redirect");
 	return (status);
 }
 
@@ -160,13 +230,15 @@ int		redir_input_dup(int fds[3], t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_out_dup(int fds[3], t_redir *redir)
+int		redir_out_dup(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
-	(void)redir;
-	status = SUCCESS;
+	status = NIL;
+	if (IS_A("-", redir->word))
+		status = close(redir->original);
+	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
+		ft_printf("Execution Error: %s: ambiguous redirect");
 	return (status);
 }
 
@@ -179,13 +251,13 @@ int		redir_out_dup(int fds[3], t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_inout(int fds[3], t_redir *redir)
+int		redir_out(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
-	(void)redir;
 	status = SUCCESS;
+	if (ERR((redir->replacement = open(redir->word, O_RDWR | O_CREAT))))
+		status = NIL;
 	return (status);
 }
 
@@ -219,11 +291,10 @@ int		redir_inout(int fds[3], t_redir *redir)
 ** be read first by the shell.
 */
 
-int		redir_heredoc_dash(int fds[3], t_redir *redir)
+int		redir_heredoc_dash(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
 	(void)redir;
 	status = SUCCESS;
 	return (status);
@@ -243,54 +314,58 @@ int		redir_heredoc_dash(int fds[3], t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_clobber(int fds[3], t_redir *redir)
+int		redir_clobber(t_redir *redir)
 {
 	int		status;
 
-	(void)fds;
 	(void)redir;
 	status = SUCCESS;
 	return (status);
 }
 
-
-int		perform_redir(int fds[3], t_redir *redir)
+int		open_redirs(int fds[3], t_simple *simple)
 {
-	int		status;
-
-	status = SUCCESS;
-	if (redir->type == REDIR_GT)
-		status = redir_out(fds, redir);
-	else if (redir->type == REDIR_LT)
-		status = redir_input(fds, redir);
-	else if (redir->type == REDIR_DLESS)
-		status = redir_heredoc(fds, redir);
-	else if (redir->type == REDIR_DGREAT)
-		status = redir_out_append(fds, redir);
-	else if (redir->type == REDIR_LESSAND)
-		status = redir_input_dup(fds, redir);
-	else if (redir->type == REDIR_GREATAND)
-		status = redir_out_dup(fds, redir);
-	else if (redir->type == REDIR_LESSGREAT)
-		status = redir_inout(fds, redir);
-	else if (redir->type == REDIR_DLESSDASH)
-		status = redir_heredoc_dash(fds, redir);
-	else if (redir->type == REDIR_CLOBBER)
-		status = redir_clobber(fds, redir);
-	return (status);
-}
-
-int		perform_redirs(int fds[3], t_simple *simple)
-{
-	int		status;
 	t_redir	*redir;
 
-	status = SUCCESS;
 	redir = simple->redirs;
-	while (OK(status) && redir)
+	simple->exit_status = SUCCESS;
+	while (OK(simple->exit_status) && redir)
 	{
-		simple->exit_status = perform_redir(fds, redir);
-		status = simple->exit_status;
+		if (redir->type == REDIR_GT)
+			simple->exit_status = redir_out(redir);
+		else if (redir->type == REDIR_LT)
+			simple->exit_status = redir_input(redir);
+		else if (redir->type == REDIR_DLESS)
+			simple->exit_status = redir_heredoc(redir);
+		else if (redir->type == REDIR_DGREAT)
+			simple->exit_status = redir_out_append(redir);
+		else if (redir->type == REDIR_LESSAND)
+			simple->exit_status = redir_input_dup(redir);
+		else if (redir->type == REDIR_GREATAND)
+			simple->exit_status = redir_out_dup(redir);
+		else if (redir->type == REDIR_LESSGREAT)
+			simple->exit_status = redir_inout(redir);
+		else if (redir->type == REDIR_DLESSDASH)
+			simple->exit_status = redir_heredoc_dash(redir);
+		else if (redir->type == REDIR_CLOBBER)
+			simple->exit_status = redir_clobber(redir);
+		redir = redir->next;
 	}
-	return (status);
+	return (simple->exit_status);
+}
+
+int		perform_redirs(t_simple *simple)
+{
+	int		status;
+
+	status = SUCCESS;
+	t_redir	*current;
+	current = simple->redirs;
+	while (OK(status) && current)
+	{
+		if (ERR(dup2(redir->replacement, redir->original)))
+			status = NIL;
+		current = current->next;
+	}
+	return (SUCCESS);
 }

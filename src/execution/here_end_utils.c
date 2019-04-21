@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/30 17:18:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/20 19:08:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,6 @@ int		prep_here_end(struct termios *ttys)
 	char			buf[BUFF_SIZE];
 
 	if (!isatty(STDIN)
-		|| NONE((type = get_env_var("TERM")))
-		|| ERR(tgetent(buf, type))
 		|| ERR(tcgetattr(STDIN, &ttys[0]))
 		|| ERR(tcgetattr(STDIN, &ttys[1])))
 		return (ERROR);
@@ -96,9 +94,11 @@ int		prep_here_end(struct termios *ttys)
 	return (SUCCESS);
 }
 
-int		restore_here_end(struct termios *tty)
+int		restore_here_end(t_redir *redir, int pipe_in, struct termios *tty)
 {
-	if (ERR(tcsetattr(STDIN, TCSADRAIN, tty)))
+	if (ERR(close(pipe_in))
+	|| ERR(dup2(redir->replacement, redir->original))
+	|| ERR(tcsetattr(STDIN, TCSADRAIN, tty)))
 		return (ERROR);
 	return (SUCCESS);
 }

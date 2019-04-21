@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 19:12:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/20 16:09:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,25 @@ int		heredoc_expansion(t_redir *redir, char **new, char *old)
 	else
 		redir->heredoc_quoted = TRUE;
 	*new = old;
+	return (status);
+}
+
+/*
+** If no characters in word are quoted, all lines of the here-document shall be
+** expanded for parameter expansion, command substitution, and arithmetic
+** expansion.
+*/
+
+int		heredoc_line_expansion(char **new, char *old)
+{
+	int		status;
+	char	*parameter;
+
+	parameter = old;
+	if (OK((status = parameter_expansion(&parameter)))
+		&& OK((status = command_substitution(&parameter)))
+		&& OK((status = arithmetic_expansion(&parameter))))
+		*new = parameter;
 	return (status);
 }
 
