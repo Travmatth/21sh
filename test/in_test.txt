@@ -1,3 +1,5 @@
+cat author
+cat foo
 echo ${HOME}
 echo $HOME
 echo "HOME"

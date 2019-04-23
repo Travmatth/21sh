@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/20 19:17:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/22 14:58:11 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int		redir_heredoc(t_redir *redir)
 	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : SUCCESS))
 		status = NONE(pipe(fd)) ? SUCCESS : ERROR;
 	redir->replacement = fd[0];
-	while(OK(status))
+	while(OK(status) && !found)
 	{
 		// read next char
 		// signal encountered, break
@@ -121,7 +121,7 @@ int		redir_heredoc(t_redir *redir)
 		if (!line || (!(line = ft_strnew(here_end_len))))
 			status = ERROR;
 		// if here_end found, stop next iteration
-		if (OK(status) && here_end_len == buf_len && IS_A(redir->word, buf_len))
+		if (OK(status) && here_end_len == buf_len && IS_A(redir->word, buf))
 			found = TRUE;
 		// if buffer full, write buffer to line
 		if (OK(status) && here_end_len == buf_len)
@@ -152,7 +152,7 @@ int		redir_heredoc(t_redir *redir)
 				buf[buf_len--] = '\0';
 			else if (line_len)
 				line[line_len--] = '\0';
-			status = ERR(write(STDIN, "\b \b", 3)) : ERROR : status;
+			status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
 		}
 		// if buffer not full, write next to buffer
 		else if (OK(status) && next != DEL)
@@ -162,7 +162,7 @@ int		redir_heredoc(t_redir *redir)
 			ft_strncat(buf, &next, 1);
 		}
 	}
-	return (restore_here_end(redir, fd[1], &tty[1]) && ERR(status) ? ERROR : status);
+	return (restore_here_end(fd[1], &tty[1]) && ERR(status) ? ERROR : status);
 }
 
 /*
@@ -251,7 +251,7 @@ int		redir_out_dup(t_redir *redir)
 ** A failure to open or create a file shall cause a redirection to fail.
 */
 
-int		redir_out(t_redir *redir)
+int		redir_inout(t_redir *redir)
 {
 	int		status;
 
@@ -323,7 +323,7 @@ int		redir_clobber(t_redir *redir)
 	return (status);
 }
 
-int		open_redirs(int fds[3], t_simple *simple)
+int		open_redirs(t_simple *simple)
 {
 	t_redir	*redir;
 
@@ -357,13 +357,13 @@ int		open_redirs(int fds[3], t_simple *simple)
 int		perform_redirs(t_simple *simple)
 {
 	int		status;
+	t_redir	*current;
 
 	status = SUCCESS;
-	t_redir	*current;
 	current = simple->redirs;
 	while (OK(status) && current)
 	{
-		if (ERR(dup2(redir->replacement, redir->original)))
+		if (ERR(dup2(current->replacement, current->original)))
 			status = NIL;
 		current = current->next;
 	}

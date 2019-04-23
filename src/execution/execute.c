@@ -6,18 +6,18 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/20 20:32:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/22 18:19:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		exec_command(int fds[3], t_simple *simple)
+int		exec_command(t_simple *simple, int should_exit)
 {
 	int		argc;
 	int		status;
 
-	if (OK((status = perform_redirs(fds, simple))))
+	if (OK((status = perform_redirs(simple))))
 	{
 		if (simple->builtin)
 		{
@@ -25,6 +25,9 @@ int		exec_command(int fds[3], t_simple *simple)
 			while (simple->command[argc])
 				argc += 1;
 			simple->exit_status = simple->builtin(argc, simple->command);
+			simple->exit_status = OK(simple->exit_status) ? 0 : 1;
+			if (should_exit)
+				_exit(simple->exit_status);
 		}
 		else
 			execve(simple->command[0], simple->command, g_environ);
@@ -32,53 +35,55 @@ int		exec_command(int fds[3], t_simple *simple)
 	return (status);
 }
 
-int		exec_simple_command(int fds[3], t_simple *simple)
+// when `exec` called, happens in current process.
+// if inside pipe would be inside child process, thus no redirections detected
+
+int		exec_simple_command(t_simple *simple, int *exit_status)
 {
-	int		new_fds[3];
+	int 	waitpid_return;
 	int		status;
 	pid_t	pid;
 
-	status = ERROR;
-	ft_memcpy(new_fds, fds, sizeof(int) * 3);
-	if (!OK((status = open_redirs(fds, simple))))
+	if (!OK((status = open_redirs(simple))))
 		return (status);
 	else if (simple->builtin == builtin_exec)
-		status = exec_command(new_fds, simple);
+		status = exec_command(simple, FALSE);
 	else if (NONE((pid = fork())))
 	{
-		exec_command(new_fds, simple);
+		exec_command(simple, TRUE);
 		ft_printf("fork error: %s", simple->command[0]);
 		simple->exit_status = ERROR;
 		_exit(1);
 	}
 	else if (OK(pid))
 	{
-		waitpid(pid, &status, NIL);
-		simple->exit_status = (WIFEXITED(status) ? WEXITSTATUS(status) : -1);
-		status = restore_fds(fds, new_fds);
+		errno = 0;
+		while (ERR((waitpid_return = waitpid(pid, &simple->exit_status, NIL))))
+		{
+			if (errno == EINTR)
+				errno = 0;
+			else
+				break ;
+		}
+		if (ERR(waitpid_return))
+			simple->exit_status = ERROR;
+		else if (WIFEXITED(simple->exit_status))
+			simple->exit_status = WEXITSTATUS(simple->exit_status);
+		else if (WIFSIGNALED(simple->exit_status))
+			simple->exit_status = ERROR;
 	}
 	else if (ERR(pid))
 		ft_printf("fork error: %s", simple->command[0]);
+	status = !ERR(status) && !ERR(pid) && !ERR(simple->exit_status) ? SUCCESS : ERROR;
+	*exit_status = simple->exit_status;
 	return (status);
 }
 
-int		execute_switch(int fds[3], t_exec_node *node)
-{
-	int		status;
+// pipes should fork, execute first command in child and 
+// fork again in master to exec second child
+// for `exec` command, redirections occur in that child process 
 
-	status = SUCCESS;
-	if (node->type == EXEC_PIPE)
-		status = exec_pipe(fds, node->pipe);
-	else if (node->type == EXEC_AND)
-		status = exec_logical(fds, node->operator);
-	else if (node->type == EXEC_SIMPLE_COMMAND)
-		status = exec_simple_command(fds, node->simple_command);
-	else
-		status = NIL;
-	return (status);
-}
-
-int		exec_pipe(int fds[3], t_pipe *pipe)
+int		exec_pipe(int fds[3], t_pipe *pipe_node, int *exit_status)
 {
 	int		new_fds[3];
 	int		pipe_fd[2];
@@ -86,7 +91,7 @@ int		exec_pipe(int fds[3], t_pipe *pipe)
 
 	status = SUCCESS;
 	// open in and out
-	if (ERR(pipe(fds, new_fds)))
+	if (ERR(pipe(pipe_fd)))
 		return (ERROR);
 	// save original file descriptors
 	ft_memcpy(new_fds, fds, sizeof(int) * 3);
@@ -97,12 +102,14 @@ int		exec_pipe(int fds[3], t_pipe *pipe)
 	if (ERR((new_fds[STDOUT] = dup2(pipe_fd[PIPE_READ], new_fds[STDOUT]))))
 		return (ERROR);
 	// exec left side
-	if (ERR((pipe->exit_status = execute_switch(new_fds, pipe->left))))
+	if (ERR((status = execute_switch(new_fds, pipe_node->left, &pipe_node->exit_status))))
 		return (ERROR);
 	// replace stdin of right half with pipe_out
 	if (ERR((new_fds[STDIN] = dup2(pipe_fd[PIPE_WRITE], new_fds[STDIN]))))
 		return (ERROR);
-	status = OK(status) ? execute_switch(new_fds, pipe->right) : status;
+	status = OK(status) && NORMAL_CHILD_EXIT(pipe_node->exit_status)
+		? execute_switch(new_fds, pipe_node->right, &pipe_node->exit_status)
+		: status;
 	// close pipes
 	if (ERR(close(pipe_fd[PIPE_READ])))
 		return (ERROR);
@@ -112,31 +119,49 @@ int		exec_pipe(int fds[3], t_pipe *pipe)
 	if (ERR(dup2(fds[STDIN], new_fds[STDIN]))
 		|| ERR(dup2(fds[STDOUT], new_fds[STDOUT])))
 		return (ERROR);
+	*exit_status = pipe_node->exit_status;
 	return (status);
 }
 
-int		exec_logical(int fds[3], t_operator *operator)
+int		exec_logical(int fds[3], t_operator *operator, int *exit_status)
+{
+	int		child_exit;
+
+	operator->exit_status = execute_switch(fds, operator->left, &child_exit);
+	if (ERROR_CHILD_EXIT(child_exit) && operator->type == EXEC_OR)
+		operator->exit_status = execute_switch(fds, operator->right, &child_exit);
+	else if (OK(operator->exit_status) && NORMAL_CHILD_EXIT(child_exit) && operator->type == EXEC_AND)
+		operator->exit_status = execute_switch(fds, operator->right, &child_exit);
+	*exit_status = operator->exit_status;
+	return (operator->exit_status);
+}
+
+int		execute_switch(int fds[3], t_exec_node *node, int *exit_status)
 {
 	int		status;
-	int		not;
 
-	not = operator->type == EXEC_OR ? TRUE : FALSE;
-	operator->exit_status = execute_switch(fds, pipe->left);
-	operator->exit_status = not && operator->exit_status
-		? SUCCESS
-		: execute_switch(fds, operator->right);
-	return (operator->exit_status);
+	status = SUCCESS;
+	if (node->type == EXEC_PIPE)
+		status = exec_pipe(fds, node->pipe, exit_status);
+	else if (node->type == EXEC_AND)
+		status = exec_logical(fds, node->operator, exit_status);
+	else if (node->type == EXEC_SIMPLE_COMMAND)
+		status = exec_simple_command(node->simple_command, exit_status);
+	else
+		status = NIL;
+	return (status);
 }
 
 int		execute(int fds[3], t_program *program)
 {
 	int		i;
 	int		status;
+	int		process_exit_status;
 
 	i = -1;
 	status = SUCCESS;
 	while (OK(status) && program->commands[++i])
-		status = execute_switch(fds, program->commands[i]);
+		status = execute_switch(fds, program->commands[i], &process_exit_status);
 	return (status);
 }
 

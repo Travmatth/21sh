@@ -21,6 +21,18 @@
 
 # define NEGATE(x, y) (x ? !y : y)
 
+/*
+** When a bash process exits normally, return value is 0
+** When exiting because of an error, return value is 1
+*/
+
+# define NORMAL_CHILD_EXIT(x) (x == 0)
+# define ERROR_CHILD_EXIT(x) (x == 1)
+
+/*
+** When creating pipes, fd[0] is read end of pipe and fd[1] is write end
+*/
+
 # define PIPE_READ 0
 # define PIPE_WRITE 1
 
@@ -73,7 +85,7 @@ enum			e_here_end_dfa
 ** src/execution/execute.c
 */
 
-int		execute(int fds[3], t_program *program);
+int		execute_switch(int fds[3], t_exec_node *node, int *exit_status);
 int		parse_execute_input(int fds[3], char *complete_cmd);
 
 /*
@@ -89,10 +101,8 @@ int		swap_here_end_fd(int pipe_fds[2], int dfa_state[5], int io_num);
 ** src/execution/here_end_utils.c
 */
 
-char	**init_bufs(size_t len);
-int		create_here_end_dfa(char *here_end, int ***dfa, int dfa_state[5]);
 int		prep_here_end(struct termios *ttys);
-int		restore_here_end(struct termios *tty);
+int		restore_here_end(int pipe_in, struct termios *tty);
 
 /*
 ** src/execution/operators.c
@@ -102,5 +112,6 @@ int		restore_here_end(struct termios *tty);
 ** src/execution/redirs.c
 */
 
-int		open_redirs(int fds[3], t_simple *simple);
+int		open_redirs(t_simple *simple);
+int		perform_redirs(t_simple *simple);
 #endif
