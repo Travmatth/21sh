@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/22 14:58:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/23 15:45:59 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ int		redir_out(t_redir *redir)
 {
 	int		status;
 
-	status = SUCCESS;
+	status = 0;
 	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_TRUNC | O_CREAT))))
-		status = NIL;
+		status = 1;
 	return (status);
 }
 
@@ -53,9 +53,9 @@ int		redir_input(t_redir *redir)
 {
 	int		status;
 
-	status = SUCCESS;
+	status = 0;
 	if (ERR((redir->replacement = open(redir->word, O_RDONLY))))
-		status = NIL;
+		status = 1;
 	return (status);
 }
 
@@ -108,8 +108,8 @@ int		redir_heredoc(t_redir *redir)
 	tmp = NULL;
 	line = NULL;
 	found = FALSE;
-	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : SUCCESS))
-		status = NONE(pipe(fd)) ? SUCCESS : ERROR;
+	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : 0))
+		status = NONE(pipe(fd)) ? 0 : ERROR;
 	redir->replacement = fd[0];
 	while(OK(status) && !found)
 	{
@@ -182,9 +182,9 @@ int		redir_out_append(t_redir *redir)
 {
 	int		status;
 
-	status = SUCCESS;
+	status = 0;
 	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_CREAT | O_APPEND))))
-		status = NIL;
+		status = 1;
 	return (status);
 }
 
@@ -207,7 +207,7 @@ int		redir_input_dup(t_redir *redir)
 {
 	int		status;
 
-	status = NIL;
+	status = 1;
 	if (IS_A("-", redir->word))
 		status = close(redir->original);
 	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
@@ -234,7 +234,7 @@ int		redir_out_dup(t_redir *redir)
 {
 	int		status;
 
-	status = NIL;
+	status = 1;
 	if (IS_A("-", redir->word))
 		status = close(redir->original);
 	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
@@ -255,9 +255,9 @@ int		redir_inout(t_redir *redir)
 {
 	int		status;
 
-	status = SUCCESS;
+	status = 0;
 	if (ERR((redir->replacement = open(redir->word, O_RDWR | O_CREAT))))
-		status = NIL;
+		status = 1;
 	return (status);
 }
 
@@ -296,7 +296,7 @@ int		redir_heredoc_dash(t_redir *redir)
 	int		status;
 
 	(void)redir;
-	status = SUCCESS;
+	status = 0;
 	return (status);
 }
 
@@ -319,7 +319,7 @@ int		redir_clobber(t_redir *redir)
 	int		status;
 
 	(void)redir;
-	status = SUCCESS;
+	status = 0;
 	return (status);
 }
 
@@ -328,8 +328,8 @@ int		open_redirs(t_simple *simple)
 	t_redir	*redir;
 
 	redir = simple->redirs;
-	simple->exit_status = SUCCESS;
-	while (OK(simple->exit_status) && redir)
+	simple->exit_status = 0;
+	while (simple->exit_status == 0 && redir)
 	{
 		if (redir->type == REDIR_GT)
 			simple->exit_status = redir_out(redir);
@@ -359,13 +359,13 @@ int		perform_redirs(t_simple *simple)
 	int		status;
 	t_redir	*current;
 
-	status = SUCCESS;
+	status = 0;
 	current = simple->redirs;
-	while (OK(status) && current)
+	while (NORMAL_CHILD_EXIT(status) && current)
 	{
 		if (ERR(dup2(current->replacement, current->original)))
-			status = NIL;
+			status = 1;
 		current = current->next;
 	}
-	return (SUCCESS);
+	return (0);
 }

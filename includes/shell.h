@@ -60,12 +60,13 @@ int				g_processes;
 
 void			init_environ(int argc, char **argv, char **environ);
 void			init_parser(void);
-int				init_shell(int fds[3]);
+int				init_shell();
 
 /*
 ** signal.c
 */
 
+void			sigtrap_handler(int sig);
 void			child_sig_handler(int sig);
 void			sig_handler(int sig);
 

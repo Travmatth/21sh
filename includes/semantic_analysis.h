@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/20 13:53:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/23 18:05:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,6 @@ enum	e_simple_positions
 
 # define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"
 # define CMD_SUB_ERR "Semantic Error: Command Substitution not implemented\n"
-
-/*
-** Symbols used by verify_command to differentiate shell builtin program
-** from executable programs
-*/
-
-enum	e_executable_type 
-{
-	EXECUTABLE = 1,
-	BUILTIN = 2
-};
 
 /*
 ** Symbols used in parameter expansion to identify given part of

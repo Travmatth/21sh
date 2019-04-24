@@ -1,3 +1,4 @@
+ls | head -20
 cat author
 cat foo
 echo ${HOME}
