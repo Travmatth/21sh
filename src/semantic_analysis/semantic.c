@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 14:27:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/24 16:19:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ int		and_or(t_exec_node *container, t_ast_node *root, int is_bg)
 		op->left = left;
 		op->right = right;
 		op->bg = is_bg;
+		op->type = container->type;
 		container = right;
 		position = 3;
 		if (!OK((status = and_or(left, root->val[0], FALSE))))

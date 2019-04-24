@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 19:03:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/24 16:31:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,12 @@ int		exec_simple_command(t_simple *simple)
 	return (simple->exit_status);
 }
 
-// pipes should fork, execute first command in child and 
-// fork again in master to exec second child // for `exec` command, redirections occur in that child process 
+/*
+** Execute pipe operations by executing left command, then right if successful.
+** Before the first command is executed, pipe forks itself and redirects STDOUT
+** to pipe in. Before second command, input is redirected to pipe out. Children
+** execution managed by execute_switch
+*/
 
 int		exec_pipe(t_pipe *pipe_node)
 {
@@ -72,11 +76,9 @@ int		exec_pipe(t_pipe *pipe_node)
 	int		pid;
 	int		child_pid;
 
-	if (ERR(pipe(pipe_fd)))
+	if (ERR((pid = fork())) || ERR(pipe(pipe_fd)))
 		return (ERROR);
-	if (ERR((pid = fork())))
-		return (ERROR);
-	if (pid == 0)
+	else if (pid == 0)
 	{
 		if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_READ]))))
 			pipe_node->exit_status = dup2(pipe_fd[PIPE_WRITE], STDOUT);
@@ -103,7 +105,7 @@ int		exec_pipe(t_pipe *pipe_node)
 			{
 				close(pipe_fd[PIPE_WRITE]);
 				close(pipe_fd[PIPE_WRITE]);
-				wait_loop(pid, &pipe_node->exit_status);
+				wait_loop(child_pid, &pipe_node->exit_status);
 			}
 		}
 	}
@@ -126,7 +128,7 @@ int		execute_switch(t_exec_node *node)
 
 	if (node->type == EXEC_PIPE)
 		status = exec_pipe(node->pipe);
-	else if (node->type == EXEC_AND)
+	else if (node->type == EXEC_AND || node->type == EXEC_OR)
 		status = exec_logical(node->operator);
 	else if (node->type == EXEC_SIMPLE_COMMAND)
 		status = exec_simple_command(node->simple_command);
