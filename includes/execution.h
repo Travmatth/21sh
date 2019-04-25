@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 17:07:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 18:00:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/24 17:17:59 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #endif
 
 # include "semantic_analysis.h"
+
+# define NEW_FILE_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
 # define NEGATE(x, y) (x ? !y : y)
 

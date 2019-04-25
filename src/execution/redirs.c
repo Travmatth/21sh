@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 15:45:59 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/24 17:47:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,13 @@ int		redir_out(t_redir *redir)
 	int		status;
 
 	status = 0;
-	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_TRUNC | O_CREAT))))
+	if (ERR((redir->replacement = open(redir->word
+									, O_WRONLY | O_TRUNC | O_CREAT
+									, NEW_FILE_PERMS))))
+	{
+		ft_printf("Semantic Error: Could not open or create: %s\n", redir->word);
 		status = 1;
+	}
 	return (status);
 }
 
@@ -55,7 +60,10 @@ int		redir_input(t_redir *redir)
 
 	status = 0;
 	if (ERR((redir->replacement = open(redir->word, O_RDONLY))))
+	{
+		ft_printf("Semantic Error: No such file or directory: %s\n", redir->word);
 		status = 1;
+	}
 	return (status);
 }
 
@@ -183,7 +191,7 @@ int		redir_out_append(t_redir *redir)
 	int		status;
 
 	status = 0;
-	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_CREAT | O_APPEND))))
+	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_CREAT | O_APPEND, NEW_FILE_PERMS))))
 		status = 1;
 	return (status);
 }
@@ -256,7 +264,7 @@ int		redir_inout(t_redir *redir)
 	int		status;
 
 	status = 0;
-	if (ERR((redir->replacement = open(redir->word, O_RDWR | O_CREAT))))
+	if (ERR((redir->replacement = open(redir->word, O_RDWR | O_CREAT, NEW_FILE_PERMS))))
 		status = 1;
 	return (status);
 }
