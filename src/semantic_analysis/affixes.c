@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 16:40:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/24 17:57:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int		io_here(t_simple *cmd, int io_num, t_ast_node *root)
 	char	*here_end;
 	int		type;
 
-	status = create_redir(&redir, (t_ast_node*)root->val[1], &here_end);
+	status = create_redir(&redir, root, &here_end);
 	if (OK(status) && IS_A("DLESS here_end", root->rhs))
 		type = PARSE_DLESS;
 	else if (OK(status) && IS_A("DLESSDASH here_end", root->rhs))

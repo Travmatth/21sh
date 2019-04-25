@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 17:47:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/24 18:04:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,8 @@ int		redir_heredoc(t_redir *redir)
 	tmp = NULL;
 	line = NULL;
 	found = FALSE;
-	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : 0))
-		status = NONE(pipe(fd)) ? 0 : ERROR;
+	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : SUCCESS))
+		status = NONE(pipe(fd)) ? SUCCESS : ERROR;
 	redir->replacement = fd[0];
 	while(OK(status) && !found)
 	{
