@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 15:41:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 15:52:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ int		process_token(t_token *token)
 
 	status = SUCCESS;
 	if (!OK((status = substitute_alias(token)))
-		|| OK((status = process_reserved(token)))
+		|| !OK((status = process_reserved(token)))
 		|| !OK((status = process_assignment(token)))
 		|| !OK((status = convert_token(token))))
 		return (status);

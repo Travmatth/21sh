@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 13:41:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 16:31:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int		redir_out(t_redir *redir)
 		ft_printf("Semantic Error: Could not open or create: %s\n", redir->word);
 		status = ERROR_CHILD_EXIT;
 	}
+	ft_printf("Opened %s on fd %d\n", redir->word, redir->replacement);
 	return (status);
 }
 
@@ -150,6 +151,7 @@ int		redir_out_dup(t_redir *redir)
 		status = close(redir->original);
 	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
 		ft_printf("Execution Error: %s: ambiguous redirect");
+	ft_printf("Will duplicate fd %d on fd %d\n", redir->original, redir->replacement);
 	return (status);
 }
 
@@ -274,8 +276,10 @@ int		perform_redirs(t_simple *simple)
 	current = simple->redirs;
 	while (IS_NORMAL_CHILD_EXIT(status) && current)
 	{
+		ft_printf("duplicating fd %d to fd %d\n", current->replacement, current->original);
 		if (ERR(dup2(current->replacement, current->original)))
 			status = ERROR_CHILD_EXIT;
+		ft_printf("duplication: %d\n", status);
 		current = current->next;
 	}
 	return (0);
