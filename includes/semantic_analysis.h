@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/25 14:14:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 13:41:40 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,8 +366,15 @@ int		quote_removal(char ***fields);
 ** src/semantic_analysis/expansions/tilde_expansion.c
 */
 
-
 char	*ft_stripquote(char *str);
 char	*ft_quotestr(char *str, char quote);
 int		tilde_expansion(char **parameter);
+
+/*
+** src/execution/here_end_utils.c
+*/
+
+int		prep_here_end(struct termios *ttys);
+int		restore_here_end(int pipe_in, struct termios *tty);
+int		process_heredoc(t_redir *redir);
 #endif

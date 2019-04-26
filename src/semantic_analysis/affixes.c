@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 17:57:35 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 13:23:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,8 @@ int		io_here(t_simple *cmd, int io_num, t_ast_node *root)
 		type = PARSE_DLESSDASH;
 	if (OK(status))
 		status = process_redir(redir, IO(io_num, STDIN), here_end, type);
-	if (OK(status))
-		push_redir(cmd, redir);
+	if (OK(status) && OK((status = push_redir(cmd, redir))))
+		status = process_heredoc(redir);
 	return (status);
 }
 

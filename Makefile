@@ -13,13 +13,13 @@ LIBFT = libftprintf/libftprintf.a
 CFLAGS += -Wall -Wextra -Werror -Wpedantic
 LDFLAGS := -Llibftprintf -lftprintf -I./includes -ltermcap
 CORE := main
-BUILTINS := cd echo env setenv unsetenv exec 
+BUILTINS := cd echo env setenv unsetenv exec
 LEXICAL := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa reserved_dfa process_token
 SYNTACTIC := parse parse_stack_utils parse_table parse_utils
-SEMANTIC := affixes command pipe semantic separator redir_utils verify_command
+SEMANTIC := affixes command pipe semantic separator redir_utils verify_command here_end_utils
 EXPANSIONS := arithmetic_expansion command_substitution expansion expansion_subtypes field_splitting parameter_expansion parameter_expansion_actions parameter_expansion_utils pathname_expansion quote_removal tilde_expansion
-EXECUTION := execute here_end_utils operators redirs execute_utils
-UTILS := signal init quote_management 
+EXECUTION := execute operators redirs execute_utils
+UTILS := signal init quote_management
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
 		$(addprefix src/utils/, $(UTILS)) \

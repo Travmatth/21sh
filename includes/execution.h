@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 17:07:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/25 14:24:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 13:00:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,13 +101,6 @@ int		manage_del(int **dfa, int dfa_state[5], char **read_buf);
 int		manage_read(int dfa_state[5], char buf, char **read_buf);
 int		read_until_here_end(char *here_end, int **dfa, int dfa_state[5], int fd);
 int		swap_here_end_fd(int pipe_fds[2], int dfa_state[5], int io_num);
-
-/*
-** src/execution/here_end_utils.c
-*/
-
-int		prep_here_end(struct termios *ttys);
-int		restore_here_end(int pipe_in, struct termios *tty);
 
 /*
 ** src/execution/operators.c
