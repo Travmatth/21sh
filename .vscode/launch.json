@@ -1,0 +1,54 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+"version": "0.2.0",
+"configurations": [
+    {
+        "name": "C++ Launch",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceRoot}/21sh",
+		"args": [],
+		"env": {
+			"PATH": "/nfs/2018/t/tmatthew/.brew/bin:/nfs/2018/t/tmatthew/nvim-osx64/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki:/nfs/2018/t/tmatthew/.brew/bin:/nfs/2018/t/tmatthew/nvim-osx64/bin/:/nfs/2018/t/tmatthew/gdb/bin:/nfs/2018/t/tmatthew/bin:/nfs/2018/t/tmatthew/gdb/bin:/nfs/2018/t/tmatthew/bin",
+			"OLDPWD": "/nfs/2018/t/tmatthew/21sh",
+			"SHELL_TTY": "/dev/ttys002",
+			"HOME": "/nfs/2018/t/tmatthew",
+			"TERM": "xterm-256color"
+		},
+        "stopAtEntry": false,
+        "cwd": "${workspaceRoot}",
+        "preLaunchTask": "build",
+		"externalConsole": false,
+		"setupCommands": [
+			{
+				"text": "settings set target.input-path test/in_test.txt"
+			}
+		],
+        "linux": {
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        "osx": {
+            "MIMode": "lldb"
+        },
+        "windows": {
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    }
+]
+}
