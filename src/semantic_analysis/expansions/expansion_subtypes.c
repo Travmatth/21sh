@@ -6,27 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:46:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 17:00:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 15:15:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
-
-/*
-** Traditional atoi function returns 0 on error, which introduces the possibilty
-** that invalid strings may be confused for "0"
-*/
-
-int		ft_safeatoi(char *num, int *number)
-{
-	int		nbr;
-
-	nbr = ft_atoi(num);
-	if (!nbr && ft_strcmp("0", num))
-		return ERROR;
-	*number = nbr;
-	return (SUCCESS);
-}
 
 /*
 ** ${parameter}

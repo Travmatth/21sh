@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 14:28:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 15:26:11 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,6 @@ int		suffix(t_simple *cmd, t_ast_node *root);
 ** src/semantic_analysis/command.c
 */
 
-char	**ft_strjoinarrs(char **arr_1, char **arr_2);
 int		cmd_name(t_simple *simple, t_ast_node *root);
 void	simple_positions(char *form, int position[3]);
 int		simple_command(t_simple *simple, t_ast_node *root);
@@ -333,7 +332,6 @@ int		parameter_expansion(char **parameter);
 ** src/semantic_analysis/expansions/expansion_subtypes.c
 */
 
-int		ft_safeatoi(char *num, int *number);
 int		plain_param_expansion(char **parameter, char *var, size_t *i);
 int		use_defaults_param_expansion(char **parameter, char *var, size_t *i);
 int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i);
@@ -367,8 +365,6 @@ int		quote_removal(char ***fields);
 ** src/semantic_analysis/expansions/tilde_expansion.c
 */
 
-char	*ft_stripquote(char *str);
-char	*ft_quotestr(char *str, char quote);
 int		tilde_expansion(char **parameter);
 
 /*

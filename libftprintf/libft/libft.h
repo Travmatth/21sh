@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/16 12:34:43 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/23 16:12:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 15:26:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,10 +150,6 @@ int						ft_fast_memcmp(const void *s1
 ** String functions
 */
 
-/*
-** reads a given fd and returns a string with its contents
-*/
-
 size_t					ft_str_from_fd(int fd, char **str);
 size_t					ft_wstrlen(wchar_t *w_str);
 int						ft_wchrlen(wchar_t c);
@@ -232,6 +228,10 @@ char					*ft_strfilter(int (*f)(char elem
 void					ft_freearr(char **arr, int free_parent);
 char					*ft_strsum(char **strings, char *fill);
 char					**ft_strappend(char **strings, char *string);
+int						ft_safeatoi(char *num, int *number);
+char					**ft_strjoinarrs(char **arr_1, char **arr_2);
+char					*ft_quotestr(char *str, char quote);
+char					*ft_stripquote(char *str);
 
 /*
 ** String functions
