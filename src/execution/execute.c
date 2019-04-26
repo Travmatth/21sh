@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/25 17:10:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 17:46:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,11 @@ int		exec_pipe(t_pipe *pipe_node)
 	int		pid;
 	int		child_pid;
 
-	if (ERR((pid = fork())) || ERR(pipe(pipe_fd)))
+	if (ERR(pipe(pipe_fd)) || ERR((pid = fork())))
 		return (ERROR);
 	else if (pid == 0)
 	{
-		// if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_READ]))))
+		if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_READ]))))
 			pipe_node->exit_status = dup2(pipe_fd[PIPE_WRITE], STDOUT);
 		if (!ERR(pipe_node->exit_status))
 			pipe_node->exit_status = execute_switch(pipe_node->left);
@@ -88,7 +88,6 @@ int		exec_pipe(t_pipe *pipe_node)
 	}
 	else if (!ERR(pipe_node->exit_status) && pid > 0)
 	{
-		ft_printf("Pipe function left fork: %d\n", pid);
 		wait_loop(pid, &pipe_node->exit_status);
 		if (IS_NORMAL_CHILD_EXIT(pipe_node->exit_status))
 		{
@@ -96,7 +95,7 @@ int		exec_pipe(t_pipe *pipe_node)
 				pipe_node->exit_status = ERROR;
 			else if (!ERR(pipe_node->exit_status) && child_pid == 0)
 			{
-				// if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_WRITE]))))
+				if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_WRITE]))))
 					pipe_node->exit_status = dup2(pipe_fd[PIPE_READ], STDIN);
 				if (!ERR(pipe_node->exit_status))
 					pipe_node->exit_status = execute_switch(pipe_node->right);
@@ -104,9 +103,8 @@ int		exec_pipe(t_pipe *pipe_node)
 			}
 			else if (!ERR(pipe_node->exit_status) && child_pid > 0)
 			{
-				ft_printf("Pipe function right fork: %d\n", child_pid);
-				// close(pipe_fd[PIPE_WRITE]);
-				// close(pipe_fd[PIPE_WRITE]);
+				close(pipe_fd[PIPE_WRITE]);
+				close(pipe_fd[PIPE_WRITE]);
 				wait_loop(child_pid, &pipe_node->exit_status);
 			}
 		}
