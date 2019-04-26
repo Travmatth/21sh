@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 15:21:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 16:10:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 ** and launching child processes with execve
 */
 
-void	init_environ(int argc, char **argv, char **environ)
+int		init_environ(int argc, char **argv, char **environ)
 {
 	int			i;
 	int			total;
@@ -59,16 +59,17 @@ void	init_environ(int argc, char **argv, char **environ)
 		i += 1;
 	total = i + (argc > 1 ? argc - 1 : 0);
 	if (!(g_environ = (char**)ft_memalloc(sizeof(char*) * (total + 1))))
-		return ;
+		return ERROR;
 	i = -1;
 	while (environ[++i])
 		if (!(g_environ[i] = ft_strdup(environ[i])))
-			return ;
+			return ERROR;
 	i = 0;
 	while (--argc)
 		if (!(g_environ[(total ? total - 1 : total) + i++] =
 			ft_strdup(argv[argc])))
-			return ;
+			return ERROR;
+	return SUCCESS;
 }
 
 /*
@@ -99,19 +100,20 @@ int		init_shell(void)
 ** and setting global g_prods to processed grammar production rules
 */
 
-void	init_parser(void)
+int		init_parser(void)
 {
 	int		fd;
 	size_t	size;
 	char	*line;
 	t_prod	*productions;
 
-	if (ERR((fd = open("misc/productions.txt", O_RDONLY))))
-		return ;
 	line = NULL;
-	get_next_line(fd, &line);
+	if (ERR((fd = open("misc/productions.txt", O_RDONLY)))
+		|| !OK(get_next_line(fd, &line)))
+		return ERROR;
 	size = ((size_t)ft_atoi(line) + 1) * sizeof(t_prod);
-	if (NONE((productions = (t_prod*)ft_memalloc(size))))
-		return ;
-	g_prods = init_prods(fd, productions, &line);
+	if (!(productions = (t_prod*)ft_memalloc(size))
+		|| !(g_prods = init_prods(fd, productions, &line)))
+		return ERROR;
+	return SUCCESS;
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 14:30:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 16:39:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,26 @@
 
 int		main(int argc, char **argv, char **environ)
 {
-	char	*command;
-
-	init_parser();
-	init_environ(argc, argv, environ);
-	if (!g_prods || !g_environ || ERR(init_shell()))
+	char	*input;
+	int		status;
+	
+	if (ERR(init_parser())
+		|| ERR(init_environ(argc, argv, environ))
+		|| ERR(init_shell()))
 		return (1);
-	while (TRUE)
+	status = SUCCESS;
+	while (!ERR(status))
 	{
-		signal(SIGINT, sig_handler);
-		write(STDOUT, "$> ", 3);
-		if (OK(get_next_line(STDIN, &command))
-			&& !IS_A("exit", command)
-			&& !ERR(parse_execute_input(command)))
-			free(command);
-		else
-			break ;
+		input = NULL;
+		if ((signal(SIGINT, sig_handler) != SIG_ERR)
+			&& !ERR(write(STDOUT, "$> ", 3))
+			&& (OK(get_next_line(STDIN, &input))))
+		{
+			status = IS_A("exit", input)
+				? ERROR 
+				: parse_execute_input(input);
+			free(input);
+		}
 	}
 	return (0);
 }

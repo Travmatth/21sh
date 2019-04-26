@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 17:07:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 17:17:59 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 14:24:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@
 ** When exiting because of an error, return value is 1
 */
 
-# define NORMAL_CHILD_EXIT(x) (x == 0)
-# define ERROR_CHILD_EXIT(x) (x == 1)
+# define NORMAL_CHILD_EXIT 0
+# define ERROR_CHILD_EXIT 1
+# define IS_NORMAL_CHILD_EXIT(x) (x == 0)
+# define IS_ERROR_CHILD_EXIT(x) (x == 1)
 
 /*
 ** When creating pipes, fd[0] is read end of pipe and fd[1] is write end
@@ -57,7 +59,6 @@
 */
 
 # define EOT 0x04
-# define EXIT_OK(x) (x == 0)
 
 /*
 ** Used in HEREDOC processing to detect signals sent to terminal

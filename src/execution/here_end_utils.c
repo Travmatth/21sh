@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/22 14:52:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 17:04:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int		prep_here_end(struct termios *ttys)
 	ttys[0].c_cc[VTIME] = 0;
 	if (ERR(tcsetattr(STDIN, TCSANOW, &ttys[0])))
 		return (ERROR);
-	return (SUCCESS);
+	return (NORMAL_CHILD_EXIT);
 }
 
 int		restore_here_end(int pipe_in, struct termios *tty)
@@ -31,5 +31,5 @@ int		restore_here_end(int pipe_in, struct termios *tty)
 	if (ERR(close(pipe_in))
 		|| ERR(tcsetattr(STDIN, TCSADRAIN, tty)))
 		return (ERROR);
-	return (SUCCESS);
+	return (NORMAL_CHILD_EXIT);
 }

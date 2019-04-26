@@ -58,8 +58,8 @@ int				g_processes;
 ** src/init.c
 */
 
-void			init_environ(int argc, char **argv, char **environ);
-void			init_parser(void);
+int				init_environ(int argc, char **argv, char **environ);
+int				init_parser(void);
 int				init_shell();
 
 /*

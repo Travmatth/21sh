@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 18:04:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 16:31:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ int		redir_out(t_redir *redir)
 {
 	int		status;
 
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	if (ERR((redir->replacement = open(redir->word
 									, O_WRONLY | O_TRUNC | O_CREAT
 									, NEW_FILE_PERMS))))
 	{
 		ft_printf("Semantic Error: Could not open or create: %s\n", redir->word);
-		status = 1;
+		status = ERROR_CHILD_EXIT;
 	}
 	return (status);
 }
@@ -58,11 +58,11 @@ int		redir_input(t_redir *redir)
 {
 	int		status;
 
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	if (ERR((redir->replacement = open(redir->word, O_RDONLY))))
 	{
 		ft_printf("Semantic Error: No such file or directory: %s\n", redir->word);
-		status = 1;
+		status = ERROR_CHILD_EXIT;
 	}
 	return (status);
 }
@@ -116,61 +116,77 @@ int		redir_heredoc(t_redir *redir)
 	tmp = NULL;
 	line = NULL;
 	found = FALSE;
-	if (OK(status = ERR(prep_here_end(tty)) ? ERROR : SUCCESS))
-		status = NONE(pipe(fd)) ? SUCCESS : ERROR;
+	if (IS_NORMAL_CHILD_EXIT((status = prep_here_end(tty))))
+		status = ERR(pipe(fd)) ? ERROR : status;
 	redir->replacement = fd[0];
-	while(OK(status) && !found)
+	ft_putstr("heredoc > ");
+	while(IS_NORMAL_CHILD_EXIT(status) && !found)
 	{
 		// read next char
 		// signal encountered, break
-		if (ERR((status = read(STDIN, &next, 1))) == (next == INTR || next == DEL))
-			break ;
+		if (ERR(read(STDIN, &next, 1)))
+			status = ERROR;
+		else if (next == INTR || next == EOT)
+			status = ERROR_CHILD_EXIT;
+		else
+			status = NORMAL_CHILD_EXIT;
 		// no line, create
-		if (!line || (!(line = ft_strnew(here_end_len))))
+		if (IS_NORMAL_CHILD_EXIT(status) && !line && (!(line = ft_strnew(here_end_len))))
 			status = ERROR;
 		// if here_end found, stop next iteration
-		if (OK(status) && here_end_len == buf_len && IS_A(redir->word, buf))
+		if (IS_NORMAL_CHILD_EXIT(status) && next == '\n' && here_end_len == buf_len && IS_A(redir->word, buf))
+		{
 			found = TRUE;
+			ft_putchar('\n');
+		}
 		// if buffer full, write buffer to line
-		if (OK(status) && here_end_len == buf_len)
+		if (IS_NORMAL_CHILD_EXIT(status) && !found && here_end_len == buf_len)
 		{
 			if (!(tmp = ft_strjoin(line, buf)))
-				status = ERROR;
-			free(line);
+				status = ERROR; free(line);
 			line = tmp;
 			tmp = NULL;
+			line_len += buf_len;
+			buf_len = 0;
 			ft_bzero(buf, here_end_len);
 		}
 		// if newline encountered, write line && buffer to pipe
-		if (OK(status) && next == '\n')
+		if (IS_NORMAL_CHILD_EXIT(status) && !found && next == '\n')
 		{
-			ft_putendl("heredoc > ");
+			ft_putstr("\nheredoc > ");
 			if (ERR(write(fd[1], line, line_len))
-				|| ERR(write(fd[1], buf, buf_len)))
+				|| ERR(write(fd[1], buf, buf_len))
+				|| ERR(write(fd[1], "\n", 1)))
 				status = ERROR;
 			free(line);
 			line = NULL;
 			line_len = 0;
-			here_end_len = 0;
+			ft_bzero(buf, buf_len);
+			buf_len = 0;
 		}
 		// if next backspace, remove last char
-		else if (OK(status) && next == DEL)
+		else if (IS_NORMAL_CHILD_EXIT(status) && next == DEL)
 		{
 			if (buf_len)
-				buf[buf_len--] = '\0';
+			{
+				buf[--buf_len] = '\0';
+				status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
+			}
 			else if (line_len)
-				line[line_len--] = '\0';
-			status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
+			{
+				line[--line_len] = '\0';
+				status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
+			}
 		}
 		// if buffer not full, write next to buffer
-		else if (OK(status) && next != DEL)
+		else if (IS_NORMAL_CHILD_EXIT(status) && !found && next != DEL)
 		{
-			here_end_len += 1;
+			buf_len += 1;
 			ft_putchar(next);
 			ft_strncat(buf, &next, 1);
 		}
 	}
-	return (restore_here_end(fd[1], &tty[1]) && ERR(status) ? ERROR : status);
+	return (ERR(restore_here_end(fd[1], &tty[1])) ? ERROR : status);
 }
 
 /*
@@ -190,9 +206,9 @@ int		redir_out_append(t_redir *redir)
 {
 	int		status;
 
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	if (ERR((redir->replacement = open(redir->word, O_WRONLY | O_CREAT | O_APPEND, NEW_FILE_PERMS))))
-		status = 1;
+		status = ERROR_CHILD_EXIT;
 	return (status);
 }
 
@@ -215,7 +231,7 @@ int		redir_input_dup(t_redir *redir)
 {
 	int		status;
 
-	status = 1;
+	status = ERROR_CHILD_EXIT;
 	if (IS_A("-", redir->word))
 		status = close(redir->original);
 	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
@@ -242,7 +258,7 @@ int		redir_out_dup(t_redir *redir)
 {
 	int		status;
 
-	status = 1;
+	status = ERROR_CHILD_EXIT;
 	if (IS_A("-", redir->word))
 		status = close(redir->original);
 	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
@@ -263,9 +279,9 @@ int		redir_inout(t_redir *redir)
 {
 	int		status;
 
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	if (ERR((redir->replacement = open(redir->word, O_RDWR | O_CREAT, NEW_FILE_PERMS))))
-		status = 1;
+		status = ERROR_CHILD_EXIT;
 	return (status);
 }
 
@@ -304,7 +320,7 @@ int		redir_heredoc_dash(t_redir *redir)
 	int		status;
 
 	(void)redir;
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	return (status);
 }
 
@@ -327,7 +343,7 @@ int		redir_clobber(t_redir *redir)
 	int		status;
 
 	(void)redir;
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	return (status);
 }
 
@@ -336,7 +352,7 @@ int		open_redirs(t_simple *simple)
 	t_redir	*redir;
 
 	redir = simple->redirs;
-	simple->exit_status = 0;
+	simple->exit_status = NORMAL_CHILD_EXIT;
 	while (simple->exit_status == 0 && redir)
 	{
 		if (redir->type == REDIR_GT)
@@ -367,12 +383,12 @@ int		perform_redirs(t_simple *simple)
 	int		status;
 	t_redir	*current;
 
-	status = 0;
+	status = NORMAL_CHILD_EXIT;
 	current = simple->redirs;
-	while (NORMAL_CHILD_EXIT(status) && current)
+	while (IS_NORMAL_CHILD_EXIT(status) && current)
 	{
 		if (ERR(dup2(current->replacement, current->original)))
-			status = 1;
+			status = ERROR_CHILD_EXIT;
 		current = current->next;
 	}
 	return (0);

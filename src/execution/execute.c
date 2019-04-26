@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 16:31:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 17:10:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int		exec_command(t_simple *simple, int should_exit)
 {
 	int		argc;
 
-	if (NORMAL_CHILD_EXIT((simple->exit_status = perform_redirs(simple))))
+	if (IS_NORMAL_CHILD_EXIT((simple->exit_status = perform_redirs(simple))))
 	{
 		if (simple->builtin)
 		{
@@ -44,7 +44,7 @@ int		exec_simple_command(t_simple *simple)
 {
 	pid_t	pid;
 
-	if (NORMAL_CHILD_EXIT((simple->exit_status = open_redirs(simple))))
+	if (IS_NORMAL_CHILD_EXIT((simple->exit_status = open_redirs(simple))))
 	{
 		if (simple->builtin == builtin_exec)
 			simple->exit_status = exec_command(simple, FALSE);
@@ -80,7 +80,7 @@ int		exec_pipe(t_pipe *pipe_node)
 		return (ERROR);
 	else if (pid == 0)
 	{
-		if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_READ]))))
+		// if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_READ]))))
 			pipe_node->exit_status = dup2(pipe_fd[PIPE_WRITE], STDOUT);
 		if (!ERR(pipe_node->exit_status))
 			pipe_node->exit_status = execute_switch(pipe_node->left);
@@ -88,14 +88,15 @@ int		exec_pipe(t_pipe *pipe_node)
 	}
 	else if (!ERR(pipe_node->exit_status) && pid > 0)
 	{
+		ft_printf("Pipe function left fork: %d\n", pid);
 		wait_loop(pid, &pipe_node->exit_status);
-		if (NORMAL_CHILD_EXIT(pipe_node->exit_status))
+		if (IS_NORMAL_CHILD_EXIT(pipe_node->exit_status))
 		{
 			if (ERR((child_pid = fork())))
 				pipe_node->exit_status = ERROR;
 			else if (!ERR(pipe_node->exit_status) && child_pid == 0)
 			{
-				if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_WRITE]))))
+				// if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_WRITE]))))
 					pipe_node->exit_status = dup2(pipe_fd[PIPE_READ], STDIN);
 				if (!ERR(pipe_node->exit_status))
 					pipe_node->exit_status = execute_switch(pipe_node->right);
@@ -103,8 +104,9 @@ int		exec_pipe(t_pipe *pipe_node)
 			}
 			else if (!ERR(pipe_node->exit_status) && child_pid > 0)
 			{
-				close(pipe_fd[PIPE_WRITE]);
-				close(pipe_fd[PIPE_WRITE]);
+				ft_printf("Pipe function right fork: %d\n", child_pid);
+				// close(pipe_fd[PIPE_WRITE]);
+				// close(pipe_fd[PIPE_WRITE]);
 				wait_loop(child_pid, &pipe_node->exit_status);
 			}
 		}
@@ -115,9 +117,9 @@ int		exec_pipe(t_pipe *pipe_node)
 int		exec_logical(t_operator *operator)
 {
 	operator->exit_status = execute_switch(operator->left);
-	if (ERROR_CHILD_EXIT(operator->exit_status) && operator->type == EXEC_OR)
+	if (IS_ERROR_CHILD_EXIT(operator->exit_status) && operator->type == EXEC_OR)
 		operator->exit_status = execute_switch(operator->right);
-	else if (NORMAL_CHILD_EXIT(operator->exit_status) && operator->type == EXEC_AND)
+	else if (IS_NORMAL_CHILD_EXIT(operator->exit_status) && operator->type == EXEC_AND)
 		operator->exit_status = execute_switch(operator->right);
 	return (operator->exit_status);
 }

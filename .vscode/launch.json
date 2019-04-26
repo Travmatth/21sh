@@ -13,7 +13,7 @@
 		"env": {
 			"PATH": "/nfs/2018/t/tmatthew/.brew/bin:/nfs/2018/t/tmatthew/nvim-osx64/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki:/nfs/2018/t/tmatthew/.brew/bin:/nfs/2018/t/tmatthew/nvim-osx64/bin/:/nfs/2018/t/tmatthew/gdb/bin:/nfs/2018/t/tmatthew/bin:/nfs/2018/t/tmatthew/gdb/bin:/nfs/2018/t/tmatthew/bin",
 			"OLDPWD": "/nfs/2018/t/tmatthew/21sh",
-			"SHELL_TTY": "/dev/ttys002",
+			"SHELL_TTY": "/dev/ttys004",
 			"HOME": "/nfs/2018/t/tmatthew",
 			"TERM": "xterm-256color"
 		},

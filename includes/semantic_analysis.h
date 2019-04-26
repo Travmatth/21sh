@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 18:05:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/25 14:14:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define CONTAINS(type, node) (ft_strstr(node, type))
+# define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"
+# define CMD_SUB_ERR "Semantic Error: Command Substitution not implemented\n"
 
 /*
 ** Signature of shell builtin functions
@@ -73,9 +75,6 @@ enum	e_simple_positions
 */
 
 # define IS_IFS(x) (x == ' ' || x == '\t' || x == '\n')
-
-# define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"
-# define CMD_SUB_ERR "Semantic Error: Command Substitution not implemented\n"
 
 /*
 ** Symbols used in parameter expansion to identify given part of
