@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 13:41:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 14:28:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,6 +313,7 @@ int		full_word_expansion(char ***new, char *old);
 int		param_expansion(char **new, char *old);
 int		heredoc_expansion(t_redir *redir, char **new, char *old);
 int		redir_expansion(char **new, char *old);
+int		heredoc_line_expansion(char **new, char *old);
 
 /*
 ** src/semantic_analysis/expansions/field_splitting.c

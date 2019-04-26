@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 13:42:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 14:27:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ int		process_heredoc(t_redir *redir)
 			found = TRUE;
 			ft_putchar('\n');
 		}
-		// if buffer full, write buffer to line
-		if (OK(status) && !found && here_end_len == buf_len)
+		// if buffer full or if newline encountered, write buffer to line
+		if (OK(status) && !found && (here_end_len == buf_len || next == '\n'))
 		{
 			if (!(tmp = ft_strjoin(line, buf)))
 				status = ERROR;
@@ -112,15 +112,21 @@ int		process_heredoc(t_redir *redir)
 			buf_len = 0;
 			ft_bzero(buf, here_end_len);
 		}
-		// if newline encountered, write line && buffer to pipe
+		// if newline encountered, write buf to line
+		// if here_end quoted, write line to pipe 
+		// if here_end not quoted, write expanded line to pipe 
 		if (OK(status) && !found && next == '\n')
 		{
 			ft_putstr("\nheredoc > ");
-			if (ERR(write(fd[1], line, line_len))
-				|| ERR(write(fd[1], buf, buf_len))
-				|| ERR(write(fd[1], "\n", 1)))
+			if (redir->heredoc_quoted)
+				tmp = line;
+			else
+				status = heredoc_line_expansion(&tmp, line);
+			if (OK(status)
+				&& (ERR(write(fd[1], tmp, LEN(tmp, 0))) || ERR(write(fd[1], "\n", 1))))
 				status = ERROR;
-			free(line);
+			free(tmp);
+			tmp = NULL;
 			line = NULL;
 			line_len = 0;
 			ft_bzero(buf, buf_len);
