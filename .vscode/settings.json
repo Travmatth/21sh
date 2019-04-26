@@ -1,0 +1,28 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"files.associations": {
+		"internal.h": "c",
+		"conversions.h": "c",
+		"libft.h": "c",
+		"ft_ssl.h": "c",
+		"pbkdf2.h": "c",
+		"ft_ls.h": "c",
+		"shell.h": "c"
+	},
+    "vim.visualModeKeyBindings": [
+        {
+            "before": ["u","u"],
+            "after": ["<Esc>"]
+        }
+    ],
+    "vim.insertModeKeyBindings": [
+        {
+            "before": ["u","u"],
+            "after": ["<Esc>"]
+        }
+    ],
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"python.pythonPath": "/usr/bin/python2.7"
+}
