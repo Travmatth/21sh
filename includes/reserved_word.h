@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:49:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:46:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 15:31:53 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ enum	e_reserved_ops
 };
 
 #define RESERVED_WORD_CONVERSIONS 16
-#define RESERVED_LEX_ERR "Lexical Error: Unimplemented reserved word: %s"
+#define RESERVED_LEX_ERR "Lexical Error: Unimplemented reserved word: %s\n"
 
 /*
 ** Reserved word struct used to translate given token to

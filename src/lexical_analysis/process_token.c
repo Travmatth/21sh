@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 13:26:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 15:41:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,36 @@ int		process_assignment(t_token *token)
 }
 
 /*
+** After a token has been delimited, but before applying the grammatical rules
+** in Shell Grammar, a resulting word that is identified to be the command name
+** word of a simple command shall be examined to determine whether it is an
+** unquoted, valid alias name. However, reserved words in correct grammatical
+** context shall not be candidates for alias substitution. A valid alias name
+** (see XBD Alias Name) shall be one that has been defined by the alias utility
+** and not subsequently undefined using unalias. Implementations also may
+** provide predefined valid aliases that are in effect when the shell is
+** invoked. To prevent infinite loops in recursive aliasing, if the shell is not
+** currently processing an aliasof the same name, the word shall be replaced by
+** the value of the alias; otherwise, it shall not be replaced.
+**
+** If the value of the alias replacing the word ends in a <blank>, the shell
+** shall check the next command word for alias substitution; this process shall
+** continue until a word is found that is not a valid alias or an alias value
+** does not end in a <blank>.
+**
+** When used as specified by this volume of POSIX.1-2017, alias definitions
+** shall not be inherited by separate invocations of the shell or by the
+** utility execution environments invoked by the shell; see Shell Execution
+** Environment.
+*/
+
+int		substitute_alias(t_token *token)
+{
+	(void)token;
+	return (SUCCESS);
+}
+
+/*
 ** Processing tokens involves applying certain rules described in
 ** `2.10.2 Shell Grammar Rules`. The token is inspected to determine whether
 ** it can be converted to a reserved word, or converted into an ASSIGNMENT_WORD
@@ -96,7 +126,8 @@ int		process_token(t_token *token)
 	int		status;
 
 	status = SUCCESS;
-	if (!OK((status = process_reserved(token)))
+	if (!OK((status = substitute_alias(token)))
+		|| OK((status = process_reserved(token)))
 		|| !OK((status = process_assignment(token)))
 		|| !OK((status = convert_token(token))))
 		return (status);
