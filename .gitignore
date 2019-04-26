@@ -5,3 +5,4 @@
 ft_ls
 .vscode/ipch
 21sh
+.vscode/ipch/*
