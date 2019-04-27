@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 13:11:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/26 18:24:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,10 @@ enum	e_parse_ops
 	DLESS = 8,
 	GREAT = 9,
 	DGREAT = 10,
-	LESSAND = 11,
-	GREATAND = 12,
+	GREATAND = 11,
+	LESSAND = 12,
+	// LESSAND = 11,
+	// GREATAND = 12,
 	LESSGREAT = 13,
 	DLESSDASH = 14,
 	CLOBBER = 15,
