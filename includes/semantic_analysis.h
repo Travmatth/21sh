@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 15:26:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/27 18:52:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,9 @@ typedef struct				s_simple_command
 	t_builtinf				builtin;
 	int						bg;
 	int						bang;
+	int						is_exec;
 	int						exit_status;
+	int						argc;
 }							t_simple;
 
 /*

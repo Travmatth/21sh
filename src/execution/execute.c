@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/25 17:46:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/27 19:14:33 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,11 @@
 
 int		exec_command(t_simple *simple, int should_exit)
 {
-	int		argc;
-
 	if (IS_NORMAL_CHILD_EXIT((simple->exit_status = perform_redirs(simple))))
 	{
 		if (simple->builtin)
 		{
-			argc = 0;
-			while (simple->command[argc])
-				argc += 1;
-			simple->exit_status = simple->builtin(argc, simple->command);
+			simple->exit_status = simple->builtin(simple->argc, simple->command);
 			simple->exit_status = OK(simple->exit_status) ? 0 : 1;
 			if (should_exit)
 				_exit(simple->exit_status);
@@ -46,9 +41,9 @@ int		exec_simple_command(t_simple *simple)
 
 	if (IS_NORMAL_CHILD_EXIT((simple->exit_status = open_redirs(simple))))
 	{
-		if (simple->builtin == builtin_exec)
+		if (simple->is_exec)
 			simple->exit_status = exec_command(simple, FALSE);
-		if (ERR((pid = fork())))
+		else if (ERR((pid = fork())))
 			ft_printf("fork error: %s\n", simple->command[0]);
 		else if (pid == 0)
 		{

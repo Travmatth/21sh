@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 18:11:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/27 19:26:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,29 @@ t_builtin	g_builtins[] =
 int		load_builtin(t_simple *simple)
 {
 	int		i;
+	char	**new;
 
 	i = -1;
 	while (++i < TOTAL_BUILTINS)
 	{
 		if (IS_A(g_builtins[i].cmd, simple->command[0]))
 		{
-			simple->builtin = g_builtins[i].f;
+			while (simple->command[simple->argc])
+				simple->argc += 1;
+			if (IS_A("exec", g_builtins[i].cmd))
+			{
+				simple->is_exec = TRUE;
+				simple->argc -= 1;
+				// if (!(new = ft_memdup(simple->command, sizeof(char*) * simple->argc)))
+				// 	return (ERROR);
+				if (!(new = ft_memalloc(sizeof(char*) * simple->argc)))
+					return (ERROR);
+				ft_memcpy(new, &simple->command[1], sizeof(char*) * simple->argc);
+				free(simple->command);
+				simple->command = new;
+			}
+			else
+				simple->builtin = g_builtins[i].f;
 			break ;
 		}
 	}
@@ -119,8 +135,8 @@ int		verify_command(t_simple *simple)
 	int		status;
 
 	found = 0;
-	if (load_builtin(simple))
-		return (SUCCESS);
+	if (!NONE(status = load_builtin(simple)))
+		return (OK(SUCCESS) ? SUCCESS : ERROR);
 	if (!(paths = ft_strsplit(get_env_var("PATH"), ':')))
 		return (ERROR);
 	j = 0;
