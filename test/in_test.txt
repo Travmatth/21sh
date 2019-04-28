@@ -1,3 +1,5 @@
+exec vim
+ls
 ls | head -20
 cat author
 cat foo
