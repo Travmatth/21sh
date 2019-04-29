@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 12:56:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/29 12:48:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,6 +274,7 @@ int		perform_redirs(t_simple *simple)
 	int		status;
 	t_redir	*redir;
 
+	errno = 0;
 	status = NORMAL_CHILD_EXIT;
 	redir = simple->redirs;
 	while (IS_NORMAL_CHILD_EXIT(status) && redir)
@@ -286,7 +287,11 @@ int		perform_redirs(t_simple *simple)
 				status = close(redir->original);
 		}
 		else if (ERR(dup2(redir->replacement, redir->original)))
+		{
 			status = ERROR_CHILD_EXIT;
+			if (errno == EBADF)
+				ft_printf("Execution Error: %d: bad file descriptor\n", redir->replacement);
+		}
 		redir = redir->next;
 	}
 	return (status);

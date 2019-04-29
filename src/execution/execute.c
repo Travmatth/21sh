@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/27 19:14:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/29 12:47:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,15 @@ int		exec_simple_command(t_simple *simple)
 		if (simple->is_exec)
 			simple->exit_status = exec_command(simple, FALSE);
 		else if (ERR((pid = fork())))
-			ft_printf("fork error: %s\n", simple->command[0]);
+			simple->exit_status = ERROR_CHILD_EXIT;
 		else if (pid == 0)
 		{
 			exec_command(simple, TRUE);
-			ft_printf("fork error: %s\n", simple->command[0]);
-			simple->exit_status = ERROR;
+			simple->exit_status = ERROR_CHILD_EXIT;
 			_exit(1);
 		}
-		else if (pid > 0 && ERR(wait_loop(pid, &simple->exit_status)))
-			simple->exit_status = simple->exit_status;
+		else if (pid > 0)
+			wait_loop(pid, &simple->exit_status);
 	}
 	return (simple->exit_status);
 }
