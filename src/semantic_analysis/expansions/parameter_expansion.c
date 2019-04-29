@@ -6,11 +6,28 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/13 17:46:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/28 18:17:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+int		unimplemented_expansion(char type)
+{
+	char	*is;
+
+	is = NULL;
+	if (type == '-')
+		is = "default";
+	else if (type == '=')
+		is = "default assign";
+	else if (type == '?')
+		is = "error unset";
+	else if (type == '+')
+		is = "alternative param";
+	ft_printf("Semantic Error: %s expansion not implemented", is);
+	return (NIL);
+}
 
 /*
 ** If a string does not begin with a param start ($), it should be appended
@@ -74,13 +91,13 @@ int		manage_expansions(char **new, char **str, size_t *skip)
 	status = SUCCESS;
 	param = *str + *skip;
 	if (OK(status) && enclosed(param, '-'))
-		status = use_defaults_param_expansion(&next, param, &i);
+		status = unimplemented_expansion('-');
 	else if (OK(status) && enclosed(param, '='))
-		status = assign_defaults_param_expansion(&next, param, &i);
+		status = unimplemented_expansion('=');
 	else if (OK(status) && enclosed(param, '?'))
-		status = error_unset_param_expansion(&next, param, &i);
+		status = unimplemented_expansion('?');
 	else if (OK(status) && enclosed(param, '+'))
-		status = alternative_param_expansion(&next, param, &i);
+		status = unimplemented_expansion('+');
 	else if (OK(status))
 		status = plain_param_expansion(&next, param, &i);
 	if (OK(status) && *new && !(tmp = ft_strjoin(*new, next)))

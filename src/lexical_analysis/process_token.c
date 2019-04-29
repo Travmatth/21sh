@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 15:52:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/28 16:38:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,33 @@ int		convert_token(t_token *token)
 	return (ERROR);
 }
 
+int		next_equals(char **str, size_t *i)
+{
+	size_t	end;
+	int		s;
+
+	s = SUCCESS;
+	while (OK(s) && (*str)[*i])
+	{
+		if ((*str)[*i] == '\\')
+			*i += 1;
+		else if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
+			|| (DBL_QUOTE((*str), *i) && OK((s = dbl_quote(str, *i, &end, NULL))))
+			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
+			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
+			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL))))
+			|| (((*str)[*i] == '$' && (NEXT_BRACE((*str), (*i)))) && OK((s = param_exp(str, *i, &end, NULL)))))
+			*i += end;
+		else if (OK(s) && (*str)[*i] == '=')
+		{
+			s = NIL;
+			break ;
+		}
+		*i += 1;
+	}
+	return (s);
+}
+
 /*
 ** 21sh does not implement variable assignment, so returning NIL
 ** gracefully fails current command execution and allows shell
@@ -68,18 +95,23 @@ int		convert_token(t_token *token)
 
 int		process_assignment(t_token *token)
 {
-	char	*equals;
+	size_t	i;
+	int		status;
 	char	*contents;
 
-	contents = (char*)token->value->buf;
-	equals = ft_strchr(contents, '=');
-	if (equals)
+	if (!(contents = (char*)ft_strdup(token->value->buf)))
+		return (ERROR);
+	i = 0;
+	status = SUCCESS;
+	if (ERR(next_equals(&contents, &i)))
+		return (ERROR);
+	else if (contents[i] == '=')
 	{
 		ft_putendl("Lexical Error: variable assignment not implemented");
-		return (NIL);
+		status = NIL;
 	}
-	else
-		return (SUCCESS);
+	free(contents);
+	return (status);
 }
 
 /*
