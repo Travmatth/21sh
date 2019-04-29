@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 18:38:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/28 12:56:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,9 +120,7 @@ int		redir_input_dup(t_redir *redir)
 	int		status;
 
 	status = NORMAL_CHILD_EXIT;
-	if (IS_A("-", redir->word))
-		status = close(redir->original);
-	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
+	if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
 	{
 		ft_printf("Execution Error: %s: ambiguous redirect");
 		status = ERROR_CHILD_EXIT;
@@ -150,9 +148,7 @@ int		redir_out_dup(t_redir *redir)
 	int		status;
 
 	status = NORMAL_CHILD_EXIT;
-	if (IS_A("-", redir->word))
-		status = close(redir->original);
-	else if (ERR(ft_safeatoi(redir->word, &redir->replacement)))
+	if (!IS_A("-", redir->word) && ERR(ft_safeatoi(redir->word, &redir->replacement)))
 	{
 		ft_printf("Execution Error: %s: ambiguous redirect");
 		status = ERROR_CHILD_EXIT;
@@ -276,17 +272,22 @@ int		open_redirs(t_simple *simple)
 int		perform_redirs(t_simple *simple)
 {
 	int		status;
-	t_redir	*current;
+	t_redir	*redir;
 
 	status = NORMAL_CHILD_EXIT;
-	current = simple->redirs;
-	while (IS_NORMAL_CHILD_EXIT(status) && current)
+	redir = simple->redirs;
+	while (IS_NORMAL_CHILD_EXIT(status) && redir)
 	{
-		// ft_printf("duplicating fd %d to fd %d\n", current->replacement, current->original);
-		if (ERR(dup2(current->replacement, current->original)))
+		if (IS_A("-", redir->word))
+		{
+			if (redir->type != REDIR_GREATAND && redir->type != REDIR_LESSAND)
+				ft_printf("Execution error: invalid redirection\n");
+			else
+				status = close(redir->original);
+		}
+		else if (ERR(dup2(redir->replacement, redir->original)))
 			status = ERROR_CHILD_EXIT;
-		// ft_printf("duplication: %d\n", status);
-		current = current->next;
+		redir = redir->next;
 	}
-	return (0);
+	return (status);
 }
