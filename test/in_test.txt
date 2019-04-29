@@ -1,6 +1,57 @@
+echo ${} #sh ${}: bad substitution
+echo `$((${$("'
+echo $FOO
+echo $0 #positional params not implemented
+echo $HOME
+echo ${0} #positional params not implemented
+echo ${HOME}
+echo "asdf"=
+echo ${A-FOO} #default params not implemented
+echo ${A=FOO} #default assign params not implemented
+echo ${A?FOO} #error unset params not implemented
+echo ${A+FOO} #alternative params not implemented
+echo $((asdf"))=as
+echo `asdf`=as
+echo `=`
+echo "="
+echo '='
+echo $(=)
+echo $((=))
+#============================
+exec 6>&1           # Link file descriptor #6 with stdout, save stdout
+exec > tmp_out_log     # stdout replaced with file "logfile.txt".
+# ----------------------------------------------------------- #
+# All output from commands in this block sent to file $LOGFILE.
+echo -n "Logfile: "
+date
+echo "-------------------------------------"
+echo
+echo "Output of \"ls -al\" command"
+echo
+ls -al
+echo; echo
+echo "Output of \"df\" command"
+echo
+df
+# ----------------------------------------------------------- #
+exec 1>&6 6>&-      # Restore stdout and close file descriptor #6.
+echo
+echo "== stdout now restored to default == "
+echo
+ls -al
+echo
+#============================
+echo \$(invalid)
+echo \$((invalid))
+exec > tmp_out
 exec vim
 ls
-ls | head -20
+ls | head -2
+ls | cat | head - 3
+cat foo || echo this
+cat foo && echo this
+cat tmp_out && echo this
+echo ${HOME}
 cat author
 cat foo
 echo ${HOME}
@@ -22,8 +73,6 @@ echo this && echo and this
 echo this && echo and this || echo not this
 echo this && cat foo || echo and this
 cat foo || echo this && echo and this
-echo \$(invalid)
-echo \$((invalid))
 echo \`invalid`
 echo $(echo foo);
 echo "\"l\

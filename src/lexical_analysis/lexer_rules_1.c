@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 15:36:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/28 16:45:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,7 @@ void	rule_1(t_token *token, t_lctx *ctx, t_list **tokens)
 		ctx->stop = TRUE;
 	}
 	node = NULL;
-	if (ERR(push_token(token, node, tokens, ctx)))
-		ctx->status = ERROR;
-	ctx->status = SUCCESS;
+	ctx->status = push_token(token, node, tokens, ctx);
 }
 
 /*

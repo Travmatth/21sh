@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/20 13:51:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/28 16:49:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int		lexical_analysis(char *input, t_list **tokens, t_list **missing)
 		c = input[ctx.i];
 		lex_switch(c, &token, tokens, &ctx);
 	}
-	if (NONE(ctx.status))
+	if (ctx.missing)
 		*missing = ctx.missing;
 	return (ctx.status);
 }
