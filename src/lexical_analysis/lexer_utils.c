@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:11:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/29 13:22:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,53 +74,5 @@ int		append_to_tok(char c, t_token *token)
 {
 	if (!ft_bufappend(token->value, &c, sizeof(char)))
 		return (ERROR);
-	return (SUCCESS);
-}
-
-/*
-** Returns next closing character sequence needed to correctly close
-** given command
-*/
-
-int		next_missing_symbol(t_list *missing)
-{
-	t_list	*node;
-	int		type;
-
-	if (!(node = ft_lstpeekhead(missing)))
-		return (NIL);
-	type = *(short*)node->content;
-	return (type);
-}
-
-/*
-** When given command has elements that are not properly closed, the sequence
-** of quotes or command substitutions are saved so as to allow correct sequence
-** of closing characters needed.
-*/
-
-int		push_missing_symbol(short type, t_list **missing)
-{
-	t_list	*node;
-
-	if (!(node = ft_lstnew(&type, sizeof(short))))
-		return (ERROR);
-	ft_lstpushfront(missing, node);
-	return (SUCCESS);
-}
-
-/*
-** When needed closing character detected, it's corresponding opening sequence
-** can be popped from the stack. When stack is empty command is correctly
-** closed.
-*/
-
-int		pop_missing_symbol(t_list **missing)
-{
-	t_list	*node;
-
-	node = ft_lsthead(missing);
-	free(node->content);
-	free(node);
 	return (SUCCESS);
 }

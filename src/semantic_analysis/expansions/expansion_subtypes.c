@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:46:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 18:45:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 14:37:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 	}
 	else if (!(env_lookup = get_env_var(param[NAME])))
 	{
-		ft_printf("Semantic Error: bad substitution");
+		ft_putendl("Semantic Error: bad substitution");
 		return (NIL);
 	}
 	if (!(tmp = ft_strdup(env_lookup ? env_lookup : "")))

@@ -6,11 +6,28 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 16:49:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 14:17:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+void	del_token(void *content, size_t len)
+{
+	t_stack	*node;
+
+	(void)len;
+	node = (t_stack*)content;
+	free(node->item.token->val[0]);
+	free(node->item.token);
+	free(node);
+}
+
+void	del_missing(void *content, size_t len)
+{
+	(void)len;
+	free(content);
+}
 
 /*
 ** 11. The current character is used as the start of a new word.
@@ -69,7 +86,7 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 ** -exec p (char*)((t_token*)(*tokens)->content)->value->buf
 */
 
-int		lexical_analysis(char *input, t_list **tokens, t_list **missing)
+int		lexical_analysis(char *input, t_list **tokens)
 {
 	char	c;
 	t_lctx	ctx;
@@ -83,6 +100,6 @@ int		lexical_analysis(char *input, t_list **tokens, t_list **missing)
 		lex_switch(c, &token, tokens, &ctx);
 	}
 	if (ctx.missing)
-		*missing = ctx.missing;
+		ctx.status = manage_missing_closures(input, tokens, &ctx.missing);
 	return (ctx.status);
 }

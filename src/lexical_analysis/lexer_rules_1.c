@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 16:45:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 18:21:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	rule_4(char *input, t_token *token, t_lctx *ctx)
 {
 	size_t	skip;
 
-	skip = 0;
+	skip = ERROR;
 	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
 	if (OK(ctx->status) && BACKSLASH(ctx->input, ctx->i))
@@ -145,8 +145,8 @@ void	rule_4(char *input, t_token *token, t_lctx *ctx)
 	}
 	else if (NONE(ctx->status))	
 	{
-		ctx->status = NIL;
-		ctx->missing = g_missing;
+		ft_lstmerge(&ctx->missing, g_missing);
+		g_missing = NULL;
 	}
 }
 
@@ -192,5 +192,10 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 		ctx->status = ERROR;
 	if (OK(ctx->status) && !ft_bufappend(token->value, &(*in)[ctx->i + 1], skip - 1))
 		ctx->status = ERROR;
+	if (NONE(ctx->status))	
+	{
+		ft_lstmerge(&ctx->missing, g_missing);
+		g_missing = NULL;
+	}
 	ctx->i += OK(ctx->status) ? skip : 0;
 }

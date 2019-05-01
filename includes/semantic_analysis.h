@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/27 18:52:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 11:10:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -373,7 +373,5 @@ int		tilde_expansion(char **parameter);
 ** src/execution/here_end_utils.c
 */
 
-int		prep_here_end(struct termios *ttys);
-int		restore_here_end(int pipe_in, struct termios *tty);
 int		process_heredoc(t_redir *redir);
 #endif

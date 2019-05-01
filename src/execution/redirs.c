@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:22:21 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/29 12:48:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 10:57:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int		redir_out(t_redir *redir)
 		ft_printf("Semantic Error: Could not open or create: %s\n", redir->word);
 		status = ERROR_CHILD_EXIT;
 	}
-	// ft_printf("Opened %s on fd %d\n", redir->word, redir->replacement);
 	return (status);
 }
 
@@ -153,7 +152,6 @@ int		redir_out_dup(t_redir *redir)
 		ft_printf("Execution Error: %s: ambiguous redirect");
 		status = ERROR_CHILD_EXIT;
 	}
-	// ft_printf("Will duplicate fd %d on fd %d\n", redir->original, redir->replacement);
 	return (status);
 }
 

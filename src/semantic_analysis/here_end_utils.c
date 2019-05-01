@@ -6,33 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 14:27:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 12:21:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-int		prep_here_end(struct termios *ttys)
-{
-	if (!isatty(STDIN)
-		|| ERR(tcgetattr(STDIN, &ttys[0]))
-		|| ERR(tcgetattr(STDIN, &ttys[1])))
-		return (ERROR);
-	ttys[0].c_lflag &= ~(ICANON | ISIG | ECHO);
-	ttys[0].c_cc[VMIN] = 1;
-	ttys[0].c_cc[VTIME] = 0;
-	if (ERR(tcsetattr(STDIN, TCSANOW, &ttys[0])))
-		return (ERROR);
-	return (SUCCESS);
-}
-
-int		restore_here_end(int pipe_in, struct termios *tty)
-{
-	if (ERR(close(pipe_in))
-		|| ERR(tcsetattr(STDIN, TCSADRAIN, tty)))
-		return (ERROR);
-	return (SUCCESS);
-}
 
 /*
 ** Here-Document
@@ -82,7 +60,7 @@ int		process_heredoc(t_redir *redir)
 	tmp = NULL;
 	line = NULL;
 	found = FALSE;
-	status = ERR(prep_here_end(tty)) || ERR(pipe(fd)) ? ERROR : SUCCESS;
+	status = ERR(prep_terminal(tty, ~(ICANON | ISIG | ECHO))) || ERR(pipe(fd)) ? ERROR : SUCCESS;
 	redir->replacement = ERR(status) ? ERROR : fd[0];
 	ft_putstr("heredoc > ");
 	while(OK(status) && !found)
@@ -154,5 +132,5 @@ int		process_heredoc(t_redir *redir)
 			ft_strncat(buf, &next, 1);
 		}
 	}
-	return (ERR(restore_here_end(fd[1], &tty[1])) ? ERROR : status);
+	return (ERR(restore_terminal(&tty[1])) || ERR(close(fd[1])) ? ERROR : status);
 }

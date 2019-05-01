@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 16:04:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/29 15:04:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define BACKSLASH(s, i) ((s[i] == '\\'))
 
 /*
-** Used within the lexing to track types of quotes/substitutions
+** Used within lexer to track types of quotes/substitutions
 ** in given command and whether all are properly closed
 */
 
@@ -56,6 +56,12 @@ enum			e_missing_sym
 	DQUOTE = 7,
 	BACKSLASH_ESC = 8
 };
+
+typedef struct	s_keyval
+{
+	int			type;
+	char		*value;
+}				t_keyval;
 
 /*
 ** src/utils/quote_management.c

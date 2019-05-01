@@ -55,7 +55,7 @@ int				g_processes;
 */
 
 /*
-** src/init.c
+** src/init/init.c
 */
 
 int				init_environ(int argc, char **argv, char **environ);
@@ -63,12 +63,19 @@ int				init_parser(void);
 int				init_shell();
 
 /*
-** signal.c
+** src/init/signal.c
 */
 
 void			sigtrap_handler(int sig);
 void			child_sig_handler(int sig);
 void			sig_handler(int sig);
+
+/*
+** src/init/terminal_modes.c
+*/
+
+int		prep_terminal(struct termios *ttys, int flags);
+int		restore_terminal(struct termios *tty);
 
 /*
 ** builtins/

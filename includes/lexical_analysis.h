@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 15:24:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 13:53:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,11 @@ typedef struct	s_token_cnv
 ** src/lexical_analysis/lexer.c
 */
 
+void	del_token(void *content, size_t len);
+void	del_missing(void *content, size_t len);
 void	rule_11(char c, t_lctx *ctx, t_token *token);
 void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx);
-int		lexical_analysis(char *input, t_list **tokens, t_list **missing);
+int		lexical_analysis(char *input, t_list **tokens);
 
 /*
 ** src/lexical_analysis/lexer_rules_1.c
@@ -105,11 +107,17 @@ int		create_new_tok(t_token *token, t_lctx *ctx, int type);
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx);
 int		next_missing_symbol(t_list *missing);
 int		push_missing_symbol(short type, t_list **missing);
-int		pop_missing_symbol(t_list **missing);
+int		pop_missing_symbol(t_list **missing, short *type);
 
 /*
 ** src/lexical_analysis/process_token.c
 */
 
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx);
+
+/*
+** src/lexical_analysis/missing.c
+*/
+
+int		manage_missing_closures(char *input,t_list **tokens, t_list **missing);
 #endif

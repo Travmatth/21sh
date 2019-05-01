@@ -1,3 +1,9 @@
+echo "
+
+"
+echo $(
+
+)
 exec 4<> tmp
 exec 4>&-
 cat <&4

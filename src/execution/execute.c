@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/29 12:47:35 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/04/30 12:22:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ int		parse_execute_input(char *complete_cmd)
 	tokens = NULL;
 	ft_bzero(&ast, sizeof(t_ast));
 	ft_bzero(&program, sizeof(t_program));
-	if (!OK((status = lexical_analysis(complete_cmd, &tokens, &ast.missing)))
+	if (!OK((status = lexical_analysis(complete_cmd, &tokens)))
 		|| (!OK((status = syntactic_analysis(&tokens, &ast))))
 		|| (!OK((status = semantic_analysis(&ast, &program))))
 		|| (!OK((status = execute(&program)))))
