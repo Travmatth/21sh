@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/30 18:21:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/06 13:13:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,16 +177,14 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 	i = ctx->i;
 	in = &ctx->input;
 	if (
-		(BACKTICK((*in), i) && OK((ctx->status = backtick(in, i, &skip, lex_quote))))
-		|| (ARITH_EXP((*in), i) && OK((ctx->status = arith_exp(in, i, &skip, lex_quote))))
-		|| (CMD_SUB((*in), i) && OK((ctx->status = command_sub(in, i, &skip, lex_quote))))
-		|| (PARAM_EXP((*in), i) && OK((ctx->status = param_exp(in, i, &skip, lex_quote))))
+		(OK(ctx->status) && BACKTICK((*in), i) && OK((ctx->status = backtick(in, i, &skip, lex_quote))))
+		|| (OK(ctx->status) && ARITH_EXP((*in), i) && OK((ctx->status = arith_exp(in, i, &skip, lex_quote))))
+		|| (OK(ctx->status) && CMD_SUB((*in), i) && OK((ctx->status = command_sub(in, i, &skip, lex_quote))))
+		|| (OK(ctx->status) && PARAM_EXP((*in), i) && OK((ctx->status = param_exp(in, i, &skip, lex_quote))))
 	)
 		skip += 1;
 	else if (c == '$')
 		skip = 1;
-	if (NONE(ctx->status))	
-		ctx->missing = g_missing;
 	if ((!token->type && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		|| ERR(append_to_tok(c, token)))
 		ctx->status = ERROR;
