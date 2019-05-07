@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/06 17:08:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/07 12:09:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ int		interface(char **line)
 			(*line)[--len] = '\0';
 			status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
 		}
+		else if (next[0] == DEL && !len)
+			continue ;
 		// else add char to line and STDOUT
 		else if ((tmp = ft_strjoin(*line, next)))
 		{

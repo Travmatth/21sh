@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/25 16:10:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/07 16:33:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,16 @@ int		init_environ(int argc, char **argv, char **environ)
 /*
 ** If 21sh is launched in an environment with `SHELL_TTY` set to a valid ttyid
 ** the value of this environment variable is used as the tty that 21sh
-** will write/read to/from
+** will write/read to/from. Initialize termcaps & clears screen, sets
+** cursor position to the top of the screen
 */
 
 int		init_shell(void)
 {
 	int		fd;
 	char	*tty_id;
+	char	buf[32];
+	char	*type;
 
 	if ((tty_id = get_env_var("SHELL_TTY")))
 	{
@@ -92,6 +95,12 @@ int		init_shell(void)
 			|| ERR(close(fd)))
 			return (ERROR);
 	}
+	if (NONE((type = get_env_var("TERM")))
+		|| ERR(tgetent(buf, type))
+		|| ERR(tputs(tgetstr("ti", NULL), 1, ft_termprint))
+		|| ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint))
+		|| ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
+		return (ERROR);
 	return (SUCCESS);
 }
 
@@ -116,4 +125,11 @@ int		init_parser(void)
 		|| !(g_prods = init_prods(fd, productions, &line)))
 		return ERROR;
 	return SUCCESS;
+}
+
+int		restore_shell(void)
+{
+	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
+		return (ERROR);
+	return (SUCCESS);
 }

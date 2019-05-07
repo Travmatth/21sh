@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/06 15:44:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/07 16:26:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,19 @@ int		main(int argc, char **argv, char **environ)
 		|| ERR(init_shell()))
 		return (1);
 	end = FALSE;
-	status = SUCCESS;
 	while (!end && !ERR(status))
 	{
 		input = NULL;
-		if ((signal(SIGINT, sig_handler) != SIG_ERR)
-			&& !ERR(write(STDOUT, "$> ", 3))
-			/*&& (OK(get_next_line(STDIN, &input)))*/
-			&& (OK(interface(&input))))
+		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
+		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
+		if (OK(status) && OK(interface(&input)))
 		{
-			status = IS_A("exit", input) ? NIL : parse_execute_input(input);
 			if (IS_A("exit", input))
 				end = TRUE;
+			else
+				status = parse_execute_input(input);
 			free(input);
 		}
 	}
-	return (0);
+	return (ERR(restore_shell()) || ERR(status) ? 1 : 0);
 }

@@ -86,6 +86,7 @@ int				g_processes;
 int				init_environ(int argc, char **argv, char **environ);
 int				init_parser(void);
 int				init_shell();
+int				restore_shell(void);
 
 /*
 ** src/init/signal.c
@@ -99,8 +100,9 @@ void			sig_handler(int sig);
 ** src/init/terminal_modes.c
 */
 
-int		prep_terminal(struct termios *ttys, int flags);
-int		restore_terminal(struct termios *tty);
+int				prep_terminal(struct termios *ttys, int flags);
+int				restore_terminal(struct termios *tty);
+int				ft_termprint(int c);
 
 /*
 ** builtins/
