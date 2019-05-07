@@ -6,12 +6,12 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 17:07:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 13:00:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/06 16:45:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef semantic_analysis_H
-# define semantic_analysis_H
+#ifndef EXECUTION_H
+# define EXECUTION_H
 
 #ifndef LIBFT_H
 # include "../libftprintf/srcs/includes/ft_printf.h"
@@ -41,24 +41,6 @@
 
 # define PIPE_READ 0
 # define PIPE_WRITE 1
-
-/*
-** Character sent by terminal line discipline in response to BACKSPACE key
-*/
-
-# define DEL 0x7f
-
-/*
-** Character sent by terminal line discipline in response to ctrl-c
-*/
-
-# define INTR 0x03
-
-/*
-** Character sent by terminal line discipline in response to ctrl-d
-*/
-
-# define EOT 0x04
 
 /*
 ** Used in HEREDOC processing to detect signals sent to terminal

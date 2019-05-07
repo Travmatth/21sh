@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/29 12:27:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/06 15:44:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ int		main(int argc, char **argv, char **environ)
 		input = NULL;
 		if ((signal(SIGINT, sig_handler) != SIG_ERR)
 			&& !ERR(write(STDOUT, "$> ", 3))
-			&& (OK(get_next_line(STDIN, &input))))
+			/*&& (OK(get_next_line(STDIN, &input)))*/
+			&& (OK(interface(&input))))
 		{
 			status = IS_A("exit", input) ? NIL : parse_execute_input(input);
 			if (IS_A("exit", input))

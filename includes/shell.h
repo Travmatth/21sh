@@ -28,6 +28,7 @@
 # include <sys/syslimits.h>
 
 # include "execution.h"
+# include "interface.h"
 
 /*
 ** Used in lexical analysis to when unclosed quoted
@@ -49,6 +50,30 @@ char			**g_environ;
 */
 
 int				g_processes;
+
+/*
+** Character sent by terminal line discipline in response to RETURN key
+*/
+
+# define RETURN 0x0a
+
+/*
+** Character sent by terminal line discipline in response to BACKSPACE key
+*/
+
+# define DEL 0x7f
+
+/*
+** Character sent by terminal line discipline in response to ctrl-c
+*/
+
+# define INTR 0x03
+
+/*
+** Character sent by terminal line discipline in response to ctrl-d
+*/
+
+# define EOT 0x04
 
 /*
 ** src/main.c
