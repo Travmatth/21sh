@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/07 12:09:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/07 18:19:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,15 @@ int		interface(char **line)
 	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO));
 	while (OK(status) && !ERR((status = read(STDIN, &next, 1))))
 	{
+		// if char is escaped newline, erase escape from line and write newline 
+		if (next[0] == RETURN && len && (*line)[len - 1] == '\\')
+		{
+			(*line)[--len] = '\0';
+			status = write(STDOUT, "\n> ", 1);
+			len = 0;
+		}
 		// if char is newline or CTRL-C, end current line
-		if (next[0] == RETURN || next[0] == INTR)
+		else if (next[0] == INTR || next[0] == RETURN)
 		{
 			status = write(STDOUT, "\n", 1);
 			break ;

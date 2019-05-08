@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/07 16:33:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/07 18:53:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ int		init_shell(void)
 	char	buf[32];
 	char	*type;
 
+	char *cap;
+	int	res;
 	if ((tty_id = get_env_var("SHELL_TTY")))
 	{
 		if (ERR((fd = open(tty_id, O_RDWR)))
@@ -95,12 +97,46 @@ int		init_shell(void)
 			|| ERR(close(fd)))
 			return (ERROR);
 	}
-	if (NONE((type = get_env_var("TERM")))
-		|| ERR(tgetent(buf, type))
-		|| ERR(tputs(tgetstr("ti", NULL), 1, ft_termprint))
-		|| ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint))
-		|| ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
+	if (NONE((type = get_env_var("TERM"))))
+	{
+		ft_putendl_fd("get_env_var failed", STDERR);
 		return (ERROR);
+	}
+	else ft_dprintf(STDERR, "TERM: %s", type);
+	if (ERR((res = tgetent(buf, type))))
+	{
+		ft_dprintf(STDERR, "failed tgetent: %d\n", res);
+		ft_putendl_fd("tgetent failed", STDERR);
+		return (ERROR);
+	}
+	ft_dprintf(STDERR, "tgetent: %d\n", res);
+	cap = tgetstr("ti", NULL);
+	// {
+	// 	ft_putendl_fd("tgetstr ti failed", STDERR);
+	// 	return (ERROR);
+	// }
+	if (cap == NULL) ft_putendl_fd("cap null", STDERR);
+	else ft_putendl_fd("cap not null", STDERR);
+	if (ERR(tputs(cap, 1, ft_termprint)))
+	{
+		ft_putendl_fd("tputs ti failed", STDERR);
+		return (ERROR);
+	}
+	// if (ERR(tputs(tgetstr("ti", NULL), 1, ft_termprint)))
+	// {
+	// 	ft_putendl_fd("tgetstr ti failed", STDERR);
+	// 	return (ERROR);
+	// }
+	if (ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint)))
+	{
+		ft_putendl_fd("tgetstr cm failed", STDERR);
+		return (ERROR);
+	}
+	if (ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
+	{
+		ft_putendl_fd("tgetstr cd failed", STDERR);
+		return (ERROR);
+	}
 	return (SUCCESS);
 }
 
