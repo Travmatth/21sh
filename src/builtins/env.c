@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:43:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/12/01 16:23:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/08 12:16:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ char	*get_env_var(char *var)
 	len = LEN(var, 0);
 	while (g_environ[++i])
 	{
-		if (ft_strnequ(g_environ[i], var, len))
+		if (ft_strnequ(g_environ[i], var, len) && g_environ[i][len] == '=')
 			return (ft_strchr(g_environ[i], '=') + 1);
 	}
 	return (NULL);
