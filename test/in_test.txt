@@ -1,3 +1,10 @@
+ls
+ ls
+ ls 
+ls -l
+ ls -l 
+ls -\
+l
 echo "
 
 "
