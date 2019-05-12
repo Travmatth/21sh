@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/23 17:38:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/11 16:27:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,47 @@ int		wait_loop(int pid, int *return_val)
 	else if (WIFEXITED(*return_val))
 		*return_val = WEXITSTATUS(*return_val);
 	return (*return_val);
+}
+
+void	free_redirs(t_redir *redir)
+{
+	if (redir)
+	{
+		free_redirs(redir->next);
+		free(redir->word);
+		free(redir->next);
+		free(redir);
+	}
+}
+
+void	free_exec_node(t_exec_node *node)
+{
+	if (node->type == EXEC_PIPE)
+	{
+		free_exec_node(node->pipe->left);
+		free_exec_node(node->pipe->right);
+		free(node->pipe);
+	}
+	else if (node->type == EXEC_AND || node->type == EXEC_OR)
+	{
+		free_exec_node(node->operator->left);
+		free_exec_node(node->operator->right);
+		free(node->operator);
+	}
+	else if (node->type == EXEC_SIMPLE_COMMAND)
+	{
+		free_redirs(node->simple_command->redirs);
+		ft_freearr(node->simple_command->command, TRUE);
+		free(node->simple_command);
+	}
+	free(node);
+}
+
+void	free_program(t_program *program)
+{
+	int		i;
+
+	i = -1;
+	while (program->commands[++i])
+		free_exec_node(program->commands[i]);
 }

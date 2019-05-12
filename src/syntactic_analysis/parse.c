@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 11:51:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/11 17:20:53 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ extern t_prod	*g_prods;
 int		reduce(int state, t_list **stack, t_ast_node *word)
 {
 	t_list	*tmp;
+	t_list	*state_node;
 	t_prod	*handle;
 	t_stack	*sym;
 	int		symbols;
@@ -50,7 +51,8 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 	symbols = 0;
 	while (handle->rhs && handle->rhs[symbols++])
 	{
-		ft_lsttail(stack);
+		state_node = ft_lsttail(stack);
+		ft_lstdelone(&state_node, del_stack_node);
 		ft_lstpushback(&tmp, ft_lsttail(stack));
 	}
 	peek_state(stack, &next_state);

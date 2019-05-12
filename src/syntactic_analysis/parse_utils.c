@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 18:08:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/11 16:59:53 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,4 +115,10 @@ t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
 	stack_token->type = STACK_TOKEN;
 	stack_token->item.token = node;
 	return (stack_token);
+}
+
+void	del_stack_node(void *contents, size_t size)
+{
+	(void)size;
+	free(contents);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 17:07:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/06 16:45:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/11 16:05:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,4 +100,5 @@ int		perform_redirs(t_simple *simple);
 */
 
 int		wait_loop(int pid, int *return_val);
+void	free_program(t_program *program);
 #endif

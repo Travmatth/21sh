@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/30 12:22:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/11 16:11:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,7 @@ int		execute(t_program *program)
 	status = SUCCESS;
 	while (!ERR(status) && program->commands[++i])
 		status = execute_switch(program->commands[i]);
+	free_program(program);
 	return (ERR(status) ? ERROR : SUCCESS);
 }
 
