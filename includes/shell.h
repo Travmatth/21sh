@@ -64,6 +64,72 @@ int				g_processes;
 # define DEL 0x7f
 
 /*
+** Character sent by terminal line discipline in response to DELETE key
+*/
+
+# define DEL2 0x7E335B1B
+
+/*
+** Character sent by terminal line discipline in response to UP key
+*/
+
+# define UP 0x415B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_UP key
+*/
+
+# define CTL_UP 0x41353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to DOWN key
+*/
+
+# define DOWN 0x425B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_DOWN key
+*/
+
+# define CTL_DOWN 0x42353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to RIGHT key
+*/
+
+# define RIGHT 0x435B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_RIGHT key
+*/
+
+# define CTL_RIGHT 0x43353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to LEFT key
+*/
+
+# define LEFT 0x445B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_LEFT key
+*/
+
+# define CTL_LEFT 0x44353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to HOME key
+*/
+
+# define HOME 0x485B1B
+
+/*
+** Character sent by terminal line discipline in response to END key
+*/
+
+# define END 0x465B1B
+
+/*
 ** Character sent by terminal line discipline in response to ctrl-c
 */
 

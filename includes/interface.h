@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   interface.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/10 16:10:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 22:50:49 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,25 @@ struct			s_uisegment
 	int					end;
 	int					word_end;
 }						;
+
+
+typedef struct s_line	t_line;
+struct			s_line
+{
+	char	c;
+	int		x;
+	int		y;
+	int		highlight;
+	t_line	*next;
+	t_line	*prev;
+	
+};
+
+typedef struct	s_interface
+{
+	t_line	*list;
+	
+}				t_interface;
 
 /*
 ** src/interface/interface.c
