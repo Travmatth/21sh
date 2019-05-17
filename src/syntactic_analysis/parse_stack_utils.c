@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:26:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 20:49:59 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,14 @@
 
 t_list		*create_stack_token(int type, t_ast_node *token, int state)
 {
-	t_stack	*stack_token;
+	t_stack	stack_token;
 
-	if (!(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
-		return (NULL);
-	stack_token->type = type;
+	stack_token.type = type;
 	if (type == STACK_STATE)
-		stack_token->item.state = state;
+		stack_token.item.state = state;
 	else if (type == STACK_TOKEN)
-	{
-		stack_token->item.token = token;
-	}
-	return (ft_lstnew((void*)stack_token, sizeof(t_stack)));
+		stack_token.item.token = token;
+	return (ft_lstnew((void*)&stack_token, sizeof(t_stack)));
 }
 
 /*
@@ -39,12 +35,11 @@ t_list		*create_stack_token(int type, t_ast_node *token, int state)
 
 t_list		*create_end_stack_token(void)
 {
-	t_stack	*stack_token;
+	t_stack	stack_token;
 
-	if (!(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
-		return (NULL);
-	stack_token->type = STACK_END;
-	return (ft_lstnew((void*)stack_token, sizeof(t_stack)));
+	stack_token.type = STACK_END;
+	stack_token.item.token = NULL;
+	return (ft_lstnew((void*)&stack_token, sizeof(t_stack)));
 }
 
 /*
@@ -54,9 +49,14 @@ t_list		*create_end_stack_token(void)
 
 t_ast_node	*pop_token(t_list **tokens)
 {
-	t_list	*top;
+	t_list		*top;
+	t_stack		*node;
+	t_ast_node	*ast_node;
 
 	if (!(top = ft_lsthead(tokens)))
 		return (NULL);
-	return (t_ast_node*)((t_stack*)top->content)->item.token;
+	node = (t_stack*)top->content;
+	ast_node = (t_ast_node*)node->item.token;
+	free(node);
+	return (ast_node);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/30 11:10:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 16:09:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -370,8 +370,14 @@ int		quote_removal(char ***fields);
 int		tilde_expansion(char **parameter);
 
 /*
-** src/execution/here_end_utils.c
+** src/semantic_analysis/here_end_utils.c
 */
 
 int		process_heredoc(t_redir *redir);
+
+/*
+** src/semantic_analysis/semantic_utils.c
+*/
+
+void	free_ast(t_ast *ast);
 #endif

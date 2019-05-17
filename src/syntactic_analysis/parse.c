@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/11 17:20:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 20:22:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,10 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 	t_list	*tmp;
 	t_list	*state_node;
 	t_prod	*handle;
-	t_stack	*sym;
+	t_stack	sym;
 	int		symbols;
 	int		next_state;
+	int		status;
 
 	tmp = NULL;
 	handle = &g_prods[ft_atoi(&g_parse_table[state][word->type][1])];
@@ -56,11 +57,13 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 		ft_lstpushback(&tmp, ft_lsttail(stack));
 	}
 	peek_state(stack, &next_state);
-	sym = reduce_symbol(handle, &tmp);
-	ft_lstpushback(stack, ft_lstnew(sym, sizeof(t_stack)));
-	next_state = ft_atoi(g_parse_table[next_state][sym->item.token->type]);
-	ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next_state));
-	return (SUCCESS);
+	if (OK((status = reduce_symbol(handle, &tmp, &sym))))
+	{
+		ft_lstpushback(stack, ft_lstnew(&sym, sizeof(t_stack)));
+		next_state = ft_atoi(g_parse_table[next_state][sym.item.token->type]);
+		ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next_state));
+	}
+	return (status);
 }
 
 /*
@@ -90,15 +93,19 @@ int		accept_ast(t_list **stack, t_ast *ast)
 {
 	t_list	*tmp;
 	t_prod	*handle;
-	t_stack	*sym;
+	t_stack	sym;
+	int		status;
 
-	tmp = NULL;
-	ft_lsttail(stack);
+	tmp = ft_lsttail(stack);
+	ft_lstdelone(&tmp, del_stack_node);
 	handle = &g_prods[START];
 	ft_lstpushback(&tmp, ft_lsttail(stack));
-	sym = reduce_symbol(handle, &tmp);
-	ast->root = sym->item.token;
-	return (SUCCESS);
+	if (OK((status = reduce_symbol(handle, &tmp, &sym))))
+	{
+		ast->root = sym.item.token;
+		ft_lstdel(stack, del_stack_node);
+	}
+	return (status);
 }
 
 /*

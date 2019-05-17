@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 16:19:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 16:18:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,10 @@ int		semantic_analysis(t_ast *ast, t_program *p)
 		return (ERROR);
 	is_bg = FALSE;
 	root = (t_ast_node*)ast->root->val[0];
-	if (IS_A("list separator", root->rhs)
-		&& !OK((status = separator(&is_bg, root->val[1]))))
-		return (status);
-	return (list(p, root->val[0], is_bg));
+	status = SUCCESS;
+	if (IS_A("list separator", root->rhs))
+		status = separator(&is_bg, root->val[1]);
+	status = OK(status) && list(p, root->val[0], is_bg);
+	free_ast(ast);
+	return (status);
 }

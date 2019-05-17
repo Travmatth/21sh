@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/11 16:42:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 20:08:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ typedef struct	s_ast
 {
 	t_ast_node	*root;
 	int			type;
-	t_list		*missing;
 }				t_ast;
 
 /*
@@ -206,7 +205,6 @@ t_ast_node	*pop_token(t_list **tokens);
 
 int		peek_state(t_list **stack, int *state);
 int		assign_type(char *lhs, t_ast_node *node);
-t_stack	*reduce_symbol(t_prod *handle, t_list **tmp);
+int		reduce_symbol(t_prod *handle, t_list **tmp, t_stack	*sym);
 void	del_stack_node(void *contents, size_t size);
-
 #endif

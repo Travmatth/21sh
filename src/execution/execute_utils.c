@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/11 16:27:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 20:38:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,14 @@ void	free_redirs(t_redir *redir)
 	}
 }
 
+/*
+** Free nodes by recursing down logical and pipe nodes to find base
+** simple command nodes, freeing simple commands and their parents after.
+*/
+
 void	free_exec_node(t_exec_node *node)
 {
+	ft_dprintf(STDERR, "free_exec_node\n", (void*)node);
 	if (node->type == EXEC_PIPE)
 	{
 		free_exec_node(node->pipe->left);
@@ -113,10 +119,17 @@ void	free_exec_node(t_exec_node *node)
 	{
 		free_redirs(node->simple_command->redirs);
 		ft_freearr(node->simple_command->command, TRUE);
+		ft_dprintf(STDERR, "free_exec_node, EXEC_SIMPLE_COMMAND: %p\n", (void*)node);
 		free(node->simple_command);
 	}
+	else
+		ft_dprintf(STDERR, "free_exec_node\n", (void*)node);
 	free(node);
 }
+
+/*
+** Free program tree by freeing individual nodes
+*/
 
 void	free_program(t_program *program)
 {
@@ -125,4 +138,5 @@ void	free_program(t_program *program)
 	i = -1;
 	while (program->commands[++i])
 		free_exec_node(program->commands[i]);
+	free(program->commands);
 }

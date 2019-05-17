@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/11 16:59:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 20:26:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,35 +90,46 @@ int		assign_type(char *lhs, t_ast_node *node)
 ** back onto the syntactic parse stack
 */
 
-t_stack	*reduce_symbol(t_prod *handle, t_list **tmp)
+int		reduce_symbol(t_prod *handle, t_list **tmp, t_stack	*sym)
 {
 	int			i;
 	int			size;
 	t_ast_node	*node;
-	t_stack		*stack_token;
+	t_list		*current;
 
 	if (!(node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
-		return (NULL);
+		return (ERROR);
 	i = 0;
 	size = 0;
 	while (handle->rhs && handle->rhs[size])
 		size += 1;
 	if (handle->rhs && (!(node->rhs = ft_strsum(handle->rhs, " "))
 		|| !(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1)))))
-		return (NULL);
+		return (ERROR);
 	while (handle->rhs && i < size && ft_strcmp("$end", handle->rhs[i]))
-		node->val[i++] = ((t_stack*)ft_lsttail(tmp)->content)->item.token;
+	{
+		current = ft_lsttail(tmp);
+		node->val[i++] = ((t_stack*)current->content)->item.token;
+		ft_lstdelone(&current, del_stack_node);
+	}
 	assign_type(handle->lhs, node);
-	if (!(node->lhs = ft_strdup(handle->lhs))
-		|| !(stack_token = (t_stack*)ft_memalloc(sizeof(t_stack))))
-		return (NULL);
-	stack_token->type = STACK_TOKEN;
-	stack_token->item.token = node;
-	return (stack_token);
+	if (!(node->lhs = ft_strdup(handle->lhs)))
+		return (ERROR);
+	sym->type = STACK_TOKEN;
+	sym->item.token = node;
+	return (SUCCESS);
 }
+
+/*
+** used in ft_lstdel and ft_lstdelone to free given t_list stack contents
+*/
 
 void	del_stack_node(void *contents, size_t size)
 {
+	t_stack *node;
+
 	(void)size;
-	free(contents);
+	node = (t_stack*)contents;
+	ft_dprintf(STDERR, "del_stack_node: %p\n", (void*)node);
+	free(node);
 }

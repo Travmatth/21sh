@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 16:38:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 20:56:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,24 +176,23 @@ int		process_token(t_token *token)
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 {
 	t_ast_node	*ast_node;
-	t_stack		*stack_node;
+	t_stack		stack_node;
 	int			status;
 
 	if (!OK((status = process_token(token)))
 		|| !(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node)))
-		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2))
-		|| !(ast_node->val[0] = ft_strdup((char*)token->value->buf)))
+		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2)))
 		return (OK(status) ? ERROR : status);
+	ast_node->val[0] = token->value->buf;
 	ast_node->type = token->type;
-	if (!(stack_node = (t_stack*)ft_memalloc(sizeof(t_stack))))
-		return (ERROR);
-	stack_node->type = STACK_TOKEN;
-	stack_node->item.token = ast_node;
-	if (!(node = ft_lstnew(stack_node, sizeof(t_stack))))
+	stack_node.type = STACK_TOKEN;
+	stack_node.item.token = ast_node;
+	if (!(node = ft_lstnew(&stack_node, sizeof(t_stack))))
 		return (ERROR);
 	ft_lstpushback(tokens, node);
 	ctx->in_word = FALSE;
 	ctx->op_state = FALSE;
+	free(token->value);
 	token->type = NIL;
 	token->value = NULL;
 	return (SUCCESS);

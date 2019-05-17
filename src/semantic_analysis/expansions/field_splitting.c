@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:47:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:56:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 15:45:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,5 +117,6 @@ int		field_splitting(char ***fields, char **parameter)
 			return (ERROR);
 	}
 	*fields = arr;
+	free(*parameter);
 	return (status);
 }

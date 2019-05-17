@@ -87,6 +87,7 @@ int				init_environ(int argc, char **argv, char **environ);
 int				init_parser(void);
 int				init_shell();
 int				restore_shell(void);
+void			free_prods(void);
 
 /*
 ** src/init/signal.c

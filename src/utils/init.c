@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/11 15:25:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/15 18:13:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 	char		**prod_rule;
 
 	i = 0;
-	while (42)
+	while (TRUE)
 	{
 		free(*line);
 		if (ERR((status = get_next_line(fd, line))))
@@ -132,4 +132,26 @@ int		restore_shell(void)
 	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
 		return (ERROR);
 	return (SUCCESS);
+}
+
+void	free_prods(void)
+{
+	size_t		i;
+	size_t		j;
+	t_prod		*prod;
+
+	i = 0;
+	while (TRUE)
+	{
+		prod = &g_prods[i++];
+		if (!prod->lhs)
+			break ;
+		free(prod->lhs);
+		j = 0;
+		while (prod->rhs && prod->rhs[j])
+			free(prod->rhs[j++]);
+		if (prod->rhs)
+			free(prod->rhs);
+	}
+	free(g_prods);
 }
