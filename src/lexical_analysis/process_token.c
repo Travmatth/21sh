@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/17 17:45:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/18 14:48:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,7 +183,6 @@ int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 		|| !(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node)))
 		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2)))
 		return (OK(status) ? ERROR : status);
-	ft_dprintf(STDERR, "push_token: %p\n", (void*)token->value->buf);
 	ast_node->val[0] = token->value->buf;
 	ast_node->type = token->type;
 	stack_node.type = STACK_TOKEN;

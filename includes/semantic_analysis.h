@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 16:09:09 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/18 16:13:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "syntactic_analysis.h"
 
+# define IS_TERMINAL(x) (x >= 1 && x <= 24)
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define CONTAINS(type, node) (ft_strstr(node, type))
 # define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"

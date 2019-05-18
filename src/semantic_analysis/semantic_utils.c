@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/16 16:04:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/17 18:21:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/18 16:14:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,12 @@ void	free_ast_node(t_ast_node *root)
 {
 	int		i;
 
-	if (root->type == PARSE_WORD)
-	{
-		ft_dprintf(STDERR, "free_ast_node: word: %p\n", (void*)root->val[0]);
+	if (IS_TERMINAL(root->type))
 		free(root->val[0]);
-	}
 	else
 	{
 		i = -1;
-		while (root->val[++i])
+		while (root->val && root->val[++i])
 			free_ast_node((t_ast_node*)root->val[i]);
 	}
 	free(root->val);
@@ -37,4 +34,5 @@ void	free_ast(t_ast *ast)
 {
 	free_ast_node((t_ast_node*)ast->root->val[0]);
 	free(ast->root->val);
+	free(ast->root);
 }

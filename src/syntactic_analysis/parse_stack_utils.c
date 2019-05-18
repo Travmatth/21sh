@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/17 18:01:58 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/18 14:47:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ t_ast_node	*pop_token(t_list **tokens)
 		return (NULL);
 	node = (t_stack*)top->content;
 	ast_node = (t_ast_node*)node->item.token;
-	ft_dprintf(STDERR, "pop_token: buf: %p containing: %d\n", (void*)ast_node->val[0]);
 	free(top);
 	free(node);
 	return (ast_node);

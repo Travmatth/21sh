@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 13:23:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/18 16:20:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ int		suffix(t_simple *cmd, t_ast_node *root)
 	int			status;
 	char		**tmp;
 	char		**fields;
-	t_ast_node	*node;
+	char		*word;
 
 	if (IS_A("io_redirect", root->rhs))
 		return (io_redirect(cmd, root->val[0]));
@@ -156,20 +156,23 @@ int		suffix(t_simple *cmd, t_ast_node *root)
 			? status : io_redirect(cmd, root->val[1]));
 	else if (IS_A("WORD", root->rhs))
 	{
-		node = (t_ast_node*)root->val[0];
-		if (!OK((status = full_word_expansion(&fields, (char*)node->val[0]))))
+		if (!(word = ft_strdup((char*)((t_ast_node*)root->val[0])->val[0])))
+			return (ERROR);
+		if (!OK((status = full_word_expansion(&fields, word))))
 			return (status);
 		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
 			return (ERROR);
 		free(cmd->command);
+		free(fields);
 		cmd->command = tmp;
 	}
 	else if (IS_A("cmd_suffix WORD", root->rhs))
 	{
-		node = (t_ast_node*)root->val[1];
+		if (!(word = ft_strdup((char*)((t_ast_node*)root->val[1])->val[0])))
+			return (ERROR);
 		if (!OK((status = suffix(cmd, root->val[0]))))
 			return (status);
-		if (!OK((status = full_word_expansion(&fields, (char*)node->val[0]))))
+		if (!OK((status = full_word_expansion(&fields, word))))
 			return (status);
 		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
 			return (ERROR);

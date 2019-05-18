@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/17 18:44:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/18 14:42:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ int		accept_ast(t_list **stack, t_ast *ast, t_ast_node *word)
 	{
 		ast->root = sym.item.token;
 		ft_lstdel(stack, del_stack_node);
+		free(sym.item.token->lhs);
+		free(sym.item.token->rhs);
 	}
 	free(word->val[0]);
 	free(word->val);
