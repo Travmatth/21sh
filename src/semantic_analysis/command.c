@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 20:31:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/17 17:43:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ int		cmd_name(t_simple *simple, t_ast_node *root)
 	char	**tmp;
 	char	**fields;
 
+	name = (char*)((t_ast_node*)root->val[0])->val[0];
+	ft_dprintf(STDERR, "cmd_name: %p\n", (void*)name);
 	if (!(name = ft_strdup((char*)((t_ast_node*)root->val[0])->val[0])))
 		return (ERROR);
 	if (!OK((status = full_word_expansion(&fields, name)))

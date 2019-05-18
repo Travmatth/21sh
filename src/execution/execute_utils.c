@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 20:38:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/17 13:10:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ void	free_redirs(t_redir *redir)
 
 void	free_exec_node(t_exec_node *node)
 {
-	ft_dprintf(STDERR, "free_exec_node\n", (void*)node);
 	if (node->type == EXEC_PIPE)
 	{
 		free_exec_node(node->pipe->left);
@@ -119,11 +118,8 @@ void	free_exec_node(t_exec_node *node)
 	{
 		free_redirs(node->simple_command->redirs);
 		ft_freearr(node->simple_command->command, TRUE);
-		ft_dprintf(STDERR, "free_exec_node, EXEC_SIMPLE_COMMAND: %p\n", (void*)node);
 		free(node->simple_command);
 	}
-	else
-		ft_dprintf(STDERR, "free_exec_node\n", (void*)node);
 	free(node);
 }
 

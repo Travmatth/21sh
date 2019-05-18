@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 20:22:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/17 18:44:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens)
 ** This root of the ast is stored in the ast struct
 */
 
-int		accept_ast(t_list **stack, t_ast *ast)
+int		accept_ast(t_list **stack, t_ast *ast, t_ast_node *word)
 {
 	t_list	*tmp;
 	t_prod	*handle;
@@ -105,6 +105,11 @@ int		accept_ast(t_list **stack, t_ast *ast)
 		ast->root = sym.item.token;
 		ft_lstdel(stack, del_stack_node);
 	}
+	free(word->val[0]);
+	free(word->val);
+	free(word->lhs);
+	free(word->rhs);
+	free(word);
 	return (status);
 }
 
@@ -139,7 +144,7 @@ int		syntactic_analysis(t_list **tokens, t_ast *ast)
 		else if (action[0] == 's')
 			status = shift(state, &stack, &word, tokens);
 		else if (action[0] == 'a')
-			return (accept_ast(&stack, ast));
+			return (accept_ast(&stack, ast, word));
 		else if (action[0] == '-')
 		{
 			ft_putendl("Syntactic Error: Unrecognized command syntax");

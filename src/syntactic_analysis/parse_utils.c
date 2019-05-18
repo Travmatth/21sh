@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 20:26:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/17 18:39:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ int		reduce_symbol(t_prod *handle, t_list **tmp, t_stack	*sym)
 	{
 		current = ft_lsttail(tmp);
 		node->val[i++] = ((t_stack*)current->content)->item.token;
+		ft_dprintf(STDERR, "reduce_symbol: %p\n", ((t_ast_node*)node->val[i - 1])->val[0]);
 		ft_lstdelone(&current, del_stack_node);
 	}
 	assign_type(handle->lhs, node);
@@ -130,6 +131,5 @@ void	del_stack_node(void *contents, size_t size)
 
 	(void)size;
 	node = (t_stack*)contents;
-	ft_dprintf(STDERR, "del_stack_node: %p\n", (void*)node);
 	free(node);
 }

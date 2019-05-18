@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 20:08:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/17 18:40:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ int		normalize_tokens(char **args);
 
 int		reduce(int state, t_list **stack, t_ast_node *word);
 int		shift(int state, t_list **stack, t_ast_node **word, t_list **tokens);
-int		accept_ast(t_list **stack, t_ast *ast);
+int		accept_ast(t_list **stack, t_ast *ast, t_ast_node *word);
 int		syntactic_analysis(t_list **tokens, t_ast *ast);
 
 /*
