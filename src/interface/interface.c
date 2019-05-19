@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 23:04:44 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/19 00:55:41 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@
 
 int		interface(char **line)
 {
-	// char			*tmp;
+	static char		tmp[4096];
 	unsigned long	next;
 	struct termios	tty[2];
 	int				status;
@@ -60,18 +60,21 @@ int		interface(char **line)
 	int				in_word;
 
 	len = 0;
-	if (!*line && !(*line = ft_strnew(0)))
-		return (ERROR);
+	*line = tmp;
 	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO));
 	// segments = NULL;
 	in_word = FALSE;
-	while (OK(status) && !ERR((status = read(STDIN, &next, 6))))
+	while (OK(status))
 	{
+		next = 0;
+		read(STDIN, &next, 6);
+		if (CTL_UP == next)
+			ft_printf("next = CTL_UP = %#llx\n", next);
 		// if char is newline or CTRL-C, end current line
 		if (next == INTR || next == RETURN)
 		{
-			status = tputs("\n") write(STDOUT, "\n", 1);
-			break ;
+			status = write(STDOUT, "\n", 1);
+			exit(0) ;
 		}
 		// if char is delete, remove last char from line and STDOUT
 		else if (next == DEL && len)
@@ -81,8 +84,9 @@ int		interface(char **line)
 		}
 		else if (next == DEL && !len)
 			continue ;
-		else if (PRINTABLE_CHAR(next)){
-			status = ERR(write(STDOUT, &next, 1)) ? ERROR : status;
+		if (PRINTABLE_CHAR(next)){
+			// puts("hi\n");
+			status = ERR(write(STDOUT, (char*)&next, 1)) ? ERROR : status;
 		}
 		// else add char to line and STDOUT
 		// else if ((tmp = ft_strjoin(*line, next)))
@@ -110,29 +114,29 @@ int		interface(char **line)
 		// 		if (ERR((status = get_cursor_position(&current->x, &current->y))))
 		// 			break ;
 		// 	}
-		// 	// if in word and char is not whitespace, continue current word
-		// 	// if (in_word && PRINTABLE_CHAR(next) && !IS_WHITESPACE(next))
-		// 	// {
-		// 	// }
-		// 	// if in word and char is whitespace, end current word
-		// 	if (in_word && PRINTABLE_CHAR(next) && IS_WHITESPACE(next))
-		// 	{
-		// 		current->word_end = len - current->start;
-		// 		in_word = FALSE;
-		// 	}
+			// if in word and char is not whitespace, continue current word
+			// if (in_word && PRINTABLE_CHAR(next) && !IS_WHITESPACE(next))
+			// {
+			// }
+			// if in word and char is whitespace, end current word
+			// if (in_word && PRINTABLE_CHAR(next) && IS_WHITESPACE(next))
+			// {
+			// 	current->word_end = len - current->start;
+			// 	in_word = FALSE;
+			// }
 
-		// 	// if char is escaped newline, write prompt 
-		// 	if (next == RETURN && len && (*line)[len - 1] == '\\')
-		// 	{
-		// 		status = ERR(write(STDOUT, "\n> ", 3)) ? ERROR : status;
-		// 		len = 0;
-		// 	}
-		// 	else
-		// 	free(*line);
-		// 	*line = tmp;
-		// 	len += 1;
+			// if char is escaped newline, write prompt 
+			if (next == RETURN && len && (*line)[len - 1] == '\\')
+			{
+				status = ERR(write(STDOUT, "\n> ", 3)) ? ERROR : status;
+				len = 0;
+			}
+			else
+			free(*line);
+			*line = tmp;
+			len += 1;
 			
-		// }
+		}
 		else
 			status = ERROR;
 	}

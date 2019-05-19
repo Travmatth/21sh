@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/30 11:09:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 17:51:00 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/18 23:50:27 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		prep_terminal(struct termios *ttys, int flags)
 		|| ERR(tcgetattr(STDIN, &ttys[1])))
 		return (ERROR);
 	ttys[0].c_lflag &= flags;
-	ttys[0].c_cc[VMIN] = 1;
+	ttys[0].c_cc[VMIN] = 0;
 	ttys[0].c_cc[VTIME] = 0;
 	if (ERR(tcsetattr(STDIN, TCSANOW, &ttys[0])))
 		return (ERROR);
