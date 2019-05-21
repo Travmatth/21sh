@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/19 00:55:41 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/21 01:02:42 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,58 @@
 // 	return (new);
 // }
 
-// static void insert(t_interface *interface)
-// {
-// 	t_line	*new;
+static void insert(char c, char **line, t_interface *interface)
+{
+	// t_line	*new;
 	
-// 	new = init()
-// }
+	// new = init(c);
+	(*line)[interface->line_index++] = c;
+	interface->line_len++;
+	// tputs(tgetstr("nd", NULL), 1, ft_termprint);
+}
 
-// static void delete(t_interface *interface)
-// {
-	
-// }
+static void delete(unsigned long c, char **line, t_interface *interface)
+{
+	if (c == DEL && line)
+	{
+		ft_memmove((void*)(*line + interface->line_index - 1), (void*)(*line + interface->line_index),
+		ft_strlen(*line + interface->line_index));
+		(*line)[interface->line_len] = '\0';
+		tputs(tgetstr("le", NULL), 1, ft_termprint);
+		tputs(tgetstr("dc", NULL), 1, ft_termprint);
+		interface->line_len--;
+	}
+	else if (c == DEL2 && line)
+	{
+		ft_memmove((void*)(*line + interface->line_index), (void*)(*line + interface->line_index + 1),
+		ft_strlen(*line + interface->line_index - 1));
+		(*line)[interface->line_len] = '\0';
+		tputs(tgetstr("dc", NULL), 1, ft_termprint);
+		interface->line_len--;
+	}
+}
 
-// static void	move()
-// {
-	
-// }
+static void	move(unsigned long c, t_interface *interface)
+{
+	if (c == LEFT && interface->line_index != 0)
+	{	
+		if (tputs(tgetstr("le", NULL), 1, ft_termprint))
+			interface->line_index--;
+	}
+	else if (c == RIGHT && interface->line_index < interface->line_len)
+		if (tputs(tgetstr("nd", NULL), 1, ft_termprint))
+			interface->line_index++;
+	// // if moving from start line add length of prompt
+	// else if (c == UP)
+	// // if moving to start line subtract length of prompt
+	// else if (c == DOWN)
+	// else if (c == )
+	// else if (c == )
+	// else if (c == )
+	// else if (c == )
+	// else if (c == )
+	// else if (c == )
+}
 
 /*
 ** Read single character from STDIN. Break reading on CTRL-C and delete input
@@ -50,7 +86,8 @@
 
 int		interface(char **line)
 {
-	static char		tmp[4096];
+	t_interface		interface;
+	static char		tmp[INPUT_LEN];
 	unsigned long	next;
 	struct termios	tty[2];
 	int				status;
@@ -68,8 +105,8 @@ int		interface(char **line)
 	{
 		next = 0;
 		read(STDIN, &next, 6);
-		if (CTL_UP == next)
-			ft_printf("next = CTL_UP = %#llx\n", next);
+		move(next, &interface);
+		// ft_printf("next = %#lx\n", next);
 		// if char is newline or CTRL-C, end current line
 		if (next == INTR || next == RETURN)
 		{
@@ -77,15 +114,17 @@ int		interface(char **line)
 			exit(0) ;
 		}
 		// if char is delete, remove last char from line and STDOUT
-		else if (next == DEL && len)
+		else if (next == DEL || next == DEL2)
 		{
-			(*line)[--len] = '\0';
-			status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
+			delete(next, line, &interface);
+			// (*line)[--len] = '\0';
+			// status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
 		}
-		else if (next == DEL && !len)
-			continue ;
+		// else if (next == DEL && !len)
+		// 	continue ;
 		if (PRINTABLE_CHAR(next)){
 			// puts("hi\n");
+			insert((char)next, line, &interface);
 			status = ERR(write(STDOUT, (char*)&next, 1)) ? ERROR : status;
 		}
 		// else add char to line and STDOUT
@@ -126,19 +165,19 @@ int		interface(char **line)
 			// }
 
 			// if char is escaped newline, write prompt 
-			if (next == RETURN && len && (*line)[len - 1] == '\\')
-			{
-				status = ERR(write(STDOUT, "\n> ", 3)) ? ERROR : status;
-				len = 0;
-			}
-			else
-			free(*line);
-			*line = tmp;
-			len += 1;
+			// if (next == RETURN && len && (*line)[len - 1] == '\\')
+			// {
+			// 	status = ERR(write(STDOUT, "\n> ", 3)) ? ERROR : status;
+			// 	len = 0;
+			// }
+			// else
+			// 	free(*line);
+			// *line = tmp;
+			// len += 1;
 			
-		}
-		else
-			status = ERROR;
+		// }
+		// else
+		// 	status = ERROR;
 	}
 	return (ERR(restore_terminal(&tty[1])) ? ERROR : status);
 }

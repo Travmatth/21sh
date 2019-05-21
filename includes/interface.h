@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 22:50:49 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/20 23:01:18 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,10 @@
 #ifndef LIBFT_H
 # include "../libftprintf/srcs/includes/ft_printf.h"
 #endif
+
+/*
+** #include <Holy_Spirit>
+*/
 
 # define IS_WHITESPACE(x) ((x == ' ' || x == '\t' || x == '\n'))
 
@@ -49,21 +53,25 @@ struct			s_uisegment
 }						;
 
 
-typedef struct s_line	t_line;
-struct			s_line
-{
-	char	c;
-	int		x;
-	int		y;
-	int		highlight;
-	t_line	*next;
-	t_line	*prev;
+// typedef struct s_line	t_line;
+// struct			s_line
+// {
+// 	char	c;
+// 	int		x;
+// 	int		y;
+// 	int		highlight;
+// 	t_line	*next;
+// 	t_line	*prev;
 	
-};
+// };
 
 typedef struct	s_interface
 {
-	t_line	*list;
+	// t_line			list[];
+	int				line_len;
+	int				line_index;
+	struct termios	tty_old;
+	struct termios	tty_new;
 	
 }				t_interface;
 
