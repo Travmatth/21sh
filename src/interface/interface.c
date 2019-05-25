@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/21 01:02:42 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/24 20:24:01 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,54 +28,67 @@
 
 static void insert(char c, char **line, t_interface *interface)
 {
-	// t_line	*new;
-	
-	// new = init(c);
-	(*line)[interface->line_index++] = c;
+	ft_memmove((void*)(*line + interface->line_index + 1), (void*)(*line +
+	interface->line_index),	INPUT_LEN - interface->line_index - 1);
+	(*line)[interface->line_index] = c;
 	interface->line_len++;
-	// tputs(tgetstr("nd", NULL), 1, ft_termprint);
+	interface->line_index++;
+	if (interface->line_index != interface->line_len)
+	{
+		tputs(tgetstr("sc", NULL), 1, ft_termprint);
+		tputs(tgetstr("cd", NULL), 1, ft_termprint);
+		tputs(tgetstr("vi", NULL), 1, ft_termprint);
+		ft_printf("%s", *line + interface->line_index - 1);
+		tputs(tgetstr("rc", NULL), 1, ft_termprint);
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+		tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	}
+	else
+		write(1, &c, 1);
+	// ft_printf("line_index = %i | line_len = %i", interface->line_index, interface->line_len);
 }
 
 static void delete(unsigned long c, char **line, t_interface *interface)
 {
-	if (c == DEL && line)
+	if (c == DEL && line && interface->line_index > 0)
 	{
-		ft_memmove((void*)(*line + interface->line_index - 1), (void*)(*line + interface->line_index),
-		ft_strlen(*line + interface->line_index));
+		ft_memmove((void*)(*line + interface->line_index - 1), (void*)(*line +
+		interface->line_index), INPUT_LEN - interface->line_index - 1);
 		(*line)[interface->line_len] = '\0';
+		interface->line_index--;
+		interface->line_len--;
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
-		tputs(tgetstr("dc", NULL), 1, ft_termprint);
-		interface->line_len--;
+		ft_printf("%s%s%s%s%s%s", tgetstr("sc", NULL), tgetstr("vi", NULL),
+		tgetstr("cd", NULL), *line + interface->line_index,
+		tgetstr("rc", NULL), tgetstr("ve", NULL));
+		// ft_printf("line_index = %i | line_len = %i", interface->line_index, interface->line_len);
 	}
-	else if (c == DEL2 && line)
+	else if (c == DEL2 && line && interface->line_index != interface->line_len)
 	{
-		ft_memmove((void*)(*line + interface->line_index), (void*)(*line + interface->line_index + 1),
-		ft_strlen(*line + interface->line_index - 1));
+		ft_memmove((void*)(*line + interface->line_index), (void*)(*line +
+		interface->line_index + 1), INPUT_LEN - interface->line_index - 1);
 		(*line)[interface->line_len] = '\0';
-		tputs(tgetstr("dc", NULL), 1, ft_termprint);
 		interface->line_len--;
+		ft_printf("%s%s%s%s%s%s", tgetstr("sc", NULL), tgetstr("vi", NULL),
+		tgetstr("cd", NULL), *line + interface->line_index,
+		tgetstr("rc", NULL), tgetstr("ve", NULL));
+		// ft_printf("line_index = %i | line_len = %i", interface->line_index, interface->line_len);
 	}
 }
 
-static void	move(unsigned long c, t_interface *interface)
+static void	move(unsigned long c, char **line, t_interface *interface)
 {
-	if (c == LEFT && interface->line_index != 0)
-	{	
-		if (tputs(tgetstr("le", NULL), 1, ft_termprint))
-			interface->line_index--;
-	}
-	else if (c == RIGHT && interface->line_index < interface->line_len)
-		if (tputs(tgetstr("nd", NULL), 1, ft_termprint))
-			interface->line_index++;
+		// ft_printf("line_index = %i | line_len = %i", interface->line_index, interface->line_len);
+	if (c == LEFT && interface->line_index > 0 && 
+			tputs(tgetstr("le", NULL), 1, ft_termprint) == 0)
+		interface->line_index--;
+	else if (c == RIGHT && (*line)[interface->line_index] && 
+			tputs(tgetstr("nd", NULL), 1, ft_termprint) == 0)
+		interface->line_index++;	
 	// // if moving from start line add length of prompt
-	// else if (c == UP)
+	// else if (c == CTL_UP)
 	// // if moving to start line subtract length of prompt
-	// else if (c == DOWN)
-	// else if (c == )
-	// else if (c == )
-	// else if (c == )
-	// else if (c == )
-	// else if (c == )
+	// else if (c == CTL_DOWN)
 	// else if (c == )
 }
 
@@ -105,12 +118,14 @@ int		interface(char **line)
 	{
 		next = 0;
 		read(STDIN, &next, 6);
-		move(next, &interface);
+		move(next, line, &interface);
 		// ft_printf("next = %#lx\n", next);
 		// if char is newline or CTRL-C, end current line
 		if (next == INTR || next == RETURN)
 		{
 			status = write(STDOUT, "\n", 1);
+			ft_printf("%s\n", *line);
+			restore_terminal(&tty[1]);
 			exit(0) ;
 		}
 		// if char is delete, remove last char from line and STDOUT
@@ -125,7 +140,7 @@ int		interface(char **line)
 		if (PRINTABLE_CHAR(next)){
 			// puts("hi\n");
 			insert((char)next, line, &interface);
-			status = ERR(write(STDOUT, (char*)&next, 1)) ? ERROR : status;
+			// status = ERR(write(STDOUT, (char*)&next, 1)) ? ERROR : status;
 		}
 		// else add char to line and STDOUT
 		// else if ((tmp = ft_strjoin(*line, next)))
@@ -181,6 +196,23 @@ int		interface(char **line)
 	}
 	return (ERR(restore_terminal(&tty[1])) ? ERROR : status);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // int		interface(char **line)
 // {
 // 	char			*tmp;
