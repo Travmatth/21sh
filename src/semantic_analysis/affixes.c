@@ -6,58 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/18 16:20:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 15:59:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-/*
-** Process given redirection in order to push correct t_redir struct onto
-** the t_simple struct
-*/
-
-int		io_file(t_simple *cmd, int io_num, t_ast_node *root)
-{
-	t_redir	*redir;
-	char	*file;
-	int		status;
-
-	if (!OK((status = create_redir(&redir, root, &file))))
-		return (status);
-	if (IS_A("< filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDIN), file, PARSE_LT);
-	else if (IS_A("LESSAND filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDIN), file, PARSE_LESSAND);
-	else if (IS_A("> filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDOUT), file, PARSE_GT);
-	else if (IS_A("GREATAND filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDOUT), file, PARSE_GREATAND);
-	else if (IS_A("DGREAT filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDOUT), file, PARSE_DGREAT);
-	else if (IS_A("LESSGREAT filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDIN), file, PARSE_LESSGREAT);
-	else if (IS_A("CLOBBER filename", root->rhs))
-		status = process_redir(redir, IO(io_num, STDOUT), file, PARSE_CLOBBER);
-	if (OK(status))
-		push_redir(cmd, redir);
-	return (SUCCESS);
-}
-
-/*
-** redirections may optionally specify a number, the fd
-** to be used by the given redirection
-*/
-
-int		io_number(int *io_num, t_ast_node *root)
-{
-	char	*io;
-
-	io = (char*)root->val[0];
-	if (ERR(ft_safeatoi(io, io_num)))
-		return (NIL);
-	return (SUCCESS);
-}
 
 /*
 ** io_here denote heredocs
@@ -142,12 +95,28 @@ int		prefix(t_simple *cmd, t_ast_node *root)
 ** or redirections to be performed on the given command
 */
 
+int		suffix_word(t_simple *cmd, t_ast_node *root, int position)
+{
+	char		**fields;
+	char		**tmp;
+	char		*word;
+	int			status;
+
+	if (!(word = ft_strdup((char*)((t_ast_node*)root->val[position])->val[0])))
+		return (ERROR);
+	if (!OK((status = full_word_expansion(&fields, word))))
+		return (status);
+	if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
+		return (ERROR);
+	free(cmd->command);
+	free(fields);
+	cmd->command = tmp;
+	return (SUCCESS);
+}
+
 int		suffix(t_simple *cmd, t_ast_node *root)
 {
 	int			status;
-	char		**tmp;
-	char		**fields;
-	char		*word;
 
 	if (IS_A("io_redirect", root->rhs))
 		return (io_redirect(cmd, root->val[0]));
@@ -155,29 +124,12 @@ int		suffix(t_simple *cmd, t_ast_node *root)
 		return (!OK((status = suffix(cmd, root->val[0])))
 			? status : io_redirect(cmd, root->val[1]));
 	else if (IS_A("WORD", root->rhs))
-	{
-		if (!(word = ft_strdup((char*)((t_ast_node*)root->val[0])->val[0])))
-			return (ERROR);
-		if (!OK((status = full_word_expansion(&fields, word))))
-			return (status);
-		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
-			return (ERROR);
-		free(cmd->command);
-		free(fields);
-		cmd->command = tmp;
-	}
+		return (suffix_word(cmd, root, 0));
 	else if (IS_A("cmd_suffix WORD", root->rhs))
 	{
-		if (!(word = ft_strdup((char*)((t_ast_node*)root->val[1])->val[0])))
-			return (ERROR);
 		if (!OK((status = suffix(cmd, root->val[0]))))
 			return (status);
-		if (!OK((status = full_word_expansion(&fields, word))))
-			return (status);
-		if (!(tmp = ft_strjoinarrs(cmd->command, fields)))
-			return (ERROR);
-		free(cmd->command);
-		cmd->command = tmp;
+		return (suffix_word(cmd, root, 1));
 	}
 	return (SUCCESS);
 }

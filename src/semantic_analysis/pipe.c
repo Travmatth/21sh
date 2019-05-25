@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/17 14:20:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/21 16:23:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,18 @@
 ** if a command is in the form `command_1 | command_2`
 */
 
-int		pipe_sequence(t_exec_node *container, t_ast_node *root, int bg, int bang)
+int		pipe_sequence(t_exec_node *container
+					, t_ast_node *root
+					, int bg
+					, int bang)
 {
 	int			status;
-	int			position;
+	int			i;
 	t_pipe		*pipe;
 	t_exec_node	*left;
 	t_exec_node	*right;
 
-	position = 0;
+	i = 0;
 	if (IS_A("pipe_sequence | linebreak command", root->rhs))
 	{
 		if (!(pipe = ft_memalloc(sizeof(t_pipe)))
@@ -38,12 +41,12 @@ int		pipe_sequence(t_exec_node *container, t_ast_node *root, int bg, int bang)
 		pipe->left = left;
 		pipe->right = right;
 		pipe->bg = bg;
-		position = 3;
+		i = 3;
 		container = right;
 		if (!OK((status = pipe_sequence(left, root->val[0], FALSE, FALSE))))
 			return (status);
 	}
-	return (command(container, root->val[position], bg, position ? bang : FALSE));
+	return (command(container, root->val[i], bg, i ? bang : FALSE));
 }
 
 /*
@@ -59,5 +62,5 @@ int		pipeline(t_exec_node *container, t_ast_node *root, int bg)
 	contains_bang = IS_A("Bang pipe_sequence", root->rhs);
 	bang = contains_bang ? TRUE : FALSE;
 	position = contains_bang ? 1 : 0;
-	return pipe_sequence(container, root->val[position], bg, bang);
+	return (pipe_sequence(container, root->val[position], bg, bang));
 }

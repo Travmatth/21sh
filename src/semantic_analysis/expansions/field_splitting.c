@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:47:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/16 15:45:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/23 17:56:49 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,34 +16,31 @@
 ** Determine number of fields contained in string, for use in field-splitting
 */
 
-int		count_fields(char **str)
+int		count_fields(char **str, int *count)
 {
 	int		i;
 	size_t	skip;
 	int		status;
-	int		count;
 
 	i = 0;
-	count = 0;
+	*count = 0;
 	status = SUCCESS;
 	while (OK(status) && ((*str)[i]))
 	{
 		skip = 0;
 		while (IS_IFS((*str)[i]))
 			i += 1;
-		count += 1;
+		*count += 1;
 		while ((*str)[i] && (!IS_IFS((*str)[i]) || escaped(*str, i)))
 		{
-			if ((SNGL_QUOTE((*str), i)
-					&& OK((status = quote(str, i, &skip, NULL))))
-				|| (DBL_QUOTE((*str), i)
-					&& OK((status = dbl_quote(str, i, &skip, NULL)))))
+			if ((P_QUOTE(status, str, NULL, i, (&skip)))
+				|| (P_DQUOTE(status, str, NULL, i, (&skip))))
 				i += skip + 1;
 			else
 				i += 1;
 		}
 	}
-	return (count);
+	return (status);
 }
 
 /*
@@ -82,41 +79,43 @@ int		count_fields(char **str)
 ** Non-zero-length IFS white space shall delimit a field.
 */
 
+int		init_field_split(t_field_split *fs, char **parameter)
+{
+	int		status;
+
+	status = SUCCESS;
+	fs->i = 0;
+	status = count_fields(parameter, &fs->size);
+	if (OK(status) && !(fs->arr = ft_memalloc(sizeof(char*) * (fs->size + 1))))
+		status = ERROR;
+	fs->size = 0;
+	return (status);
+}
+
 int		field_splitting(char ***fields, char **parameter)
 {
-	int		i;
-	size_t	skip;
-	int		status;
-	int		start;
-	int		size;
-	char	**arr;
+	t_field_split	fs;
+	int				status;
 
-	i = 0;
-	status = SUCCESS;
-	size = count_fields(parameter);
-	if (!(arr = ft_memalloc(sizeof(char*) * (size + 1))))
-		return (ERROR);
-	size = 0;
-	while (OK(status) && (*parameter)[i])
+	status = init_field_split(&fs, parameter);
+	while (OK(status) && (*parameter)[fs.i])
 	{
-		skip = 0;
-		while (IS_IFS((*parameter)[i]))
-			i += 1;
-		start = i;
-		while ((*parameter)[i] && (!IS_IFS((*parameter)[i]) || escaped(*parameter, i)))
+		fs.skip = 0;
+		while (IS_IFS((*parameter)[fs.i]))
+			fs.i += 1;
+		fs.start = fs.i;
+		while (NOT_IFS(parameter, fs))
 		{
-			if ((SNGL_QUOTE((*parameter), i)
-					&& OK((status = quote(parameter, i, &skip, NULL))))
-				|| (DBL_QUOTE((*parameter), i)
-					&& OK((status = dbl_quote(parameter, i, &skip, NULL)))))
-				i += skip + 1;
+			if ((P_QUOTE(status, parameter, NULL, fs.i, (&fs.skip)))
+				|| (P_DQUOTE(status, parameter, NULL, fs.i, (&fs.skip))))
+				fs.i += fs.skip + 1;
 			else
-				i += 1;
+				fs.i += 1;
 		}
-		if (OK(status) && (i - start) && (!(arr[size++] = ft_strsub(*parameter, start, i))))
+		if (OK(status) && STORE_SUBSTRING(parameter, fs))
 			return (ERROR);
 	}
-	*fields = arr;
+	*fields = fs.arr;
 	free(*parameter);
 	return (status);
 }

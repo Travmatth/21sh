@@ -6,71 +6,72 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 18:17:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 16:02:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
 
-int		unimplemented_expansion(char type)
+int		store_unexpanded(char **new, char **str, size_t start, size_t *i)
 {
-	char	*is;
-
-	is = NULL;
-	if (type == '-')
-		is = "default";
-	else if (type == '=')
-		is = "default assign";
-	else if (type == '?')
-		is = "error unset";
-	else if (type == '+')
-		is = "alternative param";
-	ft_printf("Semantic Error: %s expansion not implemented", is);
-	return (NIL);
-}
-
-/*
-** If a string does not begin with a param start ($), it should be appended
-** to the expanded output. Text containing single quotes should be appended
-** unmodified 
-*/
-
-int		join_unexpanded(char **new, char **str, size_t *i)
-{
-	size_t	end;
-	size_t	start;
-	int		s;
 	char	*next;
 	char	*tmp;
 
-	s = SUCCESS;
-	start = *i;
-	while ((*str)[*i])
-	{
-		if ((*str)[*i] == '\\')
-			*i += 1;
-		else if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
-			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
-			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
-			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL)))))
-			*i += end;
-		else if ((*str)[*i] == '$' && start != *i && !escaped(*str, *i))
-			break ;
-		*i += 1;
-	}
 	if (!(tmp = ft_strsub(*str, start, *i - start)))
 		return (ERROR);
-	if (!*new)
-	{
-		*new = tmp;
+	if (!*new && (*new = tmp))
 		return (SUCCESS);
-	}
 	if (!(next = ft_strjoin(*new, tmp)))
 		return (ERROR);
 	free(tmp);
 	free(*new);
 	*new = next;
 	return (SUCCESS);
+}
+
+/*
+** If a string does not begin with a param start ($), it should be appended
+** to the expanded output. Text containing single quotes should be appended
+** unmodified
+*/
+
+int		join_unexpanded(char **new, char **str, size_t *i)
+{
+	size_t	end;
+	size_t	start;
+	int		status;
+
+	status = SUCCESS;
+	start = *i;
+	while ((*str)[*i])
+	{
+		if ((*str)[*i] == '\\')
+			*i += 1;
+		else if ((P_QUOTE(status, str, NULL, (*i), (&end)))
+			|| (P_ARITH(status, str, NULL, (*i), (&end)))
+			|| (P_CMD(status, str, NULL, (*i), (&end)))
+			|| (P_BACKTICK(status, str, NULL, (*i), (&end))))
+			*i += end;
+		else if ((*str)[*i] == '$' && start != *i && !escaped(*str, *i))
+			break ;
+		*i += 1;
+	}
+	return (ERR(store_unexpanded(new, str, start, i)) ? ERROR : status);
+}
+
+int		switch_expansion(char *param, char *next, size_t *i)
+{
+	if (enclosed(param, '-'))
+		ft_printf("Semantic Error: default expansion not implemented");
+	else if (enclosed(param, '='))
+		ft_printf("Semantic Error: default assign expansion not implemented");
+	else if (enclosed(param, '?'))
+		ft_printf("Semantic Error: error unset expansion not implemented");
+	else if (enclosed(param, '+'))
+		ft_printf("Semantic Error: alt param expansion not implemented");
+	else
+		return (plain_param_expansion(&next, param, i));
+	return (NIL);
 }
 
 /*
@@ -88,18 +89,8 @@ int		manage_expansions(char **new, char **str, size_t *skip)
 
 	i = 0;
 	next = NULL;
-	status = SUCCESS;
 	param = *str + *skip;
-	if (OK(status) && enclosed(param, '-'))
-		status = unimplemented_expansion('-');
-	else if (OK(status) && enclosed(param, '='))
-		status = unimplemented_expansion('=');
-	else if (OK(status) && enclosed(param, '?'))
-		status = unimplemented_expansion('?');
-	else if (OK(status) && enclosed(param, '+'))
-		status = unimplemented_expansion('+');
-	else if (OK(status))
-		status = plain_param_expansion(&next, param, &i);
+	status = switch_expansion(param, next, &i);
 	if (OK(status) && *new && !(tmp = ft_strjoin(*new, next)))
 		return (ERROR);
 	else if (OK(status) && !*new)

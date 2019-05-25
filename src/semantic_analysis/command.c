@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/18 15:04:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/19 17:39:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,10 @@ int		simple_command(t_simple *simple, t_ast_node *root)
 		return (status);
 	else if (CONTAINS("cmd_word", root->rhs)
 		&& !OK((status = cmd_name(simple, root->val[position[COMMAND]]))))
-			return (status);
+		return (status);
 	else if (CONTAINS("cmd_name", root->rhs)
 		&& !OK((status = cmd_name(simple, root->val[position[COMMAND]]))))
-			return (status);
+		return (status);
 	if (CONTAINS("cmd_suffix", root->rhs)
 		&& !OK((status = suffix(simple, root->val[position[SUFFIX]]))))
 		return (status);

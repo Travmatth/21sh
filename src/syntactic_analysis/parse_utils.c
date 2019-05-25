@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/18 14:47:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 15:47:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,26 +90,25 @@ int		assign_type(char *lhs, t_ast_node *node)
 ** back onto the syntactic parse stack
 */
 
-int		reduce_symbol(t_prod *handle, t_list **tmp, t_stack	*sym)
+int		reduce_symbol(t_prod *handle, t_list **tmp, t_stack *sym, int *i)
 {
-	int			i;
 	int			size;
 	t_ast_node	*node;
 	t_list		*current;
 
 	if (!(node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node))))
 		return (ERROR);
-	i = 0;
+	*i = 0;
 	size = 0;
 	while (handle->rhs && handle->rhs[size])
 		size += 1;
 	if (handle->rhs && (!(node->rhs = ft_strsum(handle->rhs, " "))
 		|| !(node->val = (void**)ft_memalloc(sizeof(void*) * (size + 1)))))
 		return (ERROR);
-	while (handle->rhs && i < size && ft_strcmp("$end", handle->rhs[i]))
+	while (handle->rhs && *i < size && ft_strcmp("$end", handle->rhs[*i]))
 	{
 		current = ft_lsttail(tmp);
-		node->val[i++] = ((t_stack*)current->content)->item.token;
+		node->val[(*i)++] = ((t_stack*)current->content)->item.token;
 		ft_lstdelone(&current, del_stack_node);
 	}
 	assign_type(handle->lhs, node);
@@ -131,4 +130,10 @@ void	del_stack_node(void *contents, size_t size)
 	(void)size;
 	node = (t_stack*)contents;
 	free(node);
+}
+
+int		unrecognized_syntax(void)
+{
+	ft_putendl("Syntactic Error: Unrecognized command syntax");
+	return (NIL);
 }

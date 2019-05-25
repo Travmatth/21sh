@@ -6,45 +6,19 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/18 14:48:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 15:40:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-/*
-** Determine whether the current character index in the given string is
-** preceded by an escape character `\`
-*/
-
-int		escaped(char *input, size_t i)
+void	clear_current_tokens(t_list **tokens, t_list **missing)
 {
-	if (i == 0)
-		return (FALSE);
-	else if (input[i - 1] == '\\')
-		return (TRUE);
-	return (FALSE);
-}
-
-/*
-** Set initial state of lexical state struct
-*/
-
-int		init_lexer_ctx(char *input, t_lctx *ctx, t_token *token)
-{
-	if (!input)
-		return (ERROR);
-	ctx->input = input;
-	ctx->status = SUCCESS;
-	ctx->i = 0;
-	ctx->j = 0;
-	ctx->stop = 0;
-	ctx->op_state = 0;
-	ctx->in_word = 0;
-	ctx->missing = NULL;
-	token->type = NIL;
-	token->value = NULL;
-	return (SUCCESS);
+	ft_lstdel(tokens, del_token);
+	*tokens = NULL;
+	ft_lstiter(*missing, print_missing_sym);
+	ft_lstdel(missing, del_missing);
+	*missing = NULL;
 }
 
 /*
@@ -75,4 +49,47 @@ int		append_to_tok(char c, t_token *token)
 	if (!ft_bufappend(token->value, &c, sizeof(char)))
 		return (ERROR);
 	return (SUCCESS);
+}
+
+/*
+** Delete given token
+*/
+
+void	del_token(void *content, size_t len)
+{
+	t_stack	*node;
+
+	(void)len;
+	node = (t_stack*)content;
+	free(node->item.token->val[0]);
+	free(node->item.token);
+	free(node);
+}
+
+/*
+** 2.10.1.3 Shell Grammar Lexical Conventions
+** If the string consists solely of digits and the delimiter character is
+** one of '<' or '>', the token identifier IO_NUMBER shall be returned.
+*/
+
+void	detect_io_number(t_token *token)
+{
+	size_t	i;
+	int		is_io_num;
+	char	*str;
+
+	i = 0;
+	is_io_num = TRUE;
+	str = token->value->buf;
+	while (i < token->value->current)
+	{
+		if (str[i] < '0' || str[i] > '9')
+		{
+			is_io_num = FALSE;
+			break ;
+		}
+		i += 1;
+	}
+	if (is_io_num)
+		token->type = IO_NUMBER;
 }

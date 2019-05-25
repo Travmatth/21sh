@@ -6,11 +6,29 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:17:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/18 19:09:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 14:26:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Array listing parse symbols signifying redirection and their
+** equivalent REDIR_{} type
+*/
+
+t_redir_cnv	g_redirs[TOTAL_REDIRS] =
+{
+	{ PARSE_GT, REDIR_GT },
+	{ PARSE_LT, REDIR_LT },
+	{ PARSE_DLESS, REDIR_DLESS },
+	{ PARSE_DGREAT, REDIR_DGREAT },
+	{ PARSE_LESSAND, REDIR_LESSAND },
+	{ PARSE_GREATAND, REDIR_GREATAND },
+	{ PARSE_LESSGREAT, REDIR_LESSGREAT },
+	{ PARSE_DLESSDASH, REDIR_DLESSDASH },
+	{ PARSE_CLOBBER, REDIR_CLOBBER }
+};
 
 /*
 ** Push a given t_redir to the end of the list of t_redir's on the given command
@@ -47,30 +65,18 @@ int		get_filename(char **filename, t_ast_node *root)
 	return (name && name[0] ? SUCCESS : NIL);
 }
 
-/*
-** Array listing parse symbols signifying redirection and their
-** equivalent REDIR_{} type
-*/
-
-t_redir_cnv	g_redirs[TOTAL_REDIRS] =
+void	redir_not_implemented(char **name, int type)
 {
-	{ PARSE_GT, REDIR_GT },
-	{ PARSE_LT, REDIR_LT },
-	{ PARSE_DLESS, REDIR_DLESS },
-	{ PARSE_DGREAT, REDIR_DGREAT },
-	{ PARSE_LESSAND, REDIR_LESSAND },
-	{ PARSE_GREATAND, REDIR_GREATAND },
-	{ PARSE_LESSGREAT, REDIR_LESSGREAT },
-	{ PARSE_DLESSDASH, REDIR_DLESSDASH },
-	{ PARSE_CLOBBER, REDIR_CLOBBER }
-};
+	*name = type == PARSE_CLOBBER ? ">|" : "<<-";
+	ft_printf("Semantic Error: Redirection %s not implemented", *name);
+}
 
 /*
 ** Process given redirection into a struct to be pushed onto simple command
 ** redir queue, for later redirection during execution. Heredoc here_end words
 ** are subject to quote removal, while all other redirections subjected to
 ** tilde expansion, param expansion, command substitution, arithmetic expansion,
-** and quote removal. >| and <<- redirections not supported. 
+** and quote removal. >| and <<- redirections not supported.
 */
 
 int		process_redir(t_redir *redir, int io_num, char *filename, int type)
@@ -80,10 +86,7 @@ int		process_redir(t_redir *redir, int io_num, char *filename, int type)
 	char	*name;
 
 	if (type == PARSE_CLOBBER || type == PARSE_DLESSDASH)
-	{
-		name = type == PARSE_CLOBBER ? ">|" : "<<-";
-		ft_printf("Semantic Error: Redirection %s not implemented", name);
-	}
+		redir_not_implemented(&name, type);
 	i = -1;
 	while (++i < TOTAL_REDIRS)
 	{

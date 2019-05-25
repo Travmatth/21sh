@@ -6,16 +6,16 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 14:27:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/22 15:48:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../../../includes/shell.h"
 
 /*
 ** 21sh does not support command substitution, so on detection of an command
-** substitution shell should fail gracefully so that next command may be inputted
+** substitution shell should fail gracefully so that
+** next command may be inputted
 */
 
 int		cmd_sub_err(char **str, int start, int end)
@@ -114,11 +114,12 @@ int		command_substitution(char **parameter)
 	{
 		if (name[i] == '\\')
 			i += 1;
-		else if (BACKTICK(name, i) && OK((state = backtick(&name, i, &end, cmd_sub_err))))
-			i += end;
-		else if (ARITH_EXP(name, i) && OK((state = arith_exp(&name, i, &end, NULL))))
-			i += end;
-		else if (CMD_SUB(name, i) && OK((state = command_sub(&name, i, &end, cmd_sub_err))))
+		else if ((BACKTICK(name, i)
+			&& OK((state = backtick(&name, i, &end, cmd_sub_err))))
+			|| (ARITH_EXP(name, i)
+			&& OK((state = arith_exp(&name, i, &end, NULL))))
+			|| (CMD_SUB(name, i)
+			&& OK((state = command_sub(&name, i, &end, cmd_sub_err)))))
 			i += end;
 		i += 1;
 	}

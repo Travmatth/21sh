@@ -14,13 +14,12 @@ CFLAGS += -Wall -Wextra -Werror -Wpedantic
 LDFLAGS := -Llibftprintf -lftprintf -I./includes -ltermcap
 CORE := main
 BUILTINS := cd echo env setenv unsetenv exec
-INTERFACE := interface utils
-LEXICAL := lexer lexer_rules_1 lexer_rules_2 lexer_utils operator_dfa reserved_dfa process_token missing
+LEXICAL := lexer lexer_rules_1_4 lexer_rules_5_8 lexer_rules_9_11 lexer_utils missing missing_utils operator_dfa process_token reserved_word
 SYNTACTIC := parse parse_stack_utils parse_table parse_utils
-SEMANTIC := affixes command pipe semantic semantic_utils separator redir_utils verify_command here_end_utils
-EXPANSIONS := arithmetic_expansion command_substitution expansion expansion_subtypes field_splitting parameter_expansion parameter_expansion_actions parameter_expansion_utils pathname_expansion quote_removal tilde_expansion
-EXECUTION := execute operators redirs execute_utils
-UTILS := signal init quote_management terminal_modes
+SEMANTIC := affixes command here_end_utils pipe process_here_end redir_utils semantic semantic_utils separator verify_command
+EXPANSIONS := arithmetic_expansion command_substitution expansion expansion_subtypes field_splitting parameter_expansion parameter_expansion_utils pathname_expansion quote_removal tilde_expansion
+EXECUTION :=  dup_redirs execute execute_nodes execute_utils heredoc_redirs orig_redirs redirs
+UTILS := compound_quoting init quoting_utils signal simple_quoting terminal_modes utils
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
 		$(addprefix src/interface/, $(INTERFACE)) \
@@ -65,4 +64,3 @@ fclean: clean
 	@echo "\033[32mdone\033[0m"
 
 re: fclean all
-

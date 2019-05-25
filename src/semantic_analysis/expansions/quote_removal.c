@@ -6,11 +6,38 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:55:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:01:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 16:08:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+void	remove_quote_switch(char *quote, char **str, char *new, int index[2])
+{
+	if (!*quote && ((*str)[index[I]] == '"' || (*str)[index[I]] == '\''))
+	{
+		*quote = (*str)[index[I]];
+		index[I] += 1;
+	}
+	else if (*quote && (*str)[index[I]] == *quote)
+	{
+		index[I] += 1;
+		*quote = 0;
+	}
+	else if (*quote != '\'' && (*str)[index[I]] == '\\')
+	{
+		index[I] += 1;
+		new[index[J]] = (*str)[index[I]];
+		index[I] += 1;
+		index[J] += 1;
+	}
+	else
+	{
+		new[index[J]] = (*str)[index[I]];
+		index[I] += 1;
+		index[J] += 1;
+	}
+}
 
 /*
 ** Iterate through string and create new string, skipping any escape characters
@@ -19,8 +46,7 @@
 
 int		remove_quotes(char **str)
 {
-	int		i;
-	int		j;
+	int		index[2];
 	size_t	len;
 	char	*new;
 	char	quote;
@@ -28,26 +54,11 @@ int		remove_quotes(char **str)
 	len = LEN(*str, 0);
 	if (!(new = ft_strnew(len)))
 		return (ERROR);
-	i = 0;
-	j = 0;
+	index[I] = 0;
+	index[J] = 0;
 	quote = 0;
-	while ((*str)[i])
-	{
-		if (!quote && ((*str)[i] == '"' || (*str)[i] == '\''))
-			quote = (*str)[i++];
-		else if (quote && (*str)[i] == quote)
-		{
-			i += 1;
-			quote = 0;
-		}
-		else if (quote != '\'' && (*str)[i] == '\\')
-		{
-			i += 1;
-			new[j++] = (*str)[i++];
-		}
-		else
-			new[j++] = (*str)[i++];
-	}
+	while ((*str)[index[I]])
+		remove_quote_switch(&quote, str, new, index);
 	free(*str);
 	*str = new;
 	return (SUCCESS);

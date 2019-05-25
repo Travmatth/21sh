@@ -6,11 +6,15 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/17 13:10:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/19 14:40:40 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+/*
+** Convert error signal int to appropriate type
+*/
 
 char	*g_sig_table[32] =
 {
@@ -59,8 +63,8 @@ char	*g_sig_table[32] =
 
 int		wait_loop(int pid, int *return_val)
 {
-	int 	id;
-	int 	sig;
+	int		id;
+	int		sig;
 
 	errno = 0;
 	while ((id = waitpid(pid, return_val, WNOHANG)) != pid)
@@ -83,6 +87,10 @@ int		wait_loop(int pid, int *return_val)
 		*return_val = WEXITSTATUS(*return_val);
 	return (*return_val);
 }
+
+/*
+** Free redir structs
+*/
 
 void	free_redirs(t_redir *redir)
 {

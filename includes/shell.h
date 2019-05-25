@@ -13,9 +13,9 @@
 #ifndef SHELL_H
 # define SHELL_H
 
-#ifndef LIBFT_H
+# ifndef LIBFT_H
 # include "../libftprintf/srcs/includes/ft_printf.h"
-#endif
+# endif
 
 # include <sys/stat.h>
 # include <sys/ioctl.h>
@@ -28,7 +28,6 @@
 # include <sys/syslimits.h>
 
 # include "execution.h"
-# include "interface.h"
 
 /*
 ** Used in lexical analysis to when unclosed quoted
@@ -117,4 +116,13 @@ int				builtin_exec(int argc, char **argv);
 int				builtin_env(int argc, char **argv);
 void			set_env_var(char *name, char *val);
 char			*get_env_var(char *var);
+
+/*
+** src/utils/utils.c
+*/
+
+int				escaped(char *input, size_t i);
+void			free_prods(void);
+char			**push_pointer_back(char **pointers, t_ast_node *node);
+void			**push_pointer_front(void **pointers, void *ptr);
 #endif

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:40:09 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 17:53:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/23 15:13:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,22 +76,22 @@ int		arithmetic_expansion(char **parameter)
 {
 	int		i;
 	size_t	end;
-	int		state;
+	int		status;
 	char	*name;
 
 	i = 0;
 	if (!(name = ft_strdup(*parameter)))
 		return (ERROR);
-	state = SUCCESS;
-	while (OK(state) && name[i])
+	status = SUCCESS;
+	while (OK(status) && name[i])
 	{
 		if (name[i] == '\\')
 			i += 1;
-		else if (ARITH_EXP(name, i) && OK((state = arith_exp(&name, i, &end, arith_exp_err))))
+		else if (P_ARITH(status, (&name), arith_exp_err, i, (&end)))
 			i += end;
 		i += 1;
 	}
 	free(*parameter);
 	*parameter = name;
-	return (state);
+	return (status);
 }

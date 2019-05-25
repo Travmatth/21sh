@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/15 18:13:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/24 12:06:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,17 +59,17 @@ int		init_environ(int argc, char **argv, char **environ)
 		i += 1;
 	total = i + (argc > 1 ? argc - 1 : 0);
 	if (!(g_environ = (char**)ft_memalloc(sizeof(char*) * (total + 1))))
-		return ERROR;
+		return (ERROR);
 	i = -1;
 	while (environ[++i])
 		if (!(g_environ[i] = ft_strdup(environ[i])))
-			return ERROR;
+			return (ERROR);
 	i = 0;
 	while (--argc)
 		if (!(g_environ[(total ? total - 1 : total) + i++] =
 			ft_strdup(argv[argc])))
-			return ERROR;
-	return SUCCESS;
+			return (ERROR);
+	return (SUCCESS);
 }
 
 /*
@@ -119,12 +119,12 @@ int		init_parser(void)
 	line = NULL;
 	if (ERR((fd = open("misc/productions.txt", O_RDONLY)))
 		|| !OK(get_next_line(fd, &line)))
-		return ERROR;
+		return (ERROR);
 	size = ((size_t)ft_atoi(line) + 1) * sizeof(t_prod);
 	if (!(productions = (t_prod*)ft_memalloc(size))
 		|| !(g_prods = init_prods(fd, productions, &line)))
-		return ERROR;
-	return SUCCESS;
+		return (ERROR);
+	return (SUCCESS);
 }
 
 int		restore_shell(void)
@@ -132,26 +132,4 @@ int		restore_shell(void)
 	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
 		return (ERROR);
 	return (SUCCESS);
-}
-
-void	free_prods(void)
-{
-	size_t		i;
-	size_t		j;
-	t_prod		*prod;
-
-	i = 0;
-	while (TRUE)
-	{
-		prod = &g_prods[i++];
-		if (!prod->lhs)
-			break ;
-		free(prod->lhs);
-		j = 0;
-		while (prod->rhs && prod->rhs[j])
-			free(prod->rhs[j++]);
-		if (prod->rhs)
-			free(prod->rhs);
-	}
-	free(g_prods);
 }

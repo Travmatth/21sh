@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/18 14:48:22 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/23 14:19:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,27 +39,6 @@ t_token_cnv	g_tok_cnv[OP_TOKEN_CONVERSIONS] =
 	{ CLOBBER, PARSE_CLOBBER }
 };
 
-/*
-** Since lexical and syntactic analysis use separate and unique enums
-** to identify given tokens, conversion between the two types is necessary
-*/
-
-int		convert_token(t_token *token)
-{
-	int		i;
-
-	i = -1;
-	while (++i <= OP_TOKEN_CONVERSIONS)
-	{
-		if (token->type == g_tok_cnv[i].lex_tok)
-		{
-			token->type = g_tok_cnv[i].parse_tok;
-			return (SUCCESS);
-		}
-	}
-	return (ERROR);
-}
-
 int		next_equals(char **str, size_t *i)
 {
 	size_t	end;
@@ -70,12 +49,12 @@ int		next_equals(char **str, size_t *i)
 	{
 		if ((*str)[*i] == '\\')
 			*i += 1;
-		else if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
-			|| (DBL_QUOTE((*str), *i) && OK((s = dbl_quote(str, *i, &end, NULL))))
-			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
-			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
-			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL))))
-			|| (((*str)[*i] == '$' && (NEXT_BRACE((*str), (*i)))) && OK((s = param_exp(str, *i, &end, NULL)))))
+		else if ((P_QUOTE(s, str, NULL, (*i), (&end)))
+			|| (P_DQUOTE(s, str, NULL, (*i), (&end)))
+			|| (P_ARITH(s, str, NULL, (*i), (&end)))
+			|| (P_CMD(s, str, NULL, (*i), (&end)))
+			|| (P_BACKTICK(s, str, NULL, (*i), (&end)))
+			|| ((*str)[*i] == '$' && (P_PARAM(s, str, NULL, (*i), (&end)))))
 			*i += end;
 		else if (OK(s) && (*str)[*i] == '=')
 		{
@@ -151,26 +130,37 @@ int		substitute_alias(t_token *token)
 ** type. If neither are true, the given lexical type of the token is converted
 ** to the equivalent syntactical type of the token so as to be able to be used
 ** in later syntactic analysis
+** Since lexical and syntactic analysis use separate and unique enums
+** to identify given tokens, conversion between the two types is necessary
 */
 
 int		process_token(t_token *token)
 {
 	int		status;
+	int		i;
 
 	status = SUCCESS;
 	if (!OK((status = substitute_alias(token)))
 		|| !OK((status = process_reserved(token)))
-		|| !OK((status = process_assignment(token)))
-		|| !OK((status = convert_token(token))))
-		return (status);
-	return (status);
+		|| !OK((status = process_assignment(token))))
+		return (ERROR);
+	i = -1;
+	while (++i <= OP_TOKEN_CONVERSIONS)
+	{
+		if (token->type == g_tok_cnv[i].lex_tok)
+		{
+			token->type = g_tok_cnv[i].parse_tok;
+			return (SUCCESS);
+		}
+	}
+	return (ERROR);
 }
 
 /*
 ** Once a token is delimited, it is processed by process_token and then
 ** embedded into an ast_node, which is then ast_node is embedded into a
 ** stack_token. The stack_token is pushed onto the list of stack_tokens
-** which will later be processed in syntactical analysis. 
+** which will later be processed in syntactical analysis.
 */
 
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)

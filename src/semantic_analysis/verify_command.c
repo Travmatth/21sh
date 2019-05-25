@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/27 20:04:32 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/25 15:59:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,20 @@ t_builtin	g_builtins[] =
 	{"exec", builtin_exec}
 };
 
+int		load_exec(t_simple *simple)
+{
+	char	**new;
+
+	simple->is_exec = TRUE;
+	simple->argc -= 1;
+	if (!(new = ft_memalloc(sizeof(char*) * simple->argc)))
+		return (ERROR);
+	ft_memcpy(new, &simple->command[1], sizeof(char*) * simple->argc);
+	free(simple->command);
+	simple->command = new;
+	return (SUCCESS);
+}
+
 /*
 ** Determine whether given command is a shell builtin function
 */
@@ -34,7 +48,6 @@ int		load_builtin(t_simple *simple)
 {
 	int		i;
 	int		status;
-	char	**new;
 
 	i = -1;
 	status = FALSE;
@@ -45,15 +58,7 @@ int		load_builtin(t_simple *simple)
 		if (IS_A(g_builtins[i].cmd, simple->command[0]))
 		{
 			if (IS_A("exec", g_builtins[i].cmd))
-			{
-				simple->is_exec = TRUE;
-				simple->argc -= 1;
-				if (!(new = ft_memalloc(sizeof(char*) * simple->argc)))
-					return (ERROR);
-				ft_memcpy(new, &simple->command[1], sizeof(char*) * simple->argc);
-				free(simple->command);
-				simple->command = new;
-			}
+				load_exec(simple);
 			else
 				status = TRUE;
 			simple->builtin = g_builtins[i].f;

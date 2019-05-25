@@ -6,38 +6,31 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/30 14:17:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/23 14:44:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void	del_token(void *content, size_t len)
-{
-	t_stack	*node;
-
-	(void)len;
-	node = (t_stack*)content;
-	free(node->item.token->val[0]);
-	free(node->item.token);
-	free(node);
-}
-
-void	del_missing(void *content, size_t len)
-{
-	(void)len;
-	free(content);
-}
-
 /*
-** 11. The current character is used as the start of a new word.
+** Set initial state of lexical state struct
 */
 
-void	rule_11(char c, t_lctx *ctx, t_token *token)
+int		init_lexer_ctx(char *input, t_lctx *ctx, t_token *token)
 {
-	ctx->status = create_new_tok(token, ctx, LEXER_WORD);
-	if (OK(ctx->status))
-		ctx->status = append_to_tok(c, token);
+	if (!input)
+		return (ERROR);
+	ctx->input = input;
+	ctx->status = SUCCESS;
+	ctx->i = 0;
+	ctx->j = 0;
+	ctx->stop = 0;
+	ctx->op_state = 0;
+	ctx->in_word = 0;
+	ctx->missing = NULL;
+	token->type = NIL;
+	token->value = NULL;
+	return (SUCCESS);
 }
 
 /*
@@ -73,17 +66,16 @@ void	lex_switch(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 }
 
 /*
-** Lexical analysis is performed by in-order processing of a given inputted 
+** Lexical analysis is performed by in-order processing of a given inputted
 ** command. Command is processed from beginning to end, where each given
 ** character may alter the state of processing and be added to the current
 ** token, delimit the current token, start a new token, or denote an opening
 ** sequence of quote/command substitution characters that need to be included
-** in the current token and skipped over during lexical processing. The 
+** in the current token and skipped over during lexical processing. The
 ** end-of-string null character `\0' is processed twice, once to allow any
 ** current tokens to be delimited and finally to push the end-of-input to the
 ** list of tokens. Result is a list of tokens suitable for use in syntactic
-** analysis 
-** -exec p (char*)((t_token*)(*tokens)->content)->value->buf
+** analysis
 */
 
 int		lexical_analysis(char *input, t_list **tokens)
