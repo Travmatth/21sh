@@ -1,23 +1,8 @@
-echo foo | less
-ls
-# interface iteration tests
-ls
- ls
- ls 
-ls -l
- ls -l 
-ls -\
-l
-
-echo "
-
-"
-echo $(
-
-)
 exec 4<> tmp
+cat Makefile >&4
+#cat <&4
+cat tmp
 exec 4>&-
-cat <&4
 ./test/read_from_fd.py 5 5<<EOF
 cat author foo > tmp 2>&1
 echo foobar >> tmp
@@ -133,3 +118,21 @@ ls -l -R | grep "\.txt$";
 echo "foo bar" > test/out_file;
 echo ${ENV};
 cat << EOF;
+## interface iteration tests
+#ls
+# ls
+# ls 
+#ls -l
+# ls -l 
+#ls -\
+#l
+#
+#echo "
+#
+#"
+#echo $(
+#
+#)
+# testing after norming
+echo foo | cat
+ls

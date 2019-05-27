@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 15:33:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/26 17:03:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ extern t_builtin				g_builtins[];
 
 typedef struct					s_redir_cnv
 {
-	int							redir_tok;
 	int							parse_tok;
+	int							redir_tok;
 }								t_redir_cnv;
 
 enum							e_redir_type

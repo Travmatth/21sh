@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/22 15:45:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/26 15:34:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ int		main(int argc, char **argv, char **environ)
 		|| ERR(init_environ(argc, argv, environ))
 		|| ERR(init_shell()))
 		return (1);
-	free_prods();
 	status = event_loop(get_env_var("SHELL_LEAKS"));
+	free_prods();
 	status = ERR(restore_shell()) || ERR(status) ? 1 : 0;
 	return (status);
 }

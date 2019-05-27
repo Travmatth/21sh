@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/20 19:23:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 15:46:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/26 16:20:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ int		reduce(int state, t_list **stack, t_ast_node *word)
 		ft_lstdelone(&state_node, del_stack_node);
 		ft_lstpushback(&tmp, ft_lsttail(stack));
 	}
-	peek_state(stack, &next);
 	if (OK(reduce_symbol(handle, &tmp, &sym, &next)))
 	{
+		peek_state(stack, &next);
 		ft_lstpushback(stack, ft_lstnew(&sym, sizeof(t_stack)));
 		next = ft_atoi(g_parse_table[next][sym.item.token->type]);
 		ft_lstpushback(stack, create_stack_token(STACK_STATE, NULL, next));

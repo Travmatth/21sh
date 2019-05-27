@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 15:59:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/26 16:48:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,12 @@ int		load_exec(t_simple *simple)
 	char	**new;
 
 	simple->is_exec = TRUE;
-	simple->argc -= 1;
-	if (!(new = ft_memalloc(sizeof(char*) * simple->argc)))
+	if (!--simple->argc)
+		new = NULL;
+	else if (!(new = ft_memalloc(sizeof(char*) * simple->argc)))
 		return (ERROR);
-	ft_memcpy(new, &simple->command[1], sizeof(char*) * simple->argc);
+	if (new)
+		ft_memcpy(new, &simple->command[1], sizeof(char*) * simple->argc);
 	free(simple->command);
 	simple->command = new;
 	return (SUCCESS);
