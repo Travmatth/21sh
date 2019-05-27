@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/24 20:24:01 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/27 01:24:59 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,34 @@ static void delete(unsigned long c, char **line, t_interface *interface)
 	}
 }
 
-static void	move(unsigned long c, char **line, t_interface *interface)
+static void	history(unsigned long c, char **line, t_h_list *h_list,
+t_interface *interface)
+{
+	// ft_printf("hello\n");
+	if (h_list->history)
+	{
+		if (c == UP && h_list->history->prev)
+		{
+			h_list->history = h_list->history->prev;
+			*line = h_list->history->content;
+		}
+		else if (c == DOWN && h_list->history->next)
+		{
+			h_list->history = h_list->history->next;
+			*line = h_list->history->content;
+		}
+		tputs(tgetstr("vi", NULL), 1, ft_termprint);
+		while (interface->line_index > 0)
+			movement(LEFT, line, interface);
+		tputs(tgetstr("cd", NULL), 1, ft_termprint);
+		ft_printf("%s", *line);
+		tputs(tgetstr("ve", NULL), 1, ft_termprint);
+		interface->line_len = ft_strlen(*line);
+		interface->line_index = interface->line_len;
+	}
+}
+
+void		movement(unsigned long c, char **line, t_interface *interface)
 {
 		// ft_printf("line_index = %i | line_len = %i", interface->line_index, interface->line_len);
 	if (c == LEFT && interface->line_index > 0 && 
@@ -89,7 +116,8 @@ static void	move(unsigned long c, char **line, t_interface *interface)
 	// else if (c == CTL_UP)
 	// // if moving to start line subtract length of prompt
 	// else if (c == CTL_DOWN)
-	// else if (c == )
+	else if ((c == UP || c == DOWN))
+		history(c, line, &interface->h_list, interface);
 }
 
 /*
@@ -99,16 +127,18 @@ static void	move(unsigned long c, char **line, t_interface *interface)
 
 int		interface(char **line)
 {
-	t_interface		interface;
-	static char		tmp[INPUT_LEN];
-	unsigned long	next;
-	struct termios	tty[2];
-	int				status;
-	size_t			len;
+	static t_interface	interface;
+	static char			tmp[INPUT_LEN];
+	unsigned long		next;
+	struct termios		tty[2];
+	int					status;
+	size_t				len;
 	// t_uisegment		**segments;
 	// t_uisegment		*current;
-	int				in_word;
+	int					in_word;
 
+	interface.h_list.history = NULL;
+	init_history(&interface.h_list);
 	len = 0;
 	*line = tmp;
 	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO));
@@ -118,30 +148,23 @@ int		interface(char **line)
 	{
 		next = 0;
 		read(STDIN, &next, 6);
-		move(next, line, &interface);
+		movement(next, line, &interface);
 		// ft_printf("next = %#lx\n", next);
 		// if char is newline or CTRL-C, end current line
 		if (next == INTR || next == RETURN)
 		{
 			status = write(STDOUT, "\n", 1);
 			ft_printf("%s\n", *line);
+			write(interface.h_list.fd, *line, interface.line_len);
+			close(interface.h_list.fd);
+			push_history(&interface.h_list.history, *line);
 			restore_terminal(&tty[1]);
 			exit(0) ;
 		}
-		// if char is delete, remove last char from line and STDOUT
 		else if (next == DEL || next == DEL2)
-		{
 			delete(next, line, &interface);
-			// (*line)[--len] = '\0';
-			// status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
-		}
-		// else if (next == DEL && !len)
-		// 	continue ;
-		if (PRINTABLE_CHAR(next)){
-			// puts("hi\n");
+		if (PRINTABLE_CHAR(next))
 			insert((char)next, line, &interface);
-			// status = ERR(write(STDOUT, (char*)&next, 1)) ? ERROR : status;
-		}
 		// else add char to line and STDOUT
 		// else if ((tmp = ft_strjoin(*line, next)))
 		// {

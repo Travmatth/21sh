@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/20 23:01:18 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/27 01:25:20 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,21 @@ struct			s_uisegment
 }						;
 
 
+typedef struct s_history	t_history;
+struct			s_history
+{
+	char		*content;
+	t_history	*prev;
+	t_history	*next;
+};
+
+typedef struct s_h_list	t_h_list;
+struct			s_h_list
+{
+	int			fd;
+	t_history	*history;
+};
+
 // typedef struct s_line	t_line;
 // struct			s_line
 // {
@@ -72,7 +87,7 @@ typedef struct	s_interface
 	int				line_index;
 	struct termios	tty_old;
 	struct termios	tty_new;
-	
+	t_h_list		h_list;
 }				t_interface;
 
 /*
@@ -80,6 +95,8 @@ typedef struct	s_interface
 */
 
 int						interface(char **line);
+void					movement(unsigned long c, char **line,
+						t_interface *interface);
 
 /*
 ** src/interface/utils.c
@@ -88,4 +105,12 @@ int						interface(char **line);
 t_uisegment				*new_segment(void);
 void					add_segment(t_uisegment **segments, t_uisegment *seg);
 int						get_cursor_position(int *x, int *y);
+
+/*
+** src/utils/history.c
+*/
+
+void					init_history(t_h_list *h_list);
+int						push_history(t_history **history, char *content);
+
 #endif

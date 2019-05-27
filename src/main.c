@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/19 00:53:54 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/26 00:29:54 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ int		main(int argc, char **argv, char **environ)
 	int		status;
 	int		end;
 	
-	if (ERR(init_parser())
-		|| ERR(init_environ(argc, argv, environ))
+	if (ERR(init_parser()) || ERR(init_environ(argc, argv, environ))
 		|| ERR(init_shell()))
 		return (1);
 	end = FALSE;
