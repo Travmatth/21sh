@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/27 18:19:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/27 18:47:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,5 +131,12 @@ int		restore_shell(void)
 {
 	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
 		return (ERROR);
+	if ((get_env_var("SHELL_TTY")))
+	{
+		if (ERR(close(STDIN))
+			|| ERR(close(STDOUT))
+			|| ERR(close(STDERR)))
+			return (ERROR);
+	}
 	return (SUCCESS);
 }
