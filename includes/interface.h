@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/27 01:25:20 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/27 19:35:59 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,8 @@ typedef struct s_h_list	t_h_list;
 struct			s_h_list
 {
 	int			fd;
-	t_history	*history;
+	char		*old;
+	t_history	*hst;
 };
 
 // typedef struct s_line	t_line;
@@ -97,6 +98,8 @@ typedef struct	s_interface
 int						interface(char **line);
 void					movement(unsigned long c, char **line,
 						t_interface *interface);
+void					history(unsigned long c, char **line, t_h_list *h_list,
+														t_interface *interface);
 
 /*
 ** src/interface/utils.c
@@ -112,5 +115,6 @@ int						get_cursor_position(int *x, int *y);
 
 void					init_history(t_h_list *h_list);
 int						push_history(t_history **history, char *content);
+void					write_to_history(char **line, t_interface *interface);
 
 #endif

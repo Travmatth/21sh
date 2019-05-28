@@ -20,7 +20,7 @@ SYNTACTIC := parse parse_stack_utils parse_table parse_utils
 SEMANTIC := affixes command pipe semantic separator redir_utils verify_command here_end_utils
 EXPANSIONS := arithmetic_expansion command_substitution expansion expansion_subtypes field_splitting parameter_expansion parameter_expansion_actions parameter_expansion_utils pathname_expansion quote_removal tilde_expansion
 EXECUTION := execute operators redirs execute_utils
-UTILS := signal init quote_management terminal_modes history
+UTILS := signal init quote_management terminal_modes history move
 FILES := $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
 		$(addprefix src/interface/, $(INTERFACE)) \

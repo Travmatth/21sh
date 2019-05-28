@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/05/27 01:24:45 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/28 00:28:23 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,29 @@ static t_history	*init_h_node(char *content)
 // 	}
 // }
 
-// write_to_history()
+void				write_to_history(char **line, t_interface *interface)
+{
+	int	i;
+
+	i = 0;
+	if (*line && (!interface->h_list.hst ||
+					ft_strcmp(*line, interface->h_list.hst->content) != 0))
+	{
+		// ft_printf("line_len: %i\n", interface->line_len);
+		write(interface->h_list.fd, ":", 1);
+		while (i < interface->line_len)
+		{
+			// ft_printf("line: %s\n", *line);
+			// ft_printf("i: %i | *line[i]: %c\n", i, (*line)[i]);
+			if ((*line)[i] == '\n')
+				(*line)[i] = '\\';
+			write(interface->h_list.fd, *line + i, 1);
+			if ((*line)[i] == '\\' || i + 1 == interface->line_len)	
+				write(interface->h_list.fd, "\n", 1);
+			i++;
+		}
+	}
+}
 
 int					push_history(t_history **history, char *content)
 {
@@ -88,11 +110,11 @@ void				init_history(t_h_list *h_list)
 					break ;
 				}
 				i > 0 && line[i - 1] == '\\' && buf[0] == '\n' ? i-- : 0;
-				buf[0] == ':' ? 0 : (line[i++] = buf[0]);
+				buf[0] == ':' || (line[i] != '\\' && buf[0] == '\n') ? 0 : (line[i++] = buf[0]);
 				ft_bzero(buf, 1);
 			}
 			// ft_printf("outside loop\n");
-			if ((push_history(&h_list->history, line)) == 0)
+			if ((push_history(&h_list->hst, line)) == 0)
 				break ;
 			ft_bzero(line, i);
 		}
