@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/27 18:19:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/27 18:31:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ int		event_loop(char *leaks)
 				break ;
 		}
 	}
-	if (leaks)
-		hang_for_leaks();
 	return (status);
 }
 
@@ -69,13 +67,17 @@ int		event_loop(char *leaks)
 int		main(int argc, char **argv, char **environ)
 {
 	int		status;
+	char	*leaks;
 
 	if (ERR(init_parser())
 		|| ERR(init_environ(argc, argv, environ))
 		|| ERR(init_shell()))
 		return (1);
-	status = event_loop(get_env_var("SHELL_LEAKS"));
+	leaks = get_env_var("SHELL_LEAKS");
+	status = event_loop(leaks);
 	free_prods();
 	status = ERR(restore_shell()) || ERR(status) ? 1 : 0;
+	if (leaks)
+		hang_for_leaks();
 	return (status);
 }
