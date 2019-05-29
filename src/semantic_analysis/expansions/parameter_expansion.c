@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 16:02:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 14:32:49 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,18 @@ int		join_unexpanded(char **new, char **str, size_t *i)
 	return (ERR(store_unexpanded(new, str, start, i)) ? ERROR : status);
 }
 
-int		switch_expansion(char *param, char *next, size_t *i)
+int		switch_expansion(char *param, char **next, size_t *i)
 {
 	if (enclosed(param, '-'))
-		ft_printf("Semantic Error: default expansion not implemented");
+		ft_putendl("Semantic Error: default expansion not implemented");
 	else if (enclosed(param, '='))
-		ft_printf("Semantic Error: default assign expansion not implemented");
+		ft_putendl("Semantic Error: default assign expansion not implemented");
 	else if (enclosed(param, '?'))
-		ft_printf("Semantic Error: error unset expansion not implemented");
+		ft_putendl("Semantic Error: error unset expansion not implemented");
 	else if (enclosed(param, '+'))
-		ft_printf("Semantic Error: alt param expansion not implemented");
+		ft_putendl("Semantic Error: alt param expansion not implemented");
 	else
-		return (plain_param_expansion(&next, param, i));
+		return (plain_param_expansion(next, param, i));
 	return (NIL);
 }
 
@@ -90,7 +90,7 @@ int		manage_expansions(char **new, char **str, size_t *skip)
 	i = 0;
 	next = NULL;
 	param = *str + *skip;
-	status = switch_expansion(param, next, &i);
+	status = switch_expansion(param, &next, &i);
 	if (OK(status) && *new && !(tmp = ft_strjoin(*new, next)))
 		return (ERROR);
 	else if (OK(status) && !*new)
@@ -142,7 +142,7 @@ int		parameter_expansion(char **str)
 			status = NIL;
 		}
 		else
-			status = PARAM_EXP((*str), i)
+			status = UPARAM_EXP((*str), i) || EPARAM_EXP((*str), i)
 				? manage_expansions(&new, str, &i)
 				: join_unexpanded(&new, str, &i);
 	}

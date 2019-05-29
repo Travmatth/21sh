@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:46:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/24 12:22:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 14:31:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,8 @@ int		swap_param(char **parameter, char *param[3], int quoted)
 	char	*env_lookup;
 
 	if (!(env_lookup = get_env_var(param[NAME])))
-	{
-		ft_putendl("Semantic Error: bad substitution");
-		return (NIL);
-	}
-	if (!(tmp = ft_strdup(env_lookup ? env_lookup : "")))
+		env_lookup = "\n";
+	if (!(tmp = ft_strdup(env_lookup)))
 		return (ERROR);
 	free(*parameter);
 	if (quoted)
@@ -68,7 +65,7 @@ int		plain_param_expansion(char **parameter, char *var, size_t *i)
 	}
 	if (OK(ft_safeatoi(param[NAME], &position)))
 	{
-		ft_printf("Semantic Error: Positional Parameters not implemented");
+		ft_putendl("Semantic Error: Positional Parameters not implemented");
 		return (NIL);
 	}
 	*i = *i + len[FULL_PARAM];

@@ -18,7 +18,7 @@
 			// "SHELL_LEAKS": "TRUE",
 			"HOME": "/nfs/2018/t/tmatthew",
 			"TERM": "xterm-256color",
-			"FOO": ""
+			"UNSET_ENV_VAR": ""
 		},
         "stopAtEntry": false,
         "cwd": "${workspaceRoot}",

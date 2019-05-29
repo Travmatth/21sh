@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:47:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/23 17:56:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 16:07:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,10 @@ int		count_fields(char **str, int *count)
 		while (IS_IFS((*str)[i]))
 			i += 1;
 		*count += 1;
-		while ((*str)[i] && (!IS_IFS((*str)[i]) || escaped(*str, i)))
+		while ((*str)[i] && !IS_IFS((*str)[i]))
 		{
-			if ((P_QUOTE(status, str, NULL, i, (&skip)))
+			if ((P_BACKSLASH(status, str, NULL, i, (&skip)))
+				|| (P_QUOTE(status, str, NULL, i, (&skip)))
 				|| (P_DQUOTE(status, str, NULL, i, (&skip))))
 				i += skip + 1;
 			else
@@ -106,7 +107,8 @@ int		field_splitting(char ***fields, char **parameter)
 		fs.start = fs.i;
 		while (NOT_IFS(parameter, fs))
 		{
-			if ((P_QUOTE(status, parameter, NULL, fs.i, (&fs.skip)))
+			if ((P_BACKSLASH(status, parameter, NULL, fs.i, (&fs.skip)))
+				|| (P_QUOTE(status, parameter, NULL, fs.i, (&fs.skip)))
 				|| (P_DQUOTE(status, parameter, NULL, fs.i, (&fs.skip))))
 				fs.i += fs.skip + 1;
 			else

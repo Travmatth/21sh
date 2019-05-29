@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 16:06:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 18:01:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,8 @@ typedef struct	s_field_split
 }				t_field_split;
 
 # define NOT_IFS(p, f) ((*p)[f.i] && (!IS_IFS((*p)[f.i]) || escaped(*p, f.i)))
-# define NEW_SUB(p, fs) ((fs.arr[fs.size++] = ft_strsub(*p, fs.start, fs.i)))
-# define STORE_SUBSTRING(p, fs) ((fs.i - fs.start) && (!NEW_SUB(p, fs)))
+# define NEW_SUB(p, fs) ((fs.arr[fs.size++] = ft_strsub(*p, fs.start, fs.i - fs.start)))
+# define STORE_SUBSTRING(p, fs) ((fs.i - fs.start > 0) && (!NEW_SUB(p, fs)))
 
 /*
 ** When processing simple command in its 5 possible forms, we use enum symbols
@@ -257,7 +257,7 @@ int				field_splitting(char ***fields, char **parameter);
 
 int				store_unexpanded(char **new, char **str, size_t start, size_t *i);
 int				join_unexpanded(char **new, char **str, size_t *i);
-int				switch_expansion(char *param, char *next, size_t *i);
+int				switch_expansion(char *param, char **next, size_t *i);
 int				manage_expansions(char **new, char **str, size_t *skip);
 int				parameter_expansion(char **str);
 

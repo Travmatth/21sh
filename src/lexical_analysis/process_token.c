@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/23 14:19:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 13:37:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ int		next_equals(char **str, size_t *i)
 			|| (P_ARITH(s, str, NULL, (*i), (&end)))
 			|| (P_CMD(s, str, NULL, (*i), (&end)))
 			|| (P_BACKTICK(s, str, NULL, (*i), (&end)))
-			|| ((*str)[*i] == '$' && (P_PARAM(s, str, NULL, (*i), (&end)))))
+			|| (P_UPARAM(s, str, NULL, (*i), (&end)))
+			|| (P_EPARAM(s, str, NULL, (*i), (&end))))
 			*i += end;
 		else if (OK(s) && (*str)[*i] == '=')
 		{

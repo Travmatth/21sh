@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/26 16:48:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/27 18:49:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int		find_command(char **command, char **paths, int i, int found)
 	char	*full_name;
 
 	if (ft_strequ(".", *command) || ft_strequ("..", *command))
-		return (0);
+		return (NIL);
 	if (!NONE((result = find_exec(*command))))
 		return (result);
 	while (!found && --i >= 0)

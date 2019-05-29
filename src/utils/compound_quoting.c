@@ -6,18 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/24 15:10:24 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 15:39:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 13:58:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-int		init_exp(size_t *i, size_t start, int *found)
-{
-	*i = start;
-	*found = FALSE;
-	return (SUCCESS);
-}
 
 /*
 ** Process double quotes of form "", allows embedded arithmetic
@@ -33,16 +26,15 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 	int		status;
 	int		found;
 
-	found = FALSE;
-	i = start;
-	s = SUCCESS;
+	s = init_exp(&i, start, &found);
 	while (OK(s) && (*str)[++i])
 	{
 		if ((P_BACKSLASH(s, str, f, i, end))
 			|| (P_ARITH(s, str, f, i, end))
 			|| (P_CMD(s, str, f, i, end))
 			|| (P_BACKTICK(s, str, f, i, end))
-			|| (P_PARAM(s, str, f, i, end)))
+			|| (P_UPARAM(s, str, f, i, end))
+			|| (P_EPARAM(s, str, f, i, end)))
 		{
 			i += *end;
 			*end = ERROR;
@@ -55,6 +47,17 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 	return (f ? f(str, start, *end) : status);
 }
 
+int		uparam_exp(char **str, size_t start, size_t *end, t_quote f)
+{
+	size_t	i;
+
+	i = start;
+	while (IS_VAR_CHAR((*str)[i + 1]))
+		i += 1;
+	*end = i - start;
+	return (f ? f(str, start, *end) : SUCCESS);
+}
+
 /*
 ** Process parameter expansions of form ${} and $_, allows embedded arithmetic
 ** expansions, command substitution, backticks and parameter expansions, single
@@ -62,15 +65,14 @@ int		dbl_quote(char **str, size_t start, size_t *end, t_quote f)
 ** expansion not properly closed
 */
 
-int		param_exp(char **str, size_t start, size_t *end, t_quote f)
+int		eparam_exp(char **str, size_t start, size_t *end, t_quote f)
 {
 	size_t	i;
 	int		found;
 	int		s;
 	int		status;
 
-	if ((s = init_exp(&i, start + 2, &found)) && (*str)[i + 1] != '{')
-		return (f ? f(str, start, *exp_p(str, start, &found, end)) : SUCCESS);
+	s = init_exp(&i, start + 2, &found);
 	while (OK(s) && (*str)[i])
 	{
 		if ((P_BACKSLASH(s, str, f, i, end))
@@ -79,7 +81,8 @@ int		param_exp(char **str, size_t start, size_t *end, t_quote f)
 			|| (P_ARITH(s, str, f, i, end))
 			|| (P_CMD(s, str, f, i, end))
 			|| (P_BACKTICK(s, str, f, i, end))
-			|| (P_PARAM(s, str, f, i, end)))
+			|| (P_UPARAM(s, str, f, i, end))
+			|| (P_EPARAM(s, str, f, i, end)))
 		{
 			i += *end;
 			*end = ERROR;
@@ -114,14 +117,14 @@ int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 			|| (P_ARITH(s, str, f, i, end))
 			|| (P_CMD(s, str, f, i, end))
 			|| (P_BACKTICK(s, str, f, i, end))
-			|| (P_PARAM(s, str, f, i, end)))
+			|| (P_UPARAM(s, str, f, i, end))
+			|| (P_EPARAM(s, str, f, i, end)))
 		{
 			i += *end;
 			*end = ERROR;
 		}
-		else if (OK(s) && (*str)[i] == ')')
-			s = arith_exp_switch(end, i - start, &found);
-		i += 1;
+		else if (OK(s) && (*str)[i++] == ')')
+			s = arith_exp_switch(end, i - start - 1, &found);
 	}
 	status = ERR(s) ? ERROR : found;
 	return (f ? f(str, start, *end) : status);
@@ -143,20 +146,20 @@ int		arith_exp(char **str, size_t start, size_t *end, t_quote f)
 
 	count = 0;
 	s = init_exp(&i, start, &found);
-	while (OK(s) && (*str)[i])
+	while (OK(s) && (*str)[i] && !found)
 	{
 		if ((P_BACKSLASH(s, str, f, i, end))
 			|| (P_ARITH(s, str, f, i, end))
 			|| (P_CMD(s, str, f, i, end))
 			|| (P_BACKTICK(s, str, f, i, end))
-			|| (P_PARAM(s, str, f, i, end)))
+			|| (P_UPARAM(s, str, f, i, end))
+			|| (P_EPARAM(s, str, f, i, end)))
 		{
 			i += *end;
 			*end = ERROR;
 		}
-		else if (OK(s) && NONE((s = switch_arith_exp(str, i, &count, &found))))
-			*end = i - start + 1;
-		i += 1;
+		else if (switch_arith_exp(str, i++, &count, &found))
+			*end = i - start;
 	}
 	status = ERR(s) ? ERROR : found;
 	return (f ? f(str, start, *end) : status);
