@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/22 15:48:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 12:21:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,8 @@
 
 int		cmd_sub_err(char **str, int start, int end)
 {
-	(void)str;
-	(void)start;
 	(void)end;
-	if (ERR(end))
-		return (NIL);
-	else if (BACKTICK((*str), start) || CMD_SUB((*str), start))
+	if (BACKTICK((*str), start) || CMD_SUB((*str), start))
 	{
 		ft_printf("Semantic Error: command substitution not implemented\n");
 		return (NIL);
@@ -114,12 +110,9 @@ int		command_substitution(char **parameter)
 	{
 		if (name[i] == '\\')
 			i += 1;
-		else if ((BACKTICK(name, i)
-			&& OK((state = backtick(&name, i, &end, cmd_sub_err))))
-			|| (ARITH_EXP(name, i)
-			&& OK((state = arith_exp(&name, i, &end, NULL))))
-			|| (CMD_SUB(name, i)
-			&& OK((state = command_sub(&name, i, &end, cmd_sub_err)))))
+		else if ((P_BACKTICK(state, (&name), cmd_sub_err, i, (&end)))
+			|| (P_ARITH(state, (&name), cmd_sub_err, i, (&end)))
+			|| (P_CMD(state, (&name), cmd_sub_err, i, (&end))))
 			i += end;
 		i += 1;
 	}

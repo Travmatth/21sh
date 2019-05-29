@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 18:01:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 11:39:11 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,6 +241,7 @@ int				redir_expansion(char **new, char *old);
 */
 
 int				swap_param(char **parameter, char *param[3], int quoted);
+int				positional_param(void);
 int				plain_param_expansion(char **parameter, char *var, size_t *i);
 
 /*
@@ -267,8 +268,8 @@ int				parameter_expansion(char **str);
 
 char			*find_end_brace(char *param);
 void			init_plain_exp(char *param[6], size_t len[4], char *str);
-int				init_param_state(char *param[6], size_t len[4], char sep, char *str);
-int				create_param_state(char *param[3], size_t len[3]);
+int				init_param(char *param[6], size_t len[4], char sep, char *str);
+int				create_param(char *param[3], size_t len[3]);
 int				enclosed(char *str, char c);
 
 /*

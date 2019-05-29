@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/24 15:10:24 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 13:58:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 13:36:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ int		arith_exp(char **str, size_t start, size_t *end, t_quote f)
 	int		found;
 
 	count = 0;
-	s = init_exp(&i, start, &found);
+	s = init_exp(&i, start + 3, &found);
 	while (OK(s) && (*str)[i] && !found)
 	{
 		if ((P_BACKSLASH(s, str, f, i, end))

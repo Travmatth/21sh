@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 13:36:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 11:57:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 	if (OK(ctx->status)
 		&& !ft_bufappend(token->value, &(*s)[ctx->i + 1], skip - 1))
 		ctx->status = ERROR;
-	if (NONE(ctx->status) && !(g_missing = NULL))
+	if (NONE(ctx->status) && g_missing != NULL)
 		ft_lstmerge(&ctx->missing, g_missing);
 	ctx->i += OK(ctx->status) ? skip : 0;
 }

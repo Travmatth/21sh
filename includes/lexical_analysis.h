@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 15:44:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 13:28:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,6 @@ int				next_op_state(char c, int current);
 ** src/lexical_analysis/process_token.c
 */
 
-int				next_equals(char **str, size_t *i);
-int				process_assignment(t_token *token);
 int				substitute_alias(t_token *token);
 int				process_token(t_token *token);
 int				push_token(t_token *token

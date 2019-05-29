@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/22 15:30:49 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 13:51:22 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 11:50:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int						lex_quote(char **str, int start, int end)
 			type = QUOTE;
 		else if (DBL_QUOTE((*str), start))
 			type = DQUOTE;
-		else if (UPARAM_EXP((*str), start) || EPARAM_EXP((*str), start))
+		else if (EPARAM_EXP((*str), start))
 			type = BRACE_SUB;
 		else if (ARITH_EXP((*str), start))
 			type = MATH_SUB;

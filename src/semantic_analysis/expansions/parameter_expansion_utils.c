@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:51:19 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 16:07:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 11:32:33 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	init_plain_exp(char *param[6], size_t len[4], char *str)
 	len[TEST] = FALSE;
 }
 
-int		init_param_state(char *param[6], size_t len[4], char sep, char *str)
+int		init_param(char *param[6], size_t len[4], char sep, char *str)
 {
 	int		test;
 
@@ -88,7 +88,7 @@ int		init_param_state(char *param[6], size_t len[4], char sep, char *str)
 ** parse parameter and copy full param, name and word values
 */
 
-int		create_param_state(char *param[3], size_t len[3])
+int		create_param(char *param[3], size_t len[3])
 {
 	if (!(param[FULL_PARAM] = ft_strndup(param[FULL_PARAM], len[FULL_PARAM]))
 		|| !(param[NAME] = ft_strndup(param[NAME], len[NAME])))

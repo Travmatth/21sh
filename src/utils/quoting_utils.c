@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/24 15:31:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 13:46:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 13:38:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int		switch_arith_exp(char **str, size_t i, size_t *count, int *found)
 	else if (TWO_CLOSING((*str), i))
 	{
 		*found = TRUE;
-		return (NIL);
+		return (SUCCESS);
 	}
-	return (SUCCESS);
+	return (NIL);
 }

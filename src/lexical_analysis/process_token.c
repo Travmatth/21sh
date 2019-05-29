@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 13:37:22 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 13:27:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,61 +38,6 @@ t_token_cnv	g_tok_cnv[OP_TOKEN_CONVERSIONS] =
 	{ DLESSDASH, PARSE_DLESSDASH },
 	{ CLOBBER, PARSE_CLOBBER }
 };
-
-int		next_equals(char **str, size_t *i)
-{
-	size_t	end;
-	int		s;
-
-	s = SUCCESS;
-	while (OK(s) && (*str)[*i])
-	{
-		if ((*str)[*i] == '\\')
-			*i += 1;
-		else if ((P_QUOTE(s, str, NULL, (*i), (&end)))
-			|| (P_DQUOTE(s, str, NULL, (*i), (&end)))
-			|| (P_ARITH(s, str, NULL, (*i), (&end)))
-			|| (P_CMD(s, str, NULL, (*i), (&end)))
-			|| (P_BACKTICK(s, str, NULL, (*i), (&end)))
-			|| (P_UPARAM(s, str, NULL, (*i), (&end)))
-			|| (P_EPARAM(s, str, NULL, (*i), (&end))))
-			*i += end;
-		else if (OK(s) && (*str)[*i] == '=')
-		{
-			s = NIL;
-			break ;
-		}
-		*i += 1;
-	}
-	return (s);
-}
-
-/*
-** 21sh does not implement variable assignment, so returning NIL
-** gracefully fails current command execution and allows shell
-** to accept next command to execute
-*/
-
-int		process_assignment(t_token *token)
-{
-	size_t	i;
-	int		status;
-	char	*contents;
-
-	if (!(contents = (char*)ft_strdup(token->value->buf)))
-		return (ERROR);
-	i = 0;
-	status = SUCCESS;
-	if (ERR(next_equals(&contents, &i)))
-		return (ERROR);
-	else if (contents[i] == '=')
-	{
-		ft_putendl("Lexical Error: variable assignment not implemented");
-		status = NIL;
-	}
-	free(contents);
-	return (status);
-}
 
 /*
 ** After a token has been delimited, but before applying the grammatical rules
@@ -142,9 +87,8 @@ int		process_token(t_token *token)
 
 	status = SUCCESS;
 	if (!OK((status = substitute_alias(token)))
-		|| !OK((status = process_reserved(token)))
-		|| !OK((status = process_assignment(token))))
-		return (ERROR);
+		|| !OK((status = process_reserved(token))))
+		return (status);
 	i = -1;
 	while (++i <= OP_TOKEN_CONVERSIONS)
 	{

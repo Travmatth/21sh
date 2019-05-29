@@ -1,9 +1,9 @@
 #5 quoting tests
 #	 	echo 	 	 "\nthis should"	 	"work";
 #echo	"\"this should"		\"too		;
-echo ${} #sh ${}: bad substitution
-echo `$((${$("'
-echo "asdf"=
+#echo ${} #sh ${}: bad substitution
+#echo `$((${$("'
+#echo "asdf"=
 echo $((asdf"))=as
 echo `asdf`=as
 echo `=`
