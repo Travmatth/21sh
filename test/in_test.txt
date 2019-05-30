@@ -1,55 +1,91 @@
-#5 quoting tests
-echo \$(invalid)
-echo \$((invalid))
-echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
-echo \$HOME
-echo $(((1 + 2) + 1))
-echo "simple";
-echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
-echo $FOO;
-echo $(echo bar);
-echo 	 	 "\nthis should not;
-echo 	 	 "\nthis should not" ';
-echo 	 	 "'\nthis should not';
-echo \`invalid`
-echo $(echo foo);
-echo "\"l\
-$($("foo"));
-$((1 + 1));
+# simple tests WORKING
+ls
+ls tmp
+ls -l
+echo $
+
+# simple io WORKING
+cat author > tmp
+cat < tmp
+rm tmp
+
+# env var tests
+echo $0 #positional params not implemented
+echo ${0} #positional params not implemented
+echo $FOO
+echo $HOME
+echo ${HOME}
+echo ${UNSET_ENV_VAR}
+echo ${A-FOO} #default params not implemented
+echo ${A=FOO} #default assign params not implemented
+echo ${A?FOO} #error unset params not implemented
+echo ${A+FOO} #alternative params not implemented
+echo ${} #sh ${}: bad substitution
 echo ${echo foo};
+
+# semicolon separated commands
+echo foo; echo bar; 
+
+# test escaping chars
+echo \$HOME
+echo \2>tmp # write character 2 into file tmp_a 
+cat tmp
+rm tmp
+echo 2\>a # write characters 2>a to STDOUT
+
+# test single quotes
+echo '='
+
+# test double quotes
+	 	echo 	 	 "\nthis should"	 	"work";
+echo	"\"this should"		\"too		;
+echo "asdf"=
+echo "="
+echo "simple";
+echo ""
+
+# test arith expansions
+echo $((asdf"))=as
+echo $((=))
+$((1 + 1));
+
+# test command substitution
+echo `asdf`=as
+echo `=`
+echo $(=)
+echo $(echo bar);
+echo $(echo foo);
+echo `echo $HOME`
+echo $(echo $)
+echo $(echo $HOME)
+
+# test nested arith expansions
+echo $(((1 + 2) + 1))
+
+# test mixed quoting, expansions and substitutions
+echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
+echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
+$($("foo"));
+
+# test subshell & braced groups
+echo \$(i)
+echo \$((i))
 (c)
 {c}
-echo `echo $HOME`
-echo $
-echo $(echo $)
-echo ""
-echo $(echo $HOME)
-echo \2>a # write character 2 into file a
-echo 2\>a # write characters 2>a to STDOUT
-#	 	echo 	 	 "\nthis should"	 	"work";
-#echo	"\"this should"		\"too		;
-#echo ${} #sh ${}: bad substitution
-#echo `$((${$("'
-#echo "asdf"=
-#echo $((asdf"))=as
-#echo `asdf`=as
-#echo `=`
-#echo "="
-#echo '='
-#echo $(=)
-#echo $((=))
 
-#6 redir tests
+# ================  CRASH HERE  ==================
+# redir tests
+# ----------------------------------------------------------- #
 exec 6>&1           # Link file descriptor #6 with stdout, save stdout
 exec > tmp_out_log     # stdout replaced with file "logfile.txt".
-# ----------------------------------------------------------- #
 # All output from commands in this block sent to file $LOGFILE.
 ls -al
 echo; echo
 exec 1>&6 6>&-      # Restore stdout and close file descriptor #6.
 echo "== stdout now restored to default == "
+# ----------------------------------------------------------- #
 
-#7 pipe tests
+# pipe tests
 ls | head -2
 ls | cat | head - 3
 echo hello && echo world | tr a-z A-Z
@@ -61,7 +97,7 @@ echo hello && echo world | tr a-z A-Z
 # while echo hello went through on its own.
 ls -l -R | grep "\.txt$";
 
-#8 logical tests
+# logical tests
 cat foo || echo this
 cat author || echo this
 cat foo && echo this
@@ -73,56 +109,22 @@ echo this && echo and this || echo not this
 echo this && cat foo || echo and this
 cat foo || echo this && echo and this
 
-#9 Testing append, inout & dup in/out
+# Testing append, inout & dup in/out
 cat author >> tmp_aid_test.log
 exec 5<> tmp_aid_test.log
 cat <&5
 exec 5>&-
+rm tmp_aid_test.log
 
-#10 test heredoc no fd
-#./test/read_from_fd.py 0 <<EOF
-# test heredoc orig fd
-#./test/read_from_fd.py 0 0<<EOF
-# test heredoc new fd
-#./test/read_from_fd.py 5 5<<EOF
+# test missing quotes, cannot test from file
+echo 	 	 "\nthis should not;
+echo 	 	 "\nthis should not" ';
+echo 	 	 "'\nthis should not';
+echo `$((${$("'
+echo "\"l\
+echo \`i`
 
-##11 interface iteration tests
-#ls
-# ls
-# ls 
-#ls -l
-# ls -l 
-#ls -\
-#l
-#
-#echo "
-#
-#"
-#echo $(
-#
-#)
-
-#1 simple tests WORKING
-ls
-ls tmp
-ls -l
-
-#2 simple io WORKING
-cat author > tmp
-cat < tmp
-rm tmp
-
-#3 env var tests
-#echo $0 #positional params not implemented
-#echo ${0} #positional params not implemented
-echo $FOO
-echo $HOME
-echo ${HOME}
-echo ${UNSET_ENV_VAR}
-echo ${A-FOO} #default params not implemented
-echo ${A=FOO} #default assign params not implemented
-echo ${A?FOO} #error unset params not implemented
-echo ${A+FOO} #alternative params not implemented
-
-#4 semicolon separated commands
-echo foo; echo bar; 
+# test heredoc, cannot test from input file
+./test/read_from_fd.py 0 <<EOF
+./test/read_from_fd.py 0 0<<EOF
+./test/read_from_fd.py 5 5<<EOF

@@ -6,43 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:47:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 16:07:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/30 11:57:41 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
-
-/*
-** Determine number of fields contained in string, for use in field-splitting
-*/
-
-int		count_fields(char **str, int *count)
-{
-	int		i;
-	size_t	skip;
-	int		status;
-
-	i = 0;
-	*count = 0;
-	status = SUCCESS;
-	while (OK(status) && ((*str)[i]))
-	{
-		skip = 0;
-		while (IS_IFS((*str)[i]))
-			i += 1;
-		*count += 1;
-		while ((*str)[i] && !IS_IFS((*str)[i]))
-		{
-			if ((P_BACKSLASH(status, str, NULL, i, (&skip)))
-				|| (P_QUOTE(status, str, NULL, i, (&skip)))
-				|| (P_DQUOTE(status, str, NULL, i, (&skip))))
-				i += skip + 1;
-			else
-				i += 1;
-		}
-	}
-	return (status);
-}
 
 /*
 ** Field Splitting
@@ -79,6 +47,38 @@ int		count_fields(char **str, int *count)
 **
 ** Non-zero-length IFS white space shall delimit a field.
 */
+
+/*
+** Determine number of fields contained in string, for use in field-splitting
+*/
+
+int		count_fields(char **str, int *count)
+{
+	int		i;
+	size_t	skip;
+	int		status;
+
+	i = 0;
+	*count = 0;
+	status = SUCCESS;
+	while (OK(status) && ((*str)[i]))
+	{
+		skip = 0;
+		while (IS_IFS((*str)[i]))
+			i += 1;
+		*count += 1;
+		while ((*str)[i] && !IS_IFS((*str)[i]))
+		{
+			if ((P_BACKSLASH(status, str, NULL, i, (&skip)))
+				|| (P_QUOTE(status, str, NULL, i, (&skip)))
+				|| (P_DQUOTE(status, str, NULL, i, (&skip))))
+				i += skip + 1;
+			else
+				i += 1;
+		}
+	}
+	return (status);
+}
 
 int		init_field_split(t_field_split *fs, char **parameter)
 {

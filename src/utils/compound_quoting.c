@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/24 15:10:24 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 13:36:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/30 10:43:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int		command_sub(char **str, size_t start, size_t *end, t_quote f)
 			|| (P_UPARAM(s, str, f, i, end))
 			|| (P_EPARAM(s, str, f, i, end)))
 		{
-			i += *end;
+			i += *end + 1;
 			*end = ERROR;
 		}
 		else if (OK(s) && (*str)[i++] == ')')
