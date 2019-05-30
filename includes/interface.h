@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/27 19:35:59 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/29 18:08:41 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,12 @@
 /*
 ** #include <Holy_Spirit>
 */
+
+/*
+** The max Length of input
+*/
+
+#define INPUT_LEN 4096
 
 # define IS_WHITESPACE(x) ((x == ' ' || x == '\t' || x == '\n'))
 
@@ -84,12 +90,18 @@ struct			s_h_list
 typedef struct	s_interface
 {
 	// t_line			list[];
+	int				line_row[1000];
 	int				line_len;
 	int				line_index;
+	t_uisegment		*segments[INPUT_LEN / 2];
+	t_uisegment		*current;
 	struct termios	tty_old;
 	struct termios	tty_new;
+	struct winsize	ws;
 	t_h_list		h_list;
 }				t_interface;
+
+// arr[]->len of row && can be offset by prompt
 
 /*
 ** src/interface/interface.c

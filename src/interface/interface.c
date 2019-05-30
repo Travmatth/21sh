@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 00:27:36 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/30 01:17:37 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,11 @@ int		interface(char **line)
 	struct termios		tty[2];
 	int					status;
 	size_t				len;
-	// t_uisegment		**segments;
-	// t_uisegment		*current;
 	int					in_word;
 
-	interface.h_list.hst = NULL;
+	// interface.h_list.hst = NULL;
 	init_history(&interface.h_list);
+	ioctl(STDERR_FILENO, TIOCGWINSZ, &interface.ws);
 	len = 0;
 	*line = tmp;
 	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO));

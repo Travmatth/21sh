@@ -52,12 +52,6 @@ char			**g_environ;
 int				g_processes;
 
 /*
-** The max Length of input
-*/
-
-#define INPUT_LEN 4096
-
-/*
 ** Character sent by terminal line discipline in response to RETURN key
 */
 
