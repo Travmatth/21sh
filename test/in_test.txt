@@ -1,16 +1,4 @@
 #5 quoting tests
-#	 	echo 	 	 "\nthis should"	 	"work";
-#echo	"\"this should"		\"too		;
-#echo ${} #sh ${}: bad substitution
-#echo `$((${$("'
-#echo "asdf"=
-echo $((asdf"))=as
-echo `asdf`=as
-echo `=`
-echo "="
-echo '='
-echo $(=)
-echo $((=))
 echo \$(invalid)
 echo \$((invalid))
 echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
@@ -36,10 +24,20 @@ echo $
 echo $(echo $)
 echo ""
 echo $(echo $HOME)
-echo \2>a
-# write character 2 into file a
-echo 2\>a
-# write characters 2>a to STDOUT
+echo \2>a # write character 2 into file a
+echo 2\>a # write characters 2>a to STDOUT
+#	 	echo 	 	 "\nthis should"	 	"work";
+#echo	"\"this should"		\"too		;
+#echo ${} #sh ${}: bad substitution
+#echo `$((${$("'
+#echo "asdf"=
+#echo $((asdf"))=as
+#echo `asdf`=as
+#echo `=`
+#echo "="
+#echo '='
+#echo $(=)
+#echo $((=))
 
 #6 redir tests
 exec 6>&1           # Link file descriptor #6 with stdout, save stdout

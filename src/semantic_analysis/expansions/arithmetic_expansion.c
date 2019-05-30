@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:40:09 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/23 15:13:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/29 18:31:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,13 @@
 
 int		arith_exp_err(char **str, int start, int end)
 {
-	(void)str;
-	(void)start;
 	(void)end;
-	ft_printf("Semantic Error: arithmetic expansion not implemented\n");
-	return (NIL);
+	if (ARITH_EXP((*str), start))
+	{
+		ft_printf("Semantic Error: arithmetic expansion not implemented\n");
+		return (NIL);
+	}
+	return (SUCCESS);
 }
 
 /*
