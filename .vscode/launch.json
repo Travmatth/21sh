@@ -26,7 +26,7 @@
 		"externalConsole": false,
 		"setupCommands": [
 			{
-				"text": "settings set target.input-path test/in_test.txt"
+				"text": "settings set target.input-path test/backend_test.txt"
 			}
 		],
         "linux": {
