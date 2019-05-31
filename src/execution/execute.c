@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/19 14:57:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 15:23:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ int		execute_switch(t_exec_node *node)
 	int		status;
 
 	if (node->type == EXEC_PIPE)
-		status = exec_pipe(node->pipe);
+		status = exec_pipe(node->node.pipe);
 	else if (node->type == EXEC_AND || node->type == EXEC_OR)
-		status = exec_logical(node->operator);
+		status = exec_logical(node->node.operator);
 	else if (node->type == EXEC_SIMPLE_COMMAND)
-		status = exec_simple_command(node->simple_command);
+		status = exec_simple_command(node->node.simple);
 	else
 		status = 1;
 	return (status);

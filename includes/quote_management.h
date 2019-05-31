@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 13:53:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 15:36:41 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define QUOTE_MANAGEMENT_H
 
 # ifndef LIBFT_H
-# include "../libftprintf/srcs/includes/ft_printf.h"
+#  include "../libftprintf/srcs/includes/ft_printf.h"
 # endif
 
 /*

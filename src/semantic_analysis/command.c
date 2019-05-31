@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/19 17:39:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 16:40:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int		command(t_exec_node *container, t_ast_node *root, int bg, int bang)
 	if (!(simple = ft_memalloc(sizeof(t_simple))))
 		return (ERROR);
 	container->type = EXEC_SIMPLE_COMMAND;
-	container->simple_command = simple;
+	container->node.simple = simple;
 	simple->bang = bang;
 	simple->bg = bg;
 	return (simple_command(simple, root->val[0]));

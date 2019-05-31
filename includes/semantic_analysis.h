@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 11:39:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 16:41:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ typedef struct	s_field_split
 }				t_field_split;
 
 # define NOT_IFS(p, f) ((*p)[f.i] && (!IS_IFS((*p)[f.i]) || escaped(*p, f.i)))
-# define NEW_SUB(p, fs) ((fs.arr[fs.size++] = ft_strsub(*p, fs.start, fs.i - fs.start)))
+# define NEW_STR(p, fs) (ft_strsub(*p, fs.start, fs.i - fs.start))
+# define NEW_SUB(p, fs) ((fs.arr[fs.size++] = NEW_STR(p, fs)))
 # define STORE_SUBSTRING(p, fs) ((fs.i - fs.start > 0) && (!NEW_SUB(p, fs)))
 
 /*
@@ -256,7 +257,10 @@ int				field_splitting(char ***fields, char **parameter);
 ** src/semantic_analysis/expansions/parameter_expansion.c
 */
 
-int				store_unexpanded(char **new, char **str, size_t start, size_t *i);
+int				store_unexpanded(char **new
+								, char **str
+								, size_t start
+								, size_t *i);
 int				join_unexpanded(char **new, char **str, size_t *i);
 int				switch_expansion(char *param, char **next, size_t *i);
 int				manage_expansions(char **new, char **str, size_t *skip);
@@ -286,7 +290,10 @@ int				pathname_expansion(char ***fields);
 
 int				remove_quotes(char **str);
 int				quote_removal(char ***fields);
-void			remove_quote_switch(char *quote, char **str, char *new, int index[2]);
+void			remove_quote_switch(char *quote
+								, char **str
+								, char *new
+								, int index[2]);
 
 /*
 ** src/semantic_analysis/expansions/tilde_expansion.c

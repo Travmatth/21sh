@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/10 23:42:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 14:06:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 15:24:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,6 @@ typedef struct	s_ast
 /*
 ** After tokens are lexed, tokens are placed into stack nodes to allow
 ** syntactic analyis to interchangeably manage tokens and parse states
-*/
-
-/*
-**
 */
 
 typedef union	u_item

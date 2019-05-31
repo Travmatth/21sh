@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 17:45:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 15:20:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,27 +107,27 @@ void	free_redirs(t_redir *redir)
 ** simple command nodes, freeing simple commands and their parents after.
 */
 
-void	free_exec_node(t_exec_node *node)
+void	free_exec_node(t_exec_node *container)
 {
-	if (node->type == EXEC_PIPE)
+	if (container->type == EXEC_PIPE)
 	{
-		free_exec_node(node->pipe->left);
-		free_exec_node(node->pipe->right);
-		free(node->pipe);
+		free_exec_node(container->node.pipe->left);
+		free_exec_node(container->node.pipe->right);
+		free(container->node.pipe);
 	}
-	else if (node->type == EXEC_AND || node->type == EXEC_OR)
+	else if (container->type == EXEC_AND || container->type == EXEC_OR)
 	{
-		free_exec_node(node->operator->left);
-		free_exec_node(node->operator->right);
-		free(node->operator);
+		free_exec_node(container->node.operator->left);
+		free_exec_node(container->node.operator->right);
+		free(container->node.operator);
 	}
-	else if (node->type == EXEC_SIMPLE_COMMAND)
+	else if (container->type == EXEC_SIMPLE_COMMAND)
 	{
-		free_redirs(node->simple_command->redirs);
-		ft_freearr(node->simple_command->command, TRUE);
-		free(node->simple_command);
+		free_redirs(container->node.simple->redirs);
+		ft_freearr(container->node.simple->command, TRUE);
+		free(container->node.simple);
 	}
-	free(node);
+	free(container);
 }
 
 /*

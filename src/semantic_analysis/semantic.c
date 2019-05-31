@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 14:27:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 16:41:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int		and_or(t_exec_node *container, t_ast_node *root, int is_bg)
 			|| !(right = ft_memalloc(sizeof(t_exec_node))))
 			return (ERROR);
 		container->type = CONTAINS("AND_IF", root->rhs) ? EXEC_AND : EXEC_OR;
-		container->operator = op;
+		container->node.operator = op;
 		op->left = left;
 		op->right = right;
 		op->bg = is_bg;

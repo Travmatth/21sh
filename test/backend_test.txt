@@ -114,15 +114,17 @@ cat <&5
 exec 5>&-
 rm tmp_aid_test.log
 
+echo "finished tests";
+exit
 # test missing quotes, cannot test from file
-echo 	 	 "\nthis should not;
-echo 	 	 "\nthis should not" ';
-echo 	 	 "'\nthis should not';
-echo `$((${$("'
-echo "\"l\
-echo \`i`
+#echo 	 	 "\nthis should not;
+#echo 	 	 "\nthis should not" ';
+#echo 	 	 "'\nthis should not';
+#echo `$((${$("'
+#echo "\"l\
+#echo \`i`
 
 # test heredoc, cannot test from input file
-./test/read_from_fd.py 0 <<EOF
-./test/read_from_fd.py 0 0<<EOF
-./test/read_from_fd.py 5 5<<EOF
+#./test/read_from_fd.py 0 <<EOF
+#./test/read_from_fd.py 0 0<<EOF
+#./test/read_from_fd.py 5 5<<EOF

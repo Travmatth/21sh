@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 15:11:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/21 16:23:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 16:40:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int		pipe_sequence(t_exec_node *container
 			|| !(right = ft_memalloc(sizeof(t_exec_node))))
 			return (ERROR);
 		container->type = EXEC_PIPE;
-		container->pipe = pipe;
+		container->node.pipe = pipe;
 		pipe->bang = bang;
 		pipe->left = left;
 		pipe->right = right;
