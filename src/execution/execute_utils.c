@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/19 14:40:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/30 17:45:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ void	free_redirs(t_redir *redir)
 	{
 		free_redirs(redir->next);
 		free(redir->word);
-		free(redir->next);
 		free(redir);
 	}
 }

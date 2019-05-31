@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/27 18:49:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/30 17:38:58 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int		load_builtin(t_simple *simple)
 		if (IS_A(g_builtins[i].cmd, simple->command[0]))
 		{
 			if (IS_A("exec", g_builtins[i].cmd))
-				load_exec(simple);
+				status = load_exec(simple);
 			else
 				status = TRUE;
 			simple->builtin = g_builtins[i].f;
