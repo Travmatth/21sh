@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   history.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/05/29 17:56:56 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/31 18:09:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,24 +24,6 @@ static t_history	*init_h_node(char *content)
 	return (new);
 }
 
-// void				clear_history(t_history *history)
-// {
-// 	t_history *tmp;
-	
-// 	if (history)
-// 	{
-// 		while (history->prev)
-// 			history = history->prev;
-// 		while (history)
-// 		{
-// 			tmp = history->next;
-// 			free(history);
-// 			history = tmp;
-// 		}
-			
-// 	}
-// }
-
 void				write_to_history(char **line, t_interface *interface)
 {
 	int	i;
@@ -50,16 +32,13 @@ void				write_to_history(char **line, t_interface *interface)
 	if (*line && (!interface->h_list.hst ||
 					ft_strcmp(*line, interface->h_list.hst->content) != 0))
 	{
-		// ft_printf("line_len: %i\n", interface->line_len);
 		write(interface->h_list.fd, ":", 1);
 		while (i < interface->line_len)
 		{
-			// ft_printf("line: %s\n", *line);
-			// ft_printf("i: %i | *line[i]: %c\n", i, (*line)[i]);
 			if ((*line)[i] == '\n')
 				(*line)[i] = '\\';
 			write(interface->h_list.fd, *line + i, 1);
-			if ((*line)[i] == '\\' || i + 1 == interface->line_len)	
+			if ((*line)[i] == '\\' || i + 1 == interface->line_len)
 				write(interface->h_list.fd, "\n", 1);
 			i++;
 		}
@@ -89,10 +68,10 @@ void				init_history(t_h_list *h_list)
 	int		i;
 	char	buf[2];
 	char	line[INPUT_LEN];
-	
+
 	ft_bzero(line, INPUT_LEN);
-	if ((h_list->fd = open("21sh_history", O_RDWR | O_CREAT | O_APPEND,
-														S_IRWXU)) > 0)
+	if ((h_list->fd = open("21sh_history", O_RDWR | O_CREAT | O_APPEND
+					, S_IRWXU)) > 0)
 		while (1)
 		{
 			i = 0;
@@ -100,10 +79,11 @@ void				init_history(t_h_list *h_list)
 			while (i < INPUT_LEN && read(h_list->fd, buf, 1))
 			{
 				buf[1] = '\0';
-				if (buf[0] == ':' && (line[i] || ( i > 0 && line[i - 1])))
+				if (buf[0] == ':' && (line[i] || (i > 0 && line[i - 1])))
 					break ;
 				i > 0 && line[i - 1] == '\\' && buf[0] == '\n' ? i-- : 0;
-				buf[0] == ':' || (line[i] != '\\' && buf[0] == '\n') ? 0 : (line[i++] = buf[0]);
+				buf[0] == ':' || (line[i] != '\\' && buf[0] == '\n')
+					? 0 : (line[i++] = buf[0]);
 				ft_bzero(buf, 1);
 			}
 			if ((push_history(&h_list->hst, line)) == 0)
