@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   interface.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 01:17:37 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/31 17:27:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int		interface(char **line)
 	ioctl(STDERR_FILENO, TIOCGWINSZ, &interface.ws);
 	len = 0;
 	*line = tmp;
-	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO));
+	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO), 1, 0);
 	// segments = NULL;
 	in_word = FALSE;
 	while (OK(status))

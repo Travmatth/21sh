@@ -166,7 +166,7 @@ void			sig_handler(int sig);
 ** src/init/terminal_modes.c
 */
 
-int				prep_terminal(struct termios *ttys, int flags);
+int				prep_terminal(struct termios *ttys, int flags, int vmin, int vtime);
 int				restore_terminal(struct termios *tty);
 int				ft_termprint(int c);
 

@@ -1,0 +1,5 @@
+:echo cat
+:echo foo 
+:exit
+:echo caat
+:exi

@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   terminal_modes.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/30 11:09:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/21 00:50:34 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/05/31 17:27:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		prep_terminal(struct termios *ttys, int flags)
+int		prep_terminal(struct termios *ttys, int flags, int vmin, int vtime)
 {
 	if (!isatty(STDIN)
 		|| ERR(tcgetattr(STDIN, &ttys[0]))
 		|| ERR(tcgetattr(STDIN, &ttys[1])))
 		return (ERROR);
 	ttys[0].c_lflag &= flags;
-	ttys[0].c_cc[VMIN] = 0;
-	ttys[0].c_cc[VTIME] = 0;
+	ttys[0].c_cc[VMIN] = vmin;
+	ttys[0].c_cc[VTIME] = vtime;
 	if (ERR(tcsetattr(STDIN, TCSANOW, &ttys[0])))
 		return (ERROR);
 	return (SUCCESS);
