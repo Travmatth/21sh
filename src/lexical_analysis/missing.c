@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/29 13:21:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 17:27:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 17:44:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ int		manage_missing_closures(char *input,t_list **tokens, t_list **missing)
 	char			*line;
 	char			*tmp;
 	int				len;
-	
+
 	ft_lstdel(tokens, del_token);
 	*tokens = NULL;
 	ft_lstiter(*missing, print_missing_sym);

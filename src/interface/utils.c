@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 12:50:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/10 16:10:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 17:44:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int		get_cursor_position(int *x, int *y)
 
 	ft_bzero(buf, 64);
 	if (OK((status = ERR(write(STDOUT, CURSOR_POS_REQ, 4)) ? ERROR : SUCCESS)))
-		status = ERR(read(STDIN, buf, 64)) ? ERROR : status; 
+		status = ERR(read(STDIN, buf, 64)) ? ERROR : status;
 	if (!(row = ft_strchr(buf, '[')))
 		return (ERROR);
 	else if (!(col = ft_strchr(buf, ';')))
