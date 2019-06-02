@@ -1,9 +1,0 @@
-:exit
-:echo foo
-:echo foo bar  
-:echo  ffo fo 
-:exit
-:a
-::echo foo 
-:echo 
-::::::
