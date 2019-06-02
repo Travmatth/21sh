@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/01 17:36:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 15:34:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ static t_history	*init_h_node(char *content)
 	return (new);
 }
 
-void				write_to_history(char *line[INPUT_LEN], t_interface *interface)
+void				write_to_history(char *line[INPUT_LEN]
+									, t_interface *interface)
 {
 	int	i;
 

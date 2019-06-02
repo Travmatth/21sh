@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/01 19:07:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 15:32:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,29 +65,28 @@ void		history(unsigned long c
 					, t_h_list *h_list
 					, t_interface *interface)
 {
-	if (h_list->hst)
+	if (!h_list->hst)
+		return ;
+	if (c == UP && h_list->hst)
 	{
-		if (c == UP && h_list->hst)
-		{
-			*line = h_list->hst->content;
-			if (h_list->hst->prev)
-				h_list->hst = h_list->hst->prev;
-		}
-		else if (c == DOWN && h_list->hst)
-		{
-			if (h_list->hst->next)
-				h_list->hst = h_list->hst->next;
-			*line = h_list->hst->next ? h_list->hst->content : h_list->old;
-		}
-		tputs(tgetstr("vi", NULL), 1, ft_termprint);
-		while (interface->line_index > 0)
-			movement(LEFT, line, interface);
-		tputs(tgetstr("cd", NULL), 1, ft_termprint);
-		ft_printf("%s", *line);
-		tputs(tgetstr("ve", NULL), 1, ft_termprint);
-		interface->line_len = ft_strlen(*line);
-		interface->line_index = interface->line_len;
+		*line = h_list->hst->content;
+		if (h_list->hst->prev)
+			h_list->hst = h_list->hst->prev;
 	}
+	else if (c == DOWN && h_list->hst)
+	{
+		if (h_list->hst->next)
+			h_list->hst = h_list->hst->next;
+		*line = h_list->hst->next ? h_list->hst->content : h_list->old;
+	}
+	tputs(tgetstr("vi", NULL), 1, ft_termprint);
+	while (interface->line_index > 0)
+		movement(LEFT, line, interface);
+	tputs(tgetstr("cd", NULL), 1, ft_termprint);
+	ft_printf("%s", *line);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	interface->line_len = ft_strlen(*line);
+	interface->line_index = interface->line_len;
 }
 
 /*
@@ -95,27 +94,31 @@ void		history(unsigned long c
 ** on BACKSPACE, otherwise append character to line and echo to STDOUT
 */
 
-int		interface(char **line, t_interface *ui)
+static int	init_interface(t_interface *ui
+							, char **line
+							, char tmp[INPUT_LEN]
+							, size_t *len)
 {
-	static char			tmp[INPUT_LEN];
+	*len = 0;
+	ft_bzero(tmp, INPUT_LEN);
+	*line = tmp;
+	ui->line_index = 0;
+	ui->line_len = 0;
+	return (prep_terminal(ui->tty, ~(ICANON | ISIG | ECHO), 1, 0));
+}
+
+int			interface(char **line, t_interface *ui)
+{
+	char				tmp[INPUT_LEN];
 	unsigned long		next;
 	int					status;
 	size_t				len;
-	int					in_word;
 
-	len = 0;
-	ft_bzero(tmp, INPUT_LEN);
-	*line = tmp;
-	status = prep_terminal(ui->tty, ~(ICANON | ISIG | ECHO), 1, 0);
-	in_word = FALSE;
-	ui->line_index = 0;
-	ui->line_len = 0;
-	while (OK(status))
+	status = init_interface(ui, line, tmp, &len);
+	while (OK(status) && !ERR(read(STDIN, &next, 6)))
 	{
-		next = 0;
-		read(STDIN, &next, 6);
 		movement(next, line, ui);
-		if (next == INTR || next == RETURN)
+		if (OK(status) && (next == INTR || next == RETURN))
 		{
 			status = write(STDOUT, "\n", 1);
 			write_to_history(line, ui);
@@ -124,9 +127,9 @@ int		interface(char **line, t_interface *ui)
 			status = !*line ? ERROR : status;
 			break ;
 		}
-		else if (next == DEL || next == DEL2)
+		else if (OK(status) && (next == DEL || next == DEL2))
 			delete(next, line, ui);
-		if (PRINTABLE_CHAR(next))
+		else if (OK(status) && (PRINTABLE_CHAR(next)))
 			insert((char)next, line, ui);
 	}
 	return (ERR(restore_terminal(&ui->tty[1])) ? ERROR : status);
