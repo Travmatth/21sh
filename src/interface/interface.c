@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 17:43:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/01 19:07:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,41 +95,39 @@ void		history(unsigned long c
 ** on BACKSPACE, otherwise append character to line and echo to STDOUT
 */
 
-int		interface(char **line)
+int		interface(char **line, t_interface *ui)
 {
-	static t_interface	interface;
 	static char			tmp[INPUT_LEN];
 	unsigned long		next;
-	struct termios		tty[2];
 	int					status;
 	size_t				len;
 	int					in_word;
 
-	init_history(&interface.h_list);
-	ioctl(STDERR_FILENO, TIOCGWINSZ, &interface.ws);
 	len = 0;
+	ft_bzero(tmp, INPUT_LEN);
 	*line = tmp;
-	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO), 1, 0);
+	status = prep_terminal(ui->tty, ~(ICANON | ISIG | ECHO), 1, 0);
 	in_word = FALSE;
+	ui->line_index = 0;
+	ui->line_len = 0;
 	while (OK(status))
 	{
 		next = 0;
 		read(STDIN, &next, 6);
-		movement(next, line, &interface);
+		movement(next, line, ui);
 		if (next == INTR || next == RETURN)
 		{
 			status = write(STDOUT, "\n", 1);
-			ft_printf("%s\n", *line);
-			write_to_history(line, &interface);
-			close(interface.h_list.fd);
-			push_history(&interface.h_list.hst, *line);
-			restore_terminal(&tty[1]);
-			exit(0);
+			write_to_history(line, ui);
+			status = OK(status) && push_history(&ui->h_list.hst, *line);
+			*line = ft_strdup(tmp);
+			status = !*line ? ERROR : status;
+			break ;
 		}
 		else if (next == DEL || next == DEL2)
-			delete(next, line, &interface);
+			delete(next, line, ui);
 		if (PRINTABLE_CHAR(next))
-			insert((char)next, line, &interface);
+			insert((char)next, line, ui);
 	}
-	return (ERR(restore_terminal(&tty[1])) ? ERROR : status);
+	return (ERR(restore_terminal(&ui->tty[1])) ? ERROR : status);
 }

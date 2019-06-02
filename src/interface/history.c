@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/05/31 18:09:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/01 17:36:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,13 @@ static t_history	*init_h_node(char *content)
 	return (new);
 }
 
-void				write_to_history(char **line, t_interface *interface)
+void				write_to_history(char *line[INPUT_LEN], t_interface *interface)
 {
 	int	i;
 
 	i = 0;
-	if (*line && (!interface->h_list.hst ||
-					ft_strcmp(*line, interface->h_list.hst->content) != 0))
+	if (*line && (!interface->h_list.hst
+		|| ft_strcmp(*line, interface->h_list.hst->content) != 0))
 	{
 		write(interface->h_list.fd, ":", 1);
 		while (i < interface->line_len)
@@ -50,7 +50,7 @@ int					push_history(t_history **history, char *content)
 	t_history	*new;
 
 	if (!content || !content[0])
-		return (0);
+		return (NIL);
 	new = init_h_node(content);
 	if (!*history)
 		*history = new;
@@ -60,7 +60,7 @@ int					push_history(t_history **history, char *content)
 		(*history)->next = new;
 		*history = new;
 	}
-	return (1);
+	return (SUCCESS);
 }
 
 void				init_history(t_h_list *h_list)

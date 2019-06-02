@@ -151,8 +151,8 @@ int				g_processes;
 
 int				init_environ(int argc, char **argv, char **environ);
 int				init_parser(void);
-int				init_shell();
-int				restore_shell(void);
+int				init_shell(t_interface *interface);
+int				restore_shell(t_interface *interface);
 
 /*
 ** src/init/signal.c

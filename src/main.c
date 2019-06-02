@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/26 00:29:54 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/01 16:09:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@
 
 int		main(int argc, char **argv, char **environ)
 {
-	char	*input;
-	int		status;
-	int		end;
-	
+	char		*input;
+	int			status;
+	int			end;
+	t_interface	ui;
+
 	if (ERR(init_parser()) || ERR(init_environ(argc, argv, environ))
-		|| ERR(init_shell()))
+		|| ERR(init_shell(&ui)))
 		return (1);
 	end = FALSE;
 	while (!end && !ERR(status))
@@ -33,7 +34,7 @@ int		main(int argc, char **argv, char **environ)
 		input = NULL;
 		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
 		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
-		if (OK(status) && OK(interface(&input)))
+		if (OK(status) && OK(interface(&input, &ui)))
 		{
 			if (IS_A("exit", input))
 				end = TRUE;
@@ -42,5 +43,5 @@ int		main(int argc, char **argv, char **environ)
 			free(input);
 		}
 	}
-	return (ERR(restore_shell()) || ERR(status) ? 1 : 0);
+	return (ERR(restore_shell(&ui)) || ERR(status) ? 1 : 0);
 }

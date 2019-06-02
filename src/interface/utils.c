@@ -6,40 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 12:50:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 17:44:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/01 15:22:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-t_uisegment	*new_segment(void)
-{
-	t_uisegment	*segment;
-
-	if (!(segment = ft_memalloc(sizeof(t_uisegment))))
-		return (NULL);
-	segment->x = ERROR;
-	segment->y = ERROR;
-	segment->start = ERROR;
-	segment->end = ERROR;
-	segment->word_end = ERROR;
-	return (segment);
-}
-
-void	add_segment(t_uisegment **segments, t_uisegment *seg)
-{
-	t_uisegment	*current;
-	if (!*segments)
-		*segments = seg;
-	else
-	{
-		current = *segments;
-		while (current->next)
-			current = current->next;
-		seg->prev = current;
-		current->next = seg;
-	}
-}
 
 /*
 ** To obtain current x,y position of cursor we can query the tty using Control

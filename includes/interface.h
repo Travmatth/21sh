@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   interface.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 18:08:41 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/01 17:38:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INTERFACE_H
 # define INTERFACE_H
 
-#ifndef LIBFT_H
-# include "../libftprintf/srcs/includes/ft_printf.h"
-#endif
+# ifndef LIBFT_H
+#  include "../libftprintf/srcs/includes/ft_printf.h"
+# endif
 
 /*
 ** #include <Holy_Spirit>
@@ -25,7 +25,7 @@
 ** The max Length of input
 */
 
-#define INPUT_LEN 4096
+# define INPUT_LEN 4096
 
 # define IS_WHITESPACE(x) ((x == ' ' || x == '\t' || x == '\n'))
 
@@ -46,19 +46,6 @@
 ** is composed of a word and leading / trailing whitespaces.
 */
 
-typedef struct s_uisegment t_uisegment;
-struct			s_uisegment
-{
-	t_uisegment	*next;
-	t_uisegment	*prev;
-	int					x;
-	int					y;
-	int					start;
-	int					end;
-	int					word_end;
-}						;
-
-
 typedef struct s_history	t_history;
 struct			s_history
 {
@@ -75,41 +62,22 @@ struct			s_h_list
 	t_history	*hst;
 };
 
-// typedef struct s_line	t_line;
-// struct			s_line
-// {
-// 	char	c;
-// 	int		x;
-// 	int		y;
-// 	int		highlight;
-// 	t_line	*next;
-// 	t_line	*prev;
-	
-// };
-
 typedef struct	s_interface
 {
-	// t_line			list[];
 	int				line_row[1000];
 	int				line_len;
 	int				line_index;
-	t_uisegment		*segments[INPUT_LEN / 2];
-	t_uisegment		*current;
-	struct termios	tty_old;
-	struct termios	tty_new;
+	struct termios	tty[2];
 	struct winsize	ws;
 	t_h_list		h_list;
 }				t_interface;
-
-// arr[]->len of row && can be offset by prompt
 
 /*
 ** src/interface/interface.c
 */
 
-int						interface(char **line);
-void					movement(unsigned long c, char **line,
-						t_interface *interface);
+int						interface(char **line, t_interface *interface);
+void					movement(unsigned long c, char **line, t_interface *interface);
 void					history(unsigned long c, char **line, t_h_list *h_list,
 														t_interface *interface);
 
@@ -117,8 +85,6 @@ void					history(unsigned long c, char **line, t_h_list *h_list,
 ** src/interface/utils.c
 */
 
-t_uisegment				*new_segment(void);
-void					add_segment(t_uisegment **segments, t_uisegment *seg);
 int						get_cursor_position(int *x, int *y);
 
 /*
@@ -128,5 +94,4 @@ int						get_cursor_position(int *x, int *y);
 void					init_history(t_h_list *h_list);
 int						push_history(t_history **history, char *content);
 void					write_to_history(char **line, t_interface *interface);
-
 #endif
