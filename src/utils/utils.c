@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 14:38:23 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 15:39:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 16:13:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,4 +101,18 @@ void	**push_pointer_front(void **pointers, void *ptr)
 		i += 1;
 	}
 	return (tmp);
+}
+
+/*
+** free history nodes
+*/
+
+void	free_history(t_history *history)
+{
+	if (history)
+	{
+		free(history->content);
+		free_history(history->next);
+		free(history);
+	}
 }

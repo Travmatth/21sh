@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 15:28:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 16:14:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,5 +141,6 @@ int		restore_shell(t_interface *interface)
 			return (ERROR);
 	}
 	close(interface->h_list.fd);
+	free_history(interface->h_list.hst);
 	return (SUCCESS);
 }

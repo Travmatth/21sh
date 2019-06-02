@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/31 16:02:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 15:47:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 16:11:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,4 +98,5 @@ int		escaped(char *input, size_t i);
 void	free_prods(void);
 char	**push_pointer_back(char **pointers, t_ast_node *node);
 void	**push_pointer_front(void **pointers, void *ptr);
+void	free_history(t_history *history);
 #endif
