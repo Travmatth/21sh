@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 13:05:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 13:51:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,11 @@ void	hang_for_leaks(void)
 ** Exit on ERROR, NIL will fail gracefully and accept next line of input
 */
 
-int		event_loop(char *leaks)
+int		event_loop(t_interface *ui, char *leaks)
 {
 	char		*input;
 	int			status;
 	int			end;
-	t_interface	ui;
 
 	end = FALSE;
 	while (!end && !ERR(status))
@@ -47,7 +46,7 @@ int		event_loop(char *leaks)
 		input = NULL;
 		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
 		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
-		if (OK(status) && OK(interface(&input, &ui)))
+		if (OK(status) && OK(interface(&input, ui)))
 		{
 			if (IS_A("exit", input))
 				end = TRUE;
@@ -67,17 +66,18 @@ int		event_loop(char *leaks)
 
 int		main(int argc, char **argv, char **environ)
 {
-	int		status;
-	char	*leaks;
+	int			status;
+	char		*leaks;
+	t_interface	ui;
 
 	if (ERR(init_parser())
 		|| ERR(init_environ(argc, argv, environ))
-		|| ERR(init_shell()))
+		|| ERR(init_shell(&ui)))
 		return (1);
 	leaks = get_env_var("SHELL_LEAKS");
-	status = event_loop(leaks);
+	status = event_loop(&ui, leaks);
 	free_prods();
-	status = ERR(restore_shell()) || ERR(status) ? 1 : 0;
+	status = ERR(restore_shell(&ui)) || ERR(status) ? 1 : 0;
 	if (leaks)
 		hang_for_leaks();
 	return (status);

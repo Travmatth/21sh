@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/29 13:21:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 13:10:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 13:47:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int		prep_missing_terminal(struct termios tty[2]
 	*len = 0;
 	next[1] = '\0';
 	if (!(*line = ft_strnew(0))
-		|| ERR(prep_terminal(tty, ~(ISIG | ICANON | ECHO))))
+		|| ERR(prep_terminal(tty, ~(ISIG | ICANON | ECHO), 0, 0)))
 		return (ERROR);
 	return (SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/31 16:02:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 16:02:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 13:36:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <sys/syslimits.h>
 
 # include "execution.h"
+# include "interface.h"
 
 /*
 ** Character sent by terminal line discipline in response to RETURN key
@@ -61,9 +62,6 @@
 t_list	*g_missing;
 
 /*
-<<<<<<< HEAD
-** Stores the {name=val} pairs of environment variables for the shell
-=======
 ** Character sent by terminal line discipline in response to DELETE key
 */
 
@@ -131,7 +129,6 @@ t_list	*g_missing;
 
 /*
 ** Character sent by terminal line discipline in response to ctrl-c
->>>>>>> move_words
 */
 
 char	**g_environ;
@@ -148,18 +145,11 @@ int		g_processes;
 ** src/init/init.c
 */
 
-<<<<<<< HEAD
 int		init_environ(int argc, char **argv, char **environ);
 int		init_parser(void);
 int		init_shell();
-int		restore_shell(void);
+int		restore_shell(t_interface *interface);
 void	free_prods(void);
-=======
-int				init_environ(int argc, char **argv, char **environ);
-int				init_parser(void);
-int				init_shell(t_interface *interface);
-int				restore_shell(t_interface *interface);
->>>>>>> move_words
 
 /*
 ** src/init/signal.c
@@ -173,15 +163,9 @@ void	sig_handler(int sig);
 ** src/init/terminal_modes.c
 */
 
-<<<<<<< HEAD
-int		prep_terminal(struct termios *ttys, int flags);
+int		prep_terminal(struct termios *ttys, int flags, int vmin, int vtime);
 int		restore_terminal(struct termios *tty);
 int		ft_termprint(int c);
-=======
-int				prep_terminal(struct termios *ttys, int flags, int vmin, int vtime);
-int				restore_terminal(struct termios *tty);
-int				ft_termprint(int c);
->>>>>>> move_words
 
 /*
 ** builtins/
