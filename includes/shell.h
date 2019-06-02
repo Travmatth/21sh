@@ -61,7 +61,77 @@
 t_list	*g_missing;
 
 /*
+<<<<<<< HEAD
 ** Stores the {name=val} pairs of environment variables for the shell
+=======
+** Character sent by terminal line discipline in response to DELETE key
+*/
+
+# define DEL2 0x7E335B1B
+
+/*
+** Character sent by terminal line discipline in response to UP key
+*/
+
+# define UP 0x415B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_UP key
+*/
+
+# define CTL_UP 0x41353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to DOWN key
+*/
+
+# define DOWN 0x425B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_DOWN key
+*/
+
+# define CTL_DOWN 0x42353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to RIGHT key
+*/
+
+# define RIGHT 0x435B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_RIGHT key
+*/
+
+# define CTL_RIGHT 0x43353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to LEFT key
+*/
+
+# define LEFT 0x445B1B
+
+/*
+** Character sent by terminal line discipline in response to CTL_LEFT key
+*/
+
+# define CTL_LEFT 0x44353B315B1B
+
+/*
+** Character sent by terminal line discipline in response to HOME key
+*/
+
+# define HOME 0x485B1B
+
+/*
+** Character sent by terminal line discipline in response to END key
+*/
+
+# define END 0x465B1B
+
+/*
+** Character sent by terminal line discipline in response to ctrl-c
+>>>>>>> move_words
 */
 
 char	**g_environ;
@@ -78,11 +148,18 @@ int		g_processes;
 ** src/init/init.c
 */
 
+<<<<<<< HEAD
 int		init_environ(int argc, char **argv, char **environ);
 int		init_parser(void);
 int		init_shell();
 int		restore_shell(void);
 void	free_prods(void);
+=======
+int				init_environ(int argc, char **argv, char **environ);
+int				init_parser(void);
+int				init_shell(t_interface *interface);
+int				restore_shell(t_interface *interface);
+>>>>>>> move_words
 
 /*
 ** src/init/signal.c
@@ -96,9 +173,15 @@ void	sig_handler(int sig);
 ** src/init/terminal_modes.c
 */
 
+<<<<<<< HEAD
 int		prep_terminal(struct termios *ttys, int flags);
 int		restore_terminal(struct termios *tty);
 int		ft_termprint(int c);
+=======
+int				prep_terminal(struct termios *ttys, int flags, int vmin, int vtime);
+int				restore_terminal(struct termios *tty);
+int				ft_termprint(int c);
+>>>>>>> move_words
 
 /*
 ** builtins/

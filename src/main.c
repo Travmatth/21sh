@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 14:49:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 13:05:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,10 @@ void	hang_for_leaks(void)
 
 int		event_loop(char *leaks)
 {
-	int		end;
-	int		status;
-	char	*input;
+	char		*input;
+	int			status;
+	int			end;
+	t_interface	ui;
 
 	end = FALSE;
 	while (!end && !ERR(status))
@@ -46,7 +47,7 @@ int		event_loop(char *leaks)
 		input = NULL;
 		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
 		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
-		if (OK(status) && OK(get_next_line(STDIN, &input)))
+		if (OK(status) && OK(interface(&input, &ui)))
 		{
 			if (IS_A("exit", input))
 				end = TRUE;

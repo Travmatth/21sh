@@ -8,3 +8,4 @@ ft_ls
 .vscode/ipch/*
 **/*.a
 tmp*
+21sh_history
