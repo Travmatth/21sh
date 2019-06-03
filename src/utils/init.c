@@ -136,6 +136,11 @@ int		init_parser(void)
 	return (SUCCESS);
 }
 
+/*
+** Clean shell state on exit
+** free environment variables and interface struct, close open files descriptors
+*/
+
 int		restore_shell(t_interface *interface)
 {
 	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
@@ -149,5 +154,6 @@ int		restore_shell(t_interface *interface)
 	}
 	close(interface->h_list.fd);
 	free_history(interface->h_list.hst);
+	ft_freearr(g_environ, TRUE);
 	return (SUCCESS);
 }
