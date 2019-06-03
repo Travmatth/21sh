@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 17:07:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 15:37:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 13:25:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,53 +19,6 @@
 
 # include "semantic_analysis.h"
 # include "execution_node.h"
-
-# define NEW_FILE_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
-# define NEGATE(x, y) (x ? !y : y)
-# define WAITPID_ERR "Runtime Error: forked process %d exited with signal: %s\n"
-
-/*
-** When a bash process exits normally, return value is 0
-** When exiting because of an error, return value is 1
-*/
-
-# define NORMAL_CHILD_EXIT 0
-# define ERROR_CHILD_EXIT 1
-# define IS_NORMAL_CHILD_EXIT(x) (x == 0)
-# define IS_ERROR_CHILD_EXIT(x) (x == 1)
-
-/*
-** When creating pipes, fd[0] is read end of pipe and fd[1] is write end
-*/
-
-# define PIPE_READ 0
-# define PIPE_WRITE 1
-
-/*
-** Used in HEREDOC processing to detect signals sent to terminal
-*/
-
-# define IS_DONE(state, c) (state[STATE] == state[ACCEPT] && buf == '\n')
-# define IS_SIG(state) (state[STATE] == state[SIG])
-
-/*
-** enums used by HEREDOC processing
-*/
-
-enum	e_here_end_buf
-{
-	HERE_END_BUF,
-	IN_BUF
-};
-
-enum	e_here_end_dfa
-{
-	ACCEPT,
-	SIG,
-	STATE,
-	LAST_STATE,
-	CHARS
-};
 
 /*
 ** src/execution/dup_redirs.c
