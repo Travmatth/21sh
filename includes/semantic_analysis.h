@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 16:41:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 13:41:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define SEMANTIC_ANALYSIS_H
 
 # include "syntactic_analysis.h"
-# include "execution_node.h"
+# include "execution_constructs.h"
 
 # define IS_TERMINAL(x) (x >= 1 && x <= 24)
 # define IS_A(type, node) (!ft_strcmp(type, node))
