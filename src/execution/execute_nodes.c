@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 14:57:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 12:43:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 13:24:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,35 +66,35 @@ int		exec_simple_command(t_simple *simple)
 }
 
 /*
-** Execute pipe operations by executing left command, then right if successful.
+** Execute pipe operations by executing left command, then right.
 ** Before the first command is executed, pipe forks itself and redirects STDOUT
 ** to pipe in. Before second command, input is redirected to pipe out. Children
-** execution managed by execute_switch
+** execution managed by execute_switch. Pipe should only fail and return early
+** if `pipefail` option is set (off by default). Can begin to implement by
+** verifying !ERR(pipe_node->exit_status) when launching child_pid child process
 */
 
 void	exec_pipe_parent_process(t_pipe *pipe_node, int pid, int pipe_fd[2])
 {
 	int		child_pid;
+	int		pipe_err;
 
 	wait_loop(pid, &pipe_node->exit_status);
-	if (IS_NORMAL_CHILD_EXIT(pipe_node->exit_status))
+	child_pid = fork();
+	pipe_err = ERR(child_pid) ? ERROR_CHILD_EXIT : NORMAL_CHILD_EXIT;
+	if (!ERR(pipe_err) && child_pid == 0)
 	{
-		if (ERR((child_pid = fork())))
-			pipe_node->exit_status = ERROR;
-		else if (!ERR(pipe_node->exit_status) && child_pid == 0)
-		{
-			if (!ERR((pipe_node->exit_status = close(pipe_fd[PIPE_WRITE]))))
-				pipe_node->exit_status = dup2(pipe_fd[PIPE_READ], STDIN);
-			if (!ERR(pipe_node->exit_status))
-				pipe_node->exit_status = execute_switch(pipe_node->right);
-			_exit(pipe_node->exit_status);
-		}
-		else if (!ERR(pipe_node->exit_status) && child_pid > 0)
-		{
-			close(pipe_fd[PIPE_WRITE]);
-			close(pipe_fd[PIPE_WRITE]);
-			wait_loop(child_pid, &pipe_node->exit_status);
-		}
+		if (!ERR((pipe_err = close(pipe_fd[PIPE_WRITE]))))
+			pipe_err = dup2(pipe_fd[PIPE_READ], STDIN);
+		if (!ERR(pipe_err))
+			pipe_err = execute_switch(pipe_node->right);
+		_exit(pipe_err);
+	}
+	else if (!ERR(pipe_err) && child_pid > 0)
+	{
+		close(pipe_fd[PIPE_WRITE]);
+		close(pipe_fd[PIPE_WRITE]);
+		wait_loop(child_pid, &pipe_node->exit_status);
 	}
 }
 
