@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 15:32:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 12:20:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,9 @@ int			interface(char **line, t_interface *ui)
 	size_t				len;
 
 	status = init_interface(ui, line, tmp, &len);
-	while (OK(status) && !ERR(read(STDIN, &next, 6)))
+	while (OK(status) && !(next = 0))
 	{
+		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
 		movement(next, line, ui);
 		if (OK(status) && (next == INTR || next == RETURN))
 		{
