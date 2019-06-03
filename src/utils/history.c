@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/05/29 17:56:56 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/02 01:50:43 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ static t_history	*init_h_node(char *content)
 
 	if (!(new = (t_history*)ft_memalloc(sizeof(t_history))))
 		return (NULL);
-	new->content = ft_strdup(content);
+		/////////////////////////////////////
+		// best to leav this a regular strdup for less memory usage
+		/////////////////////////////////////
+	new->content = ft_strndup(content, INPUT_LEN);
 	new->next = NULL;
 	new->prev = NULL;
 	return (new);
@@ -47,8 +50,8 @@ void				write_to_history(char **line, t_interface *interface)
 	int	i;
 
 	i = 0;
-	if (*line && (!interface->h_list.hst ||
-					ft_strcmp(*line, interface->h_list.hst->content) != 0))
+	if (**line && (!interface->h_list.hst ||
+					ft_strcmp(*line, interface->curr_last_history) != 0))
 	{
 		// ft_printf("line_len: %i\n", interface->line_len);
 		write(interface->h_list.fd, ":", 1);

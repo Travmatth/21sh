@@ -6,15 +6,21 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/05/28 01:12:25 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/02 01:51:30 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-///////////////////
-// What if we could store data like in a text document but with data structures
-///////////////////
+// static void	move_left()
+// {
+	
+// }
+
+// static void	move_right()
+// {
+	
+// }
 
 // static void	move_up()
 // {
@@ -40,6 +46,7 @@ void		movement(unsigned long c, char **line, t_interface *interface)
 	// else if (c == CTL_UP)
 	// // if moving to start line subtract length of prompt
 	// else if (c == CTL_DOWN)
-	else if ((c == UP || c == DOWN))
+	else if (interface->written == 0 && interface->h_list.hst
+	&& (c == UP || (c == DOWN && interface->h_list.hst->next)))
 		history(c, line, &interface->h_list, interface);
 }

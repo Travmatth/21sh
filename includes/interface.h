@@ -6,7 +6,7 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 18:08:41 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/02 01:27:13 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,11 @@ struct			s_h_list
 typedef struct	s_interface
 {
 	// t_line			list[];
+	char			*curr_last_history;
 	int				line_row[1000];
 	int				line_len;
 	int				line_index;
+	int				written;
 	t_uisegment		*segments[INPUT_LEN / 2];
 	t_uisegment		*current;
 	struct termios	tty_old;
