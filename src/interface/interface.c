@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/03 12:20:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 16:43:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,12 @@ int			interface(char **line, t_interface *ui)
 	{
 		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
 		movement(next, line, ui);
-		if (OK(status) && (next == INTR || next == RETURN))
+		if (next == INTR)
+		{
+			status = NIL;
+			break ;
+		}
+		else if (OK(status) && (next == RETURN && !escaped(*line, ui->line_len)))
 		{
 			status = write(STDOUT, "\n", 1);
 			write_to_history(line, ui);
@@ -130,7 +135,7 @@ int			interface(char **line, t_interface *ui)
 		}
 		else if (OK(status) && (next == DEL || next == DEL2))
 			delete(next, line, ui);
-		else if (OK(status) && (PRINTABLE_CHAR(next)))
+		else if (OK(status) && (next == '\n' || PRINTABLE_CHAR(next)))
 			insert((char)next, line, ui);
 	}
 	return (ERR(restore_terminal(&ui->tty[1])) ? ERROR : status);
