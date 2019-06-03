@@ -17,7 +17,8 @@
 			"SHELL_TTY": "/dev/ttys003",
 			"HOME": "/nfs/2017/d/dysotoma",
 			"TERM": "xterm-256color",
-			"FOO": ""
+			"FOO": "",
+			"SHLVL": 1
 		},
         "stopAtEntry": false,
         "cwd": "${workspaceRoot}",

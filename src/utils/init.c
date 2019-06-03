@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 16:14:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 12:49:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,21 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 /*
 ** Process existing environment variables of environment 21sh was launched in
 ** and store internally for use as internal environment, for use in builtins
-** and launching child processes with execve
+** and launching child processes with execve. Increments $SHLVL, which tracks
+** level of shell nesting.
 */
 
 int		init_environ(int argc, char **argv, char **environ)
 {
 	int			i;
-	int			total;
+	int			n;
+	char		*shlvl;
 
 	i = 0;
 	while (environ[i])
 		i += 1;
-	total = i + (argc > 1 ? argc - 1 : 0);
-	if (!(g_environ = (char**)ft_memalloc(sizeof(char*) * (total + 1))))
+	n = i + (argc > 1 ? argc - 1 : 0);
+	if (!(g_environ = (char**)ft_memalloc(sizeof(char*) * (n + 1))))
 		return (ERROR);
 	i = -1;
 	while (environ[++i])
@@ -66,9 +68,14 @@ int		init_environ(int argc, char **argv, char **environ)
 			return (ERROR);
 	i = 0;
 	while (--argc)
-		if (!(g_environ[(total ? total - 1 : total) + i++] =
-			ft_strdup(argv[argc])))
+		if (!(g_environ[(n ? n - 1 : n) + i++] = ft_strdup(argv[argc])))
 			return (ERROR);
+	if (!(shlvl = get_env_var("SHLVL")))
+		shlvl = "0";
+	i = ft_atoi(shlvl);
+	shlvl = ft_itoa(i + 1);
+	set_env_var("SHLVL", shlvl);
+	free(shlvl);
 	return (SUCCESS);
 }
 
