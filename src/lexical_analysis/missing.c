@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/29 13:21:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 13:47:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 12:35:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int		prep_missing_terminal(struct termios tty[2]
 	*len = 0;
 	next[1] = '\0';
 	if (!(*line = ft_strnew(0))
-		|| ERR(prep_terminal(tty, ~(ISIG | ICANON | ECHO), 0, 0)))
+		|| ERR(prep_terminal(tty, ~(ISIG | ICANON | ECHO), 1, 0)))
 		return (ERROR);
 	return (SUCCESS);
 }
@@ -43,7 +43,8 @@ void	add_missing_char(char **line, char *tmp, int *len, char c)
 	free(*line);
 	*line = tmp;
 	*len += 1;
-	ft_putchar(c);
+	if (c != '\n')
+		ft_putchar(c);
 }
 
 int		manage_backspace(char *line, int *len)
@@ -67,8 +68,6 @@ int		manage_missing_closures(char *input, t_list **tokens, t_list **missing)
 	{
 		if (next[0] == INTR || next[0] == EOF)
 			status = NIL;
-		else if (next[0] == '\n')
-			break ;
 		else if (next[0] == DEL && len)
 			status = ERR(manage_backspace(new[LINE], &len)) ? ERROR : status;
 		else if (next[0] == DEL)
@@ -77,6 +76,8 @@ int		manage_missing_closures(char *input, t_list **tokens, t_list **missing)
 			status = ERROR;
 		else
 			add_missing_char(&new[LINE], new[TMP], &len, next[0]);
+		if (next[0] == '\n')
+			break ;
 	}
 	return (ERR(restore_terminal(&tty[1])) ? ERROR
 		: restore_missing_terminal(tokens, input, new[LINE], new[TMP]));
