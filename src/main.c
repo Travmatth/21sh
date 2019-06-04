@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 13:51:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 17:19:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int		event_loop(t_interface *ui, char *leaks)
 	{
 		input = NULL;
 		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
-		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
+		// status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
 		if (OK(status) && OK(interface(&input, ui)))
 		{
 			if (IS_A("exit", input))

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/02 15:28:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 17:57:41 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,88 @@ static void	move_word_right(char **line, t_interface *ui)
 	}
 }
 
+int			is_previous_line(char *line, int start_index, int *col)
+{
+	int		i;
+
+	i = --start_index;
+	while (i)
+	{
+		if (line[i] == '\n')
+		{
+			*col = start_index - i;
+			return (TRUE);
+		}
+		i -= 1;
+	}
+	return (FALSE);
+}
+
+/*
+** If we are not able to move to a previous line, exit
+** If we are able to, move to the beginning of the current line,
+** up one row, then right until we reach the current row or a newline
+*/
+
+static void	move_line_up(char **line, t_interface *ui)
+{
+	int		i;
+	int		col;
+
+	if (!is_previous_line(*line, ui->line_index, &col))
+		return ;
+	i = col;
+	while (i--)
+		tputs(tgetstr("le", NULL), 1, ft_termprint);
+	tputs(tgetstr("up", NULL), 1, ft_termprint);
+	i = -1;
+	while (++i < col
+		&& (*line)[i + 1]
+		&& (*line)[i + 2]
+		&& (*line)[i + 2] != '\n')
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+}
+
+int			is_following_line(char *line, int start_index, int *col)
+{
+	int		i;
+
+	i = --start_index;
+	if (!is_previous_line(line, start_index, col))
+		*col = start_index - 1;
+	while (i)
+	{
+		if (line[i] == '\n')
+			return (TRUE);
+		i -= 1;
+	}
+	return (FALSE);
+}
+
+/*
+** If we are not able to move down a line, exit
+** If we are able to, move to the beginning of the current line,
+** down one row, then right until we reach the current row or a newline
+*/
+
+static void	move_line_down(char **line, t_interface *ui)
+{
+	int		i;
+	int		col;
+
+	if (!is_following_line(*line, ui->line_index, &col))
+		return ;
+	i = col;
+	while (i--)
+		tputs(tgetstr("le", NULL), 1, ft_termprint);
+	tputs(tgetstr("do", NULL), 1, ft_termprint);
+	i = -1;
+	while (++i < col && (*line)[i])
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+	if (col)
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+}
+
 void		movement(unsigned long c, char **line, t_interface *interface)
 {
 	if (c == LEFT
@@ -62,6 +144,10 @@ void		movement(unsigned long c, char **line, t_interface *interface)
 		move_word_left(line, interface);
 	else if (c == CTL_RIGHT)
 		move_word_right(line, interface);
+	else if (c == CTL_DOWN)
+		move_line_down(line, interface);
+	else if (c == CTL_UP)
+		move_line_up(line, interface);
 	else if ((c == UP || c == DOWN))
 		history(c, line, &interface->h_list, interface);
 }
