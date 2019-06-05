@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/04 17:18:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/04 19:21:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	write_to_history(char **line, t_interface *interface);
 ** src/interface/move.c
 */
 
-void	movement(unsigned long c, char **line, t_interface *interface);
+void	movement(unsigned long c, char **line, t_interface *ui);
 
 /*
 ** src/interface/move_utils.c

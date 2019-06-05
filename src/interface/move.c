@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/04 18:16:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/04 19:37:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,16 @@
 
 static void	move_word_left(char **line, t_interface *ui)
 {
-	if (ui->line_index == ui->line_len)
+	if (ui->line_index && (*line)[ui->line_index - 1] == '\n')
+		return ;
+	if (ui->line_index && ui->line_index == ui->line_len)
 	{
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
 		ui->line_index--;
 	}
-	while ((ui->line_index > 0) && IS_WHITESPACE((*line)[ui->line_index - 1]))
+	while ((ui->line_index > 0)
+		&& (*line)[ui->line_index - 1] != '\n'
+		&& IS_WHITESPACE((*line)[ui->line_index - 1]))
 	{
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
 		ui->line_index--;
@@ -34,13 +38,18 @@ static void	move_word_left(char **line, t_interface *ui)
 
 static void	move_word_right(char **line, t_interface *ui)
 {
+	if (ui->line_index != ui->line_len
+		&& (*line)[ui->line_index] == '\n')
+		return ;
 	while ((ui->line_index != ui->line_len)
+		&& (*line)[ui->line_index] != '\n'
 		&& !IS_WHITESPACE((*line)[ui->line_index]))
 	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 		ui->line_index++;
 	}
 	while ((ui->line_index != ui->line_len)
+		&& (*line)[ui->line_index] != '\n'
 		&& IS_WHITESPACE((*line)[ui->line_index]))
 	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
@@ -108,24 +117,26 @@ static void	move_line_down(char **line, t_interface *ui)
 	}
 }
 
-void		movement(unsigned long c, char **line, t_interface *interface)
+void		movement(unsigned long c, char **line, t_interface *ui)
 {
 	if (c == LEFT
-		&& interface->line_index > 0
+		&& ui->line_index > 0
+		&& (*line)[ui->line_index - 1] != '\n'
 		&& !ERR(tputs(tgetstr("le", NULL), 1, ft_termprint)))
-		interface->line_index--;
+		ui->line_index--;
 	else if (c == RIGHT
-		&& (*line)[interface->line_index]
+		&& (*line)[ui->line_index + 1]
+		&& (*line)[ui->line_index] != '\n'
 		&& !ERR(tputs(tgetstr("nd", NULL), 1, ft_termprint)))
-		interface->line_index++;
+		ui->line_index++;
 	else if (c == CTL_LEFT)
-		move_word_left(line, interface);
+		move_word_left(line, ui);
 	else if (c == CTL_RIGHT)
-		move_word_right(line, interface);
+		move_word_right(line, ui);
 	else if (c == CTL_DOWN)
-		move_line_down(line, interface);
+		move_line_down(line, ui);
 	else if (c == CTL_UP)
-		move_line_up(line, interface);
+		move_line_up(line, ui);
 	else if ((c == UP || c == DOWN))
-		history(c, line, &interface->h_list, interface);
+		history(c, line, &ui->h_list, ui);
 }
