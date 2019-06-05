@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/05 16:01:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 16:25:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,15 @@ int			interface(char **line, t_interface *ui)
 			status = write(STDOUT, "\n", 1);
 			write_to_history(line, ui);
 			status = OK(status) && push_history(&ui->h_list.hst, *line);
-			*line = ft_strdup(tmp);
+			*line = ft_strnew(ui->line_len);
+			ui->line_index = 0;
+			while (*line && ui->line_index != ui->line_len)
+			{
+				if ((tmp)[ui->line_index] == '\\' && (tmp)[ui->line_index + 1] == '\n')
+					ui->line_index += 2;
+				else
+					(*line)[len++] = tmp[ui->line_index++];
+			}
 			status = !*line ? ERROR : status;
 			break ;
 		}
