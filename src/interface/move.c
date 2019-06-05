@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/03 17:57:41 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/04 18:16:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,23 +48,6 @@ static void	move_word_right(char **line, t_interface *ui)
 	}
 }
 
-int			is_previous_line(char *line, int start_index, int *col)
-{
-	int		i;
-
-	i = --start_index;
-	while (i)
-	{
-		if (line[i] == '\n')
-		{
-			*col = start_index - i;
-			return (TRUE);
-		}
-		i -= 1;
-	}
-	return (FALSE);
-}
-
 /*
 ** If we are not able to move to a previous line, exit
 ** If we are able to, move to the beginning of the current line,
@@ -76,34 +59,23 @@ static void	move_line_up(char **line, t_interface *ui)
 	int		i;
 	int		col;
 
-	if (!is_previous_line(*line, ui->line_index, &col))
+	if (!line_exists(*line, ui->line_len, PREV))
 		return ;
-	i = col;
+	i = current_column(*line, ui->line_index);
+	col = i;
+	ui->line_index -= (i ? i + 1 : i);
 	while (i--)
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
 	tputs(tgetstr("up", NULL), 1, ft_termprint);
+	ui->line_index -= current_column(*line, --ui->line_index);
 	i = -1;
 	while (++i < col
-		&& (*line)[i + 1]
-		&& (*line)[i + 2]
-		&& (*line)[i + 2] != '\n')
-		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-}
-
-int			is_following_line(char *line, int start_index, int *col)
-{
-	int		i;
-
-	i = --start_index;
-	if (!is_previous_line(line, start_index, col))
-		*col = start_index - 1;
-	while (i)
+		&& (*line)[ui->line_index]
+		&& (*line)[ui->line_index] != '\n')
 	{
-		if (line[i] == '\n')
-			return (TRUE);
-		i -= 1;
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+		ui->line_index += 1;
 	}
-	return (FALSE);
 }
 
 /*
@@ -117,17 +89,23 @@ static void	move_line_down(char **line, t_interface *ui)
 	int		i;
 	int		col;
 
-	if (!is_following_line(*line, ui->line_index, &col))
+	if (!line_exists(*line, ui->line_index, NEXT))
 		return ;
-	i = col;
+	i = current_column(*line, ui->line_index);
+	col = i;
+	ui->line_index -= i;
 	while (i--)
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
 	tputs(tgetstr("do", NULL), 1, ft_termprint);
+	ui->line_index += next_column(*line, ui->line_index);
 	i = -1;
-	while (++i < col && (*line)[i])
+	while (++i < col
+		&& (*line)[ui->line_index]
+		&& (*line)[ui->line_index] != '\n')
+	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	if (col)
-		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+		ui->line_index += 1;
+	}
 }
 
 void		movement(unsigned long c, char **line, t_interface *interface)

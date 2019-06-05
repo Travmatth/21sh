@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 15:48:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/04 17:18:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 */
 
 int		interface(char **line, t_interface *interface);
-void	movement(unsigned long c, char **line, t_interface *interface);
 void	history(unsigned long c
 				, char **line
 				, t_h_list *h_list
@@ -43,4 +42,18 @@ int		get_cursor_position(int *x, int *y);
 void	init_history(t_h_list *h_list);
 int		push_history(t_history **history, char *content);
 void	write_to_history(char **line, t_interface *interface);
+
+/*
+** src/interface/move.c
+*/
+
+void	movement(unsigned long c, char **line, t_interface *interface);
+
+/*
+** src/interface/move_utils.c
+*/
+
+int		next_column(char *line, int index);
+int		current_column(char *line, int index);
+int		line_exists(char *line, int index, int direction);
 #endif

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 15:54:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/04 14:32:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,12 @@
 */
 
 # define CURSOR_POS_REQ "\033[6n"
+
+enum						e_line_exists
+{
+	PREV,
+	NEXT
+};
 
 typedef struct s_history	t_history;
 
