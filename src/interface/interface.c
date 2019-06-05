@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/03 16:43:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 13:12:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,11 @@ static void	insert(char c, char **line, t_interface *interface)
 		tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	}
 	else
-		write(1, &c, 1);
+	{
+		write(STDIN, &c, 1);
+		if (c == '\n')
+			write(STDOUT, "> ", 2);
+	}
 }
 
 static void	delete(unsigned long c, char **line, t_interface *interface)

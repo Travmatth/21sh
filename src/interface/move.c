@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/04 19:37:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 13:59:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,9 @@ static void	move_line_up(char **line, t_interface *ui)
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
 	tputs(tgetstr("up", NULL), 1, ft_termprint);
 	ui->line_index -= current_column(*line, --ui->line_index);
-	i = -1;
+	first = !line_exists(*line, ui->line_index, PREV) ? 1 : 0;
+	while (first--)
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 	while (++i < col
 		&& (*line)[ui->line_index]
 		&& (*line)[ui->line_index] != '\n')
@@ -97,17 +99,20 @@ static void	move_line_down(char **line, t_interface *ui)
 {
 	int		i;
 	int		col;
+	int		first;
 
 	if (!line_exists(*line, ui->line_index, NEXT))
 		return ;
 	i = current_column(*line, ui->line_index);
 	col = i;
 	ui->line_index -= i;
+	first = 2;
 	while (i--)
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
 	tputs(tgetstr("do", NULL), 1, ft_termprint);
 	ui->line_index += next_column(*line, ui->line_index);
-	i = -1;
+	while (first--)
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 	while (++i < col
 		&& (*line)[ui->line_index]
 		&& (*line)[ui->line_index] != '\n')
