@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/05 13:59:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 14:17:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void		movement(unsigned long c, char **line, t_interface *ui)
 		&& !ERR(tputs(tgetstr("le", NULL), 1, ft_termprint)))
 		ui->line_index--;
 	else if (c == RIGHT
-		&& (*line)[ui->line_index + 1]
+		&& ui->line_index < ui->line_len
 		&& (*line)[ui->line_index] != '\n'
 		&& !ERR(tputs(tgetstr("nd", NULL), 1, ft_termprint)))
 		ui->line_index++;
