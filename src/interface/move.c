@@ -67,8 +67,9 @@ static void	move_line_up(char **line, t_interface *ui)
 {
 	int		i;
 	int		col;
+	int		first;
 
-	if (!line_exists(*line, ui->line_len, PREV))
+	if (!line_exists(*line, ui->line_index, PREV))
 		return ;
 	i = current_column(*line, ui->line_index);
 	col = i;
