@@ -6,11 +6,27 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/02 15:34:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 15:58:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+
+void				clear_all_lines(char *line, t_interface *ui)
+{
+	tputs(tgetstr("vi", NULL), 1, ft_termprint);
+	// while there are previous lines, move up
+	while (line_exists(line, ui->line_index, PREV))
+	{
+		tputs(tgetstr("up", NULL), 1, ft_termprint);
+	}
+	// when on last line, delete all following and reprint prompt
+	tputs(tgetstr("cr", NULL), 1, ft_termprint);
+	tputs(tgetstr("cd", NULL), 1, ft_termprint);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	ft_bzero(line, ui->line_len);
+	write(STDOUT, "$> ", 3);
+}
 
 static t_history	*init_h_node(char *content)
 {
@@ -30,13 +46,13 @@ void				write_to_history(char *line[INPUT_LEN]
 	int	i;
 
 	i = 0;
-	if (*line && (!interface->h_list.hst
-		|| ft_strcmp(*line, interface->h_list.hst->content) != 0))
+	if (**line && (!interface->h_list.hst
+		|| ft_strcmp(*line, interface->curr_last_history) != 0))
 	{
 		write(interface->h_list.fd, ":", 1);
 		while (i < interface->line_len)
 		{
-			if ((*line)[i] == '\n')
+			if ((*line)[i] == '\n' && i && (*line)[i - 1] != '\\')
 				(*line)[i] = '\\';
 			write(interface->h_list.fd, *line + i, 1);
 			if ((*line)[i] == '\\' || i + 1 == interface->line_len)

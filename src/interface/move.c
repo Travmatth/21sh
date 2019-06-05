@@ -143,6 +143,6 @@ void		movement(unsigned long c, char **line, t_interface *ui)
 		move_line_down(line, ui);
 	else if (c == CTL_UP)
 		move_line_up(line, ui);
-	else if ((c == UP || c == DOWN))
+	else if ((c == UP || c == DOWN) && ui->line_index == ui->line_len)
 		history(c, line, &ui->h_list, ui);
 }

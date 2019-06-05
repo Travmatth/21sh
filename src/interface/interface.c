@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/05 13:12:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 16:01:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,30 +67,36 @@ static void	delete(unsigned long c, char **line, t_interface *interface)
 void		history(unsigned long c
 					, char **line
 					, t_h_list *h_list
-					, t_interface *interface)
+					, t_interface *ui)
 {
+	size_t	len;
+	char	*next;
+
+	// if no history, return
 	if (!h_list->hst)
 		return ;
+	len = 0;
+	clear_all_lines(*line, ui);
+	// load previous history line
 	if (c == UP && h_list->hst)
 	{
-		*line = h_list->hst->content;
+		len = LEN(h_list->hst->content, 0);
+		ft_memcpy(*line, h_list->hst->content, len);
 		if (h_list->hst->prev)
 			h_list->hst = h_list->hst->prev;
 	}
+	// load next history line
 	else if (c == DOWN && h_list->hst)
 	{
 		if (h_list->hst->next)
 			h_list->hst = h_list->hst->next;
-		*line = h_list->hst->next ? h_list->hst->content : h_list->old;
+		next = h_list->hst->content;
+		len = LEN(next, 0);
+		ft_memcpy(*line, next, len);
 	}
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	while (interface->line_index > 0)
-		movement(LEFT, line, interface);
-	tputs(tgetstr("cd", NULL), 1, ft_termprint);
 	ft_printf("%s", *line);
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
-	interface->line_len = ft_strlen(*line);
-	interface->line_index = interface->line_len;
+	ui->line_len = len;
+	ui->line_index = ui->line_len;
 }
 
 /*
@@ -103,6 +109,8 @@ static int	init_interface(t_interface *ui
 							, char tmp[INPUT_LEN]
 							, size_t *len)
 {
+	if (ui->h_list.hst)
+        ui->curr_last_history = ui->h_list.hst->content;
 	*len = 0;
 	ft_bzero(tmp, INPUT_LEN);
 	*line = tmp;
