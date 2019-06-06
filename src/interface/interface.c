@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/05 20:25:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 21:59:59 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,37 +72,34 @@ void		history(unsigned long c
 	size_t	len;
 	char	*next;
 
-	// if no history, return
 	if (!h_list->hst)
 		return ;
 	len = 0;
 	next = NULL;
 	clear_all_lines(*line, ui);
-	// load previous history line
 	if (c == UP && h_list->hst)
 	{
-		// len = LEN(h_list->hst->content, 0);
 		next = h_list->hst->content;
 		if (h_list->hst->prev)
 			h_list->hst = h_list->hst->prev;
 	}
-	// load next history line
 	else if (c == DOWN && h_list->hst)
 	{
 		if (h_list->hst->next)
 			h_list->hst = h_list->hst->next;
 		next = h_list->hst->content;
-		// len = LEN(next, 0);
 	}
 	ui->line_index = 0;
 	len = 0;
 	while (next && next[len])
 	{
-		// if (next[len] == '\n' && !escaped(next, len) && len && next[len - 1] != ';')
-		// {
-		// 	(*line)[ui->line_index++] = ';';
-		// 	write(STDOUT, ";", 1);
-		// }
+		if (next[len] == '\n' && !next[len + 1])
+			break ;
+		if (next[len] == '\n' && !escaped(next, len) && len && next[len - 1] != ';')
+		{
+			(*line)[ui->line_index++] = ';';
+			write(STDOUT, ";", 1);
+		}
 		write(STDOUT, &next[len], 1);
 		if (next[len] == '\n' && next[len + 1])
 			write(STDOUT, "> ", 2);

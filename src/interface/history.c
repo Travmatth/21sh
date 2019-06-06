@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/05 18:02:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 21:59:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,15 @@
 
 void				clear_all_lines(char *line, t_interface *ui)
 {
+	int		i;
+
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	// while there are previous lines, move up
 	while (line_exists(line, ui->line_index, PREV))
 	{
 		tputs(tgetstr("up", NULL), 1, ft_termprint);
+		i = current_column(line, ui->line_index);
+		ui->line_index -= (i ? i + 2 : i);
 	}
-	// when on last line, delete all following and reprint prompt
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("cd", NULL), 1, ft_termprint);
 	tputs(tgetstr("ve", NULL), 1, ft_termprint);
@@ -52,8 +54,6 @@ void				write_to_history(char *line[INPUT_LEN]
 		write(interface->h_list.fd, ":", 1);
 		while (i < interface->line_len)
 		{
-			// if ((*line)[i] == '\n' && i && (*line)[i - 1] != '\\')
-			// 	(*line)[i] = '\\';
 			write(interface->h_list.fd, *line + i, 1);
 			if ((*line)[i] == '\\' || i + 1 == interface->line_len)
 				write(interface->h_list.fd, "\n", 1);
