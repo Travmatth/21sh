@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/05 21:59:59 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 11:18:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-static void	insert(char c, char **line, t_interface *interface)
+void		insert(char c, char **line, t_interface *interface)
 {
 	ft_memmove((void*)(*line + interface->line_index + 1)
 				, (void*)(*line + interface->line_index)
@@ -38,7 +38,7 @@ static void	insert(char c, char **line, t_interface *interface)
 	}
 }
 
-static void	delete(unsigned long c, char **line, t_interface *interface)
+void		delete(unsigned long c, char **line, t_interface *interface)
 {
 	if (c == DEL && line && interface->line_index > 0)
 	{
@@ -139,7 +139,7 @@ int			interface(char **line, t_interface *ui)
 	while (OK(status) && !(next = 0))
 	{
 		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
-		movement(next, line, ui);
+		movement(&next, line, ui);
 		if (next == INTR)
 		{
 			status = NIL;
