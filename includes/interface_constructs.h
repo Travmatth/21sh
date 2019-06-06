@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   interface_constructs.h                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 15:54:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 01:33:17 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,25 @@
 */
 
 # define INTR 0x03
+# define COPY 0x03
 
 /*
 ** Character sent by terminal line discipline in response to ctrl-d
 */
 
 # define EOT 0x04
+
+/*
+** Character sent by terminal line discipline in response to ctrl-v key
+*/
+
+# define PASTE 0x16
+
+/*
+** Character sent by terminal line discipline in response to ctrl-x key
+*/
+
+# define CUT 0x18
 
 /*
 ** Character sent by terminal line discipline in response to DELETE key
@@ -54,6 +67,12 @@
 # define UP 0x415B1B
 
 /*
+** Character sent by terminal line discipline in response to SHIFT_UP key
+*/
+
+# define SHIFT_UP 0x41323B315B1B
+
+/*
 ** Character sent by terminal line discipline in response to CTL_UP key
 */
 
@@ -64,6 +83,12 @@
 */
 
 # define DOWN 0x425B1B
+
+/*
+** Character sent by terminal line discipline in response to SHIFT_DOWN key
+*/
+
+# define SHIFT_DOWN 0x42323B315B1B
 
 /*
 ** Character sent by terminal line discipline in response to CTL_DOWN key
@@ -78,6 +103,12 @@
 # define RIGHT 0x435B1B
 
 /*
+** Character sent by terminal line discipline in response to SHIFT_RIGHT key
+*/
+
+# define SHIFT_RIGHT 0x43323B315B1B
+
+/*
 ** Character sent by terminal line discipline in response to CTL_RIGHT key
 */
 
@@ -88,6 +119,11 @@
 */
 
 # define LEFT 0x445B1B
+/*
+** Character sent by terminal line discipline in response to SHIFT_LEFT key
+*/
+
+# define SHIFT_LEFT 0x44323B315B1B
 
 /*
 ** Character sent by terminal line discipline in response to CTL_LEFT key
@@ -148,7 +184,9 @@ typedef struct				s_h_list
 }							t_h_list;
 
 typedef struct				s_interface
-{
+{	
+	int						ccp_start;
+	int						ccp_end;
 	int						line_row[1000];
 	int						line_len;
 	int						line_index;

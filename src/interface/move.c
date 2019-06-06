@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   move.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/03 17:57:41 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 22:07:26 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,24 +130,27 @@ static void	move_line_down(char **line, t_interface *ui)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 }
 
-void		movement(unsigned long c, char **line, t_interface *interface)
+void		movement(unsigned long *c, char **line, t_interface *ui)
 {
-	if (c == LEFT
-		&& interface->line_index > 0
+	if (*c == LEFT
+		&& ui->line_index > 0
 		&& !ERR(tputs(tgetstr("le", NULL), 1, ft_termprint)))
-		interface->line_index--;
-	else if (c == RIGHT
-		&& (*line)[interface->line_index]
+		ui->line_index--;
+	else if (*c == RIGHT
+		&& (*line)[ui->line_index]
 		&& !ERR(tputs(tgetstr("nd", NULL), 1, ft_termprint)))
-		interface->line_index++;
-	else if (c == CTL_LEFT)
-		move_word_left(line, interface);
-	else if (c == CTL_RIGHT)
-		move_word_right(line, interface);
-	else if (c == CTL_DOWN)
-		move_line_down(line, interface);
-	else if (c == CTL_UP)
-		move_line_up(line, interface);
-	else if ((c == UP || c == DOWN))
-		history(c, line, &interface->h_list, interface);
+		ui->line_index++;
+	else if (*c == CTL_LEFT)
+		move_word_left(line, ui);
+	else if (*c == CTL_RIGHT)
+		move_word_right(line, ui);
+	else if (*c == CTL_DOWN)
+		move_line_down(line, ui);
+	else if (*c == CTL_UP)
+		move_line_up(line, ui);
+	else if ((*c == UP || *c == DOWN))
+		history(*c, line, &ui->h_list, ui);
+	else if (*c == SHIFT_LEFT || *c == SHIFT_RIGHT || *c == SHIFT_UP ||
+		*c == SHIFT_DOWN || *c == (int)'C' || *c == (int)'V' || *c == (int)'X')
+		cut_copy_paste(c, ui, line);
 }

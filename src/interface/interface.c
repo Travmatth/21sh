@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   interface.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/03 16:43:14 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 21:32:52 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-static void	insert(char c, char **line, t_interface *interface)
+void		insert(char c, char **line, t_interface *interface)
 {
 	ft_memmove((void*)(*line + interface->line_index + 1)
 				, (void*)(*line + interface->line_index)
@@ -34,7 +34,7 @@ static void	insert(char c, char **line, t_interface *interface)
 		write(1, &c, 1);
 }
 
-static void	delete(unsigned long c, char **line, t_interface *interface)
+void		delete(unsigned long c, char **line, t_interface *interface)
 {
 	if (c == DEL && line && interface->line_index > 0)
 	{
@@ -64,7 +64,7 @@ void		history(unsigned long c
 					, char **line
 					, t_h_list *h_list
 					, t_interface *interface)
-{
+{	
 	if (!h_list->hst)
 		return ;
 	if (c == UP && h_list->hst)
@@ -81,7 +81,7 @@ void		history(unsigned long c
 	}
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	while (interface->line_index > 0)
-		movement(LEFT, line, interface);
+		movement((unsigned long*)LEFT, line, interface);
 	tputs(tgetstr("cd", NULL), 1, ft_termprint);
 	ft_printf("%s", *line);
 	tputs(tgetstr("ve", NULL), 1, ft_termprint);
@@ -118,7 +118,7 @@ int			interface(char **line, t_interface *ui)
 	while (OK(status) && !(next = 0))
 	{
 		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
-		movement(next, line, ui);
+		movement(&next, line, ui);
 		if (next == INTR)
 		{
 			status = NIL;
