@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cut_copy_paste.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 02:27:37 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/06 11:35:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 static void	copy(t_interface *ui, char *buf, char **line)
 {
+	(void)ui;
+	(void)buf;
+	(void)line;
 	// turn cursor invisible then save cursor at starting position of the
 	// copying area with sc. From the staring index copy the line into the buffer
 	// up to the end index after which you should use cd to clear to the end
@@ -23,6 +26,9 @@ static void	copy(t_interface *ui, char *buf, char **line)
 
 static void	cut(t_interface *ui, char *buf, char **line)
 {
+	(void)ui;
+	(void)buf;
+	(void)line;
 	// same as above except you need to b_zero the differene of the start and
 	// end index in line starting from the start index after copying over to the
 	// buffer
@@ -62,6 +68,7 @@ static void	paste(t_interface *ui, char *buf, char **line)
 
 static void	select_ccp(unsigned long c, t_interface *ui, char *buf, char **line)
 {
+	(void)buf;
 	// first time set start and end index to current subsequent calls should
 	// check for one to be grater than the other and set them accordingly
 	if (c == SHIFT_LEFT)
@@ -84,11 +91,11 @@ void		cut_copy_paste(unsigned long *c, t_interface *ui, char **line)
 {
 	static char	buff[4096];
 	
-	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
-		select_ccp(c, ui, buff, line);
+	if (*c == SHIFT_LEFT || *c == SHIFT_RIGHT || *c == SHIFT_UP || *c == SHIFT_DOWN)
+		select_ccp(*c, ui, buff, line);
 	else if (buff[0] && (*c == COPY || *c == CUT))
 	{
-		cut_copy(ui, buff, line);
+		*c == CUT ? cut(ui, buff, line) : copy(ui, buff, line);
 		*c = '\0';
 	}	
 	else if (buff[0] && *c == PASTE)

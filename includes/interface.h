@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 11:27:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 11:31:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,10 @@ void	movement(unsigned long *c, char **line, t_interface *ui);
 int		next_column(char *line, int index);
 int		current_column(char *line, int index);
 int		line_exists(char *line, int index, int direction);
+
+/*
+** src/interface/cut_copy_paste.c
+*/
+
+void	cut_copy_paste(unsigned long *c, t_interface *ui, char **line);
 #endif

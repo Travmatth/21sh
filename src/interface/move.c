@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 11:25:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 11:29:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,3 +146,4 @@ void		movement(unsigned long *c, char **line, t_interface *ui)
 	else if (*c == SHIFT_LEFT || *c == SHIFT_RIGHT || *c == SHIFT_UP ||
 		*c == SHIFT_DOWN || *c == (int)'C' || *c == (int)'V' || *c == (int)'X')
 		cut_copy_paste(c, ui, line);
+}
