@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/05 16:25:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/05 18:07:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,13 @@ void		history(unsigned long c
 	if (!h_list->hst)
 		return ;
 	len = 0;
+	next = NULL;
 	clear_all_lines(*line, ui);
 	// load previous history line
 	if (c == UP && h_list->hst)
 	{
-		len = LEN(h_list->hst->content, 0);
-		ft_memcpy(*line, h_list->hst->content, len);
+		// len = LEN(h_list->hst->content, 0);
+		next = h_list->hst->content;
 		if (h_list->hst->prev)
 			h_list->hst = h_list->hst->prev;
 	}
@@ -91,12 +92,20 @@ void		history(unsigned long c
 		if (h_list->hst->next)
 			h_list->hst = h_list->hst->next;
 		next = h_list->hst->content;
-		len = LEN(next, 0);
-		ft_memcpy(*line, next, len);
+		// len = LEN(next, 0);
 	}
-	ft_printf("%s", *line);
-	ui->line_len = len;
-	ui->line_index = ui->line_len;
+	ui->line_index = 0;
+	len = 0;
+	while (next && next[len])
+	{
+		if (next[len] == '\n' && !escaped(next, len) && len && next[len - 1] != ';')
+		{
+			(*line)[ui->line_index++] = ';';
+		}
+		(*line)[ui->line_index++] = next[len++];
+	}
+	ui->line_len = ui->line_index;
+	write(STDOUT, *line, ui->line_len);
 }
 
 /*
