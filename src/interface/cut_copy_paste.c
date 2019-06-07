@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 21:40:35 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 00:08:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,27 @@
 
 static void	copy(t_interface *ui, char *buf, char **line)
 {
-	(void)ui;
+	int		i;
+
 	(void)buf;
 	(void)line;
-	// turn cursor invisible then save cursor at starting position of the
-	// copying area with sc. From the staring index copy the line into the buffer
-	// up to the end index after which you should use cd to clear to the end
-	// starting from the start index and then rewrite after turning off standout
-	// mode then return the cursor to the saved position with rc
+	i = 0;
+	// turn cursor invisible
+	//save cursor at starting position of the copying area
+	// From the starting index copy the line into the buffer
+	// up to the end index
+	ui->ccp_start = 0;
+	ui->ccp_end = 0;
+	ui->select = FALSE;
 }
 
 static void	cut(t_interface *ui, char *buf, char **line)
 {
-	(void)ui;
 	(void)buf;
 	(void)line;
+	ui->select = FALSE;
+	ui->ccp_start = 0;
+	ui->ccp_end = 0;
 	// same as above except you need to b_zero the differene of the start and
 	// end index in line starting from the start index after copying over to the
 	// buffer
@@ -44,6 +50,7 @@ static void	paste(t_interface *ui, char *buf, char **line)
 	ft_bzero(buf, ui->ccp_end - ui->ccp_start);
 	ui->ccp_start = 0;
 	ui->ccp_end = 0;
+	ui->select = FALSE;
 
 
 	// the above should work but the below has been slightly modified from the
@@ -66,53 +73,69 @@ static void	paste(t_interface *ui, char *buf, char **line)
 
 }
 
-static void	select_ccp(unsigned long c, t_interface *ui, char **line)
+unsigned long	swap_key(unsigned long c)
 {
-	int				i;
-	int				start;
+	if (c == SHIFT_LEFT)
+		return (LEFT);
+	else if (c == SHIFT_RIGHT)
+		return (RIGHT);
+	else if (c == SHIFT_UP)
+		return (CTL_UP);
+	else if (c == SHIFT_DOWN)
+		return (CTL_DOWN);
+	return (0);
+}
 
-	// first time set start and end index to current subsequent calls should
-	// check for one to be grater than the other and set them accordingly
-	start = ui->line_index;
-	i = move_index(c, *line, ui);
-	if (ERR(i) || i == INVALID)
-		return ;
-	ui->line_index = move_cursor(c, *line, ui, i);
-	if (start == ui->line_index)
-		return ;
-	else if (start > ui->line_index)
-	{
-		ui->ccp_start = ui->line_index;
-		ui->ccp_end = start;
-	}
-	i = -1;
-	ui->ccp_start = start ? start - 1 : start;
-	ui->ccp_end = ui->line_index ? ui->line_index - 1 : ui->line_index;
-	// save current cursor posiiton
+void		write_line(t_interface *ui, char *line)
+{
+	int		i;
+
 	tputs(tgetstr("sc", NULL), 1, ft_termprint);
-	// hide cursor
 	// tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	// clear screen
-	clear_all_lines(*line, ui);
-	// rewrite commands
+	i = -1;
+	clear_all_lines(line, ui);
 	while (++i < ui->line_len)
 	{
-		// if newline, print w prompt normally
-		if ((*line)[i] == '\n')
-			write(STDIN, "\n> ", 3);
+		if (line[i] == '\\' && line[i + 1] == '\n')
+			write(STDIN, "\\\n> ", 4);
 		else
 		{
-			// if inside quoted area, enable highlighting
-			if (i >= ui->ccp_start && i <= ui->ccp_end)
+			if (i >= ui->ccp_start && i < ui->ccp_end)
 				tputs(tgetstr("so", NULL), 1, ft_termprint);
-			// print character
-			write(STDIN, &(*line)[i], 1);
-			// turn off highlighting
+			write(STDIN, &line[i], 1);
 			tputs(tgetstr("se", NULL), 1, ft_termprint);
 		}
 	}
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	// tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	tputs(tgetstr("rc", NULL), 1, ft_termprint);
+}
+
+static void	select_ccp(unsigned long c, t_interface *ui, char *line)
+{
+	int				target;
+	int				original;
+	unsigned long	movement;
+
+	ui->select = TRUE;
+	movement = swap_key(c);
+	original = ui->line_index;
+	target = move_index(movement, line, ui);
+	if (target == INVALID || (!escaped(line, target) && !line[target]))
+		return ;
+	if (target != original)
+		target = move_cursor(movement, line, ui, target);
+	// if start is not recorded, do so
+	ui->ccp_start = ERR(ui->ccp_start) ? original : ui->ccp_start;
+	// if start is less than target, we're selecting forward
+	if (ui->ccp_start <= target)
+		ui->ccp_end = target;
+	// if start is greater than target, we're selecting backward
+	else if (ui->ccp_start > target)
+	{
+		ui->ccp_end = ui->ccp_start;
+		ui->ccp_start = target;
+	}
+	write_line(ui, line);
 }
 
 // if line index is not immediately adjacent to either the start or end index or
@@ -121,13 +144,26 @@ static void	select_ccp(unsigned long c, t_interface *ui, char **line)
 void		cut_copy_paste(unsigned long c, t_interface *ui, char **line)
 {
 	static char	buff[4096];
-	
+
 	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
-		select_ccp(c, ui, line);
-	else if (buff[0] && c == COPY)
+		select_ccp(c, ui, *line);
+	else if (c == COPY)
 		copy(ui, buff, line);
-	else if (buff[0] && c == CUT)
+	else if (c == CUT)
 		cut(ui, buff, line);
 	else if (buff[0] && c == PASTE)
 		paste(ui, buff, line);
+}
+
+int			is_cut_copy_paste(unsigned long c)
+{
+	if ((c == SHIFT_LEFT)
+		|| (c == SHIFT_RIGHT)
+		|| (c == SHIFT_UP)
+		|| (c == SHIFT_DOWN)
+		|| (c == COPY)
+		|| (c == CUT)
+		|| (c == PASTE))
+		return (TRUE);
+	return (FALSE);
 }

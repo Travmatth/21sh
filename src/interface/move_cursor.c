@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:14:11 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 22:16:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 00:11:10 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,6 @@ void	move_word_cursor_right(t_interface *ui, int target)
 	while (diff--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 }
-
-/*
-	i = current_column(*line, ui->line_index);
-	col = i;
-	ui->line_index -= (i ? i + 1 : i);
-*/
 
 void	move_line_cursor_up(char *line, t_interface *ui, int target)
 {

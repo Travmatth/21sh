@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 13:09:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 23:23:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ int		init_shell(t_interface *ui)
 		|| ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint))
 		|| ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
 		return (ERROR);
+	ft_bzero(ui, sizeof(t_interface));
 	ui->ccp_start = ERROR;
 	ui->ccp_end = ERROR;
 	init_history(&ui->h_list);

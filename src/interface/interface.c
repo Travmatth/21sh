@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 18:46:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 23:54:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,11 @@ int			interface(char **line, t_interface *ui)
 	while (OK(status) && !(next = 0))
 	{
 		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
-		if (next == INTR)
+		if (ui->select && !is_cut_copy_paste(next))
+			continue ;
+		else if (OK(status) && is_cut_copy_paste(next))
+			cut_copy_paste(next, ui, line);
+		else if (next == INTR)
 			status = NIL;
 		else if (OK(status) && !ERR((target = move_index(next, *line, ui))))
 			target != INVALID ? move_cursor(next, *line, ui, target) : 0;
