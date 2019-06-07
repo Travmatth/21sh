@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 14:32:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 23:23:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,9 +198,9 @@ typedef struct				s_h_list
 
 typedef struct				s_interface
 {
+	int						select;
 	int						ccp_start;
 	int						ccp_end;
-	int						line_row[1000];
 	int						line_len;
 	int						line_index;
 	struct termios			tty[2];

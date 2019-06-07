@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 21:41:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 22:40:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,5 +78,6 @@ int		line_exists(char *line, int index, int direction);
 ** src/interface/cut_copy_paste.c
 */
 
+int		is_cut_copy_paste(unsigned long c);
 void	cut_copy_paste(unsigned long c, t_interface *ui, char **line);
 #endif
