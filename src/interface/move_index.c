@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:09:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 18:05:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 22:15:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ int		move_line_index_up(char *line, t_interface *ui)
 		return (INVALID);
 	i = current_column(line, cur);
 	col = i;
-	cur -= (i ? i + 1 : i);
+	cur -= i + 1;
+	cur = cur < 0 ? 0 : cur;
 	i = -1;
 	cur -= 1;
 	cur -= current_column(line, cur);

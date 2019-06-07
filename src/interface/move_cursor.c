@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:14:11 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 18:10:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 22:16:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@ void	move_word_cursor_right(t_interface *ui, int target)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 }
 
+/*
+	i = current_column(*line, ui->line_index);
+	col = i;
+	ui->line_index -= (i ? i + 1 : i);
+*/
+
 void	move_line_cursor_up(char *line, t_interface *ui, int target)
 {
 	int		i;
@@ -38,7 +44,8 @@ void	move_line_cursor_up(char *line, t_interface *ui, int target)
 
 	i = ui->line_index;
 	col = current_column(line, i);
-	i -= col ? col + 1 : col;
+	i -= col + 1;
+	i = i < 0 ? 0 : i;
 	if (i)
 		i -= current_column(line, i);
 	offset = line_exists(line, i, PREV) ? 2 : 3;
@@ -63,9 +70,11 @@ void	move_line_cursor_down(char *line, t_interface *ui, int target)
 	offset = current_column(line, i);
 	col = i - offset;
 	col += next_column(line, col);
-	offset = line_exists(line, i, PREV) ? 2 : 3;
+	offset = 2;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("do", NULL), 1, ft_termprint);
+	while (offset--)
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 	while (++col <= target)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 19:10:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 21:40:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,17 +70,21 @@ static void	select_ccp(unsigned long c, t_interface *ui, char **line)
 {
 	int				i;
 	int				start;
-	unsigned long	move;
 
 	// first time set start and end index to current subsequent calls should
 	// check for one to be grater than the other and set them accordingly
 	start = ui->line_index;
-	i = move_index(&move, line, ui);
-	if (ERR(i) || INVALID(i))
+	i = move_index(c, *line, ui);
+	if (ERR(i) || i == INVALID)
 		return ;
 	ui->line_index = move_cursor(c, *line, ui, i);
 	if (start == ui->line_index)
 		return ;
+	else if (start > ui->line_index)
+	{
+		ui->ccp_start = ui->line_index;
+		ui->ccp_end = start;
+	}
 	i = -1;
 	ui->ccp_start = start ? start - 1 : start;
 	ui->ccp_end = ui->line_index ? ui->line_index - 1 : ui->line_index;

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 15:08:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 21:41:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void	delete(unsigned long c, char **line, t_interface *interface);
 */
 
 int		get_cursor_position(int *x, int *y);
-void	cut_copy_paste(unsigned long *c, t_interface *ui, char **line);
 
 /*
 ** src/utils/history.c
@@ -79,5 +78,5 @@ int		line_exists(char *line, int index, int direction);
 ** src/interface/cut_copy_paste.c
 */
 
-void	cut_copy_paste(unsigned long *c, t_interface *ui, char **line);
+void	cut_copy_paste(unsigned long c, t_interface *ui, char **line);
 #endif
