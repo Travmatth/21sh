@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 11:35:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 19:10:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,41 +66,64 @@ static void	paste(t_interface *ui, char *buf, char **line)
 
 }
 
-static void	select_ccp(unsigned long c, t_interface *ui, char *buf, char **line)
+static void	select_ccp(unsigned long c, t_interface *ui, char **line)
 {
-	(void)buf;
+	int				i;
+	int				start;
+	unsigned long	move;
+
 	// first time set start and end index to current subsequent calls should
 	// check for one to be grater than the other and set them accordingly
-	if (c == SHIFT_LEFT)
-		movement((unsigned long*)LEFT, line, ui);
-	else if (c == SHIFT_RIGHT)
-		movement((unsigned long*)RIGHT, line, ui);
-	else if (c == SHIFT_UP)
-		movement((unsigned long*)CTL_UP, line, ui);
-	else if (c == SHIFT_DOWN)
-		movement((unsigned long*)CTL_DOWN, line, ui);
-	//rewrite the lines and starting at the start index turn on standout mode then
-	// when you reach the end index turn it off again and continue writing to
-	// the screen normally
+	start = ui->line_index;
+	i = move_index(&move, line, ui);
+	if (ERR(i) || INVALID(i))
+		return ;
+	ui->line_index = move_cursor(c, *line, ui, i);
+	if (start == ui->line_index)
+		return ;
+	i = -1;
+	ui->ccp_start = start ? start - 1 : start;
+	ui->ccp_end = ui->line_index ? ui->line_index - 1 : ui->line_index;
+	// save current cursor posiiton
+	tputs(tgetstr("sc", NULL), 1, ft_termprint);
+	// hide cursor
+	// tputs(tgetstr("vi", NULL), 1, ft_termprint);
+	// clear screen
+	clear_all_lines(*line, ui);
+	// rewrite commands
+	while (++i < ui->line_len)
+	{
+		// if newline, print w prompt normally
+		if ((*line)[i] == '\n')
+			write(STDIN, "\n> ", 3);
+		else
+		{
+			// if inside quoted area, enable highlighting
+			if (i >= ui->ccp_start && i <= ui->ccp_end)
+				tputs(tgetstr("so", NULL), 1, ft_termprint);
+			// print character
+			write(STDIN, &(*line)[i], 1);
+			// turn off highlighting
+			tputs(tgetstr("se", NULL), 1, ft_termprint);
+		}
+	}
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	tputs(tgetstr("rc", NULL), 1, ft_termprint);
 }
 
 // if line index is not immediately adjacent to either the start or end index or
 // is between the 2 reset start and end and clear the buffer
 
-void		cut_copy_paste(unsigned long *c, t_interface *ui, char **line)
+void		cut_copy_paste(unsigned long c, t_interface *ui, char **line)
 {
 	static char	buff[4096];
 	
-	if (*c == SHIFT_LEFT || *c == SHIFT_RIGHT || *c == SHIFT_UP || *c == SHIFT_DOWN)
-		select_ccp(*c, ui, buff, line);
-	else if (buff[0] && (*c == COPY || *c == CUT))
-	{
-		*c == CUT ? cut(ui, buff, line) : copy(ui, buff, line);
-		*c = '\0';
-	}	
-	else if (buff[0] && *c == PASTE)
-	{
+	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
+		select_ccp(c, ui, line);
+	else if (buff[0] && c == COPY)
+		copy(ui, buff, line);
+	else if (buff[0] && c == CUT)
+		cut(ui, buff, line);
+	else if (buff[0] && c == PASTE)
 		paste(ui, buff, line);
-		*c = '\0';
-	}	
 }

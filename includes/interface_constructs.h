@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 11:19:47 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 14:32:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@
 # ifndef LIBFT_H
 #  include "../libftprintf/srcs/includes/ft_printf.h"
 # endif
+
+/*
+** If movement would result in invalid index position
+*/
+
+# define INVALID -2
 
 /*
 ** Character sent by terminal line discipline in response to RETURN key

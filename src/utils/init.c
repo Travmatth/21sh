@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/03 12:49:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 13:09:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int		init_environ(int argc, char **argv, char **environ)
 ** cursor position to the top of the screen
 */
 
-int		init_shell(t_interface *interface)
+int		init_shell(t_interface *ui)
 {
 	int		fd;
 	char	*tty_id;
@@ -108,8 +108,10 @@ int		init_shell(t_interface *interface)
 		|| ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint))
 		|| ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
 		return (ERROR);
-	init_history(&interface->h_list);
-	ioctl(STDERR_FILENO, TIOCGWINSZ, interface->ws);
+	ui->ccp_start = ERROR;
+	ui->ccp_end = ERROR;
+	init_history(&ui->h_list);
+	ioctl(STDERR_FILENO, TIOCGWINSZ, ui->ws);
 	return (SUCCESS);
 }
 

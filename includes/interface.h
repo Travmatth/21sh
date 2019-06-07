@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 11:31:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 15:08:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,24 @@ int		push_history(t_history **history, char *content);
 void	write_to_history(char **line, t_interface *interface);
 
 /*
-** src/interface/move.c
+** src/interface/move_index.c
 */
 
-void	movement(unsigned long *c, char **line, t_interface *ui);
+int		move_word_index_left(char *line, t_interface *ui);
+int		move_word_index_right(char *line, t_interface *ui);
+int		move_line_index_up(char *line, t_interface *ui);
+int		move_line_index_down(char *line, t_interface *ui);
+int		move_index(unsigned long c, char *line, t_interface *ui);
+
+/*
+** src/interface/move_utils.c
+*/
+
+void	move_word_cursor_left(t_interface *ui, int target);
+void	move_word_cursor_right(t_interface *ui, int target);
+void	move_line_cursor_up(char *line, t_interface *ui, int target);
+void	move_line_cursor_down(char *line, t_interface *ui, int target);
+int		move_cursor(unsigned long c, char *line, t_interface *ui, int target);
 
 /*
 ** src/interface/move_utils.c

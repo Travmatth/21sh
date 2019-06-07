@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/05 21:59:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 13:43:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void				clear_all_lines(char *line, t_interface *ui)
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("cd", NULL), 1, ft_termprint);
 	tputs(tgetstr("ve", NULL), 1, ft_termprint);
-	ft_bzero(line, ui->line_len);
 	write(STDOUT, "$> ", 3);
 }
 

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 19:31:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 11:29:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 14:24:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,6 @@ static void	move_word_right(char **line, t_interface *ui)
 	}
 }
 
-/*
-** If we are not able to move to a previous line, exit
-** If we are able to, move to the beginning of the current line,
-** up one row, then right until we reach the current row or a newline
-*/
-
 static void	move_line_up(char **line, t_interface *ui)
 {
 	int		i;
@@ -89,12 +83,6 @@ static void	move_line_up(char **line, t_interface *ui)
 		ui->line_index += 1;
 	}
 }
-
-/*
-** If we are not able to move down a line, exit
-** If we are able to, move to the beginning of the current line,
-** down one row, then right until we reach the current row or a newline
-*/
 
 static void	move_line_down(char **line, t_interface *ui)
 {
@@ -146,4 +134,20 @@ void		movement(unsigned long *c, char **line, t_interface *ui)
 	else if (*c == SHIFT_LEFT || *c == SHIFT_RIGHT || *c == SHIFT_UP ||
 		*c == SHIFT_DOWN || *c == (int)'C' || *c == (int)'V' || *c == (int)'X')
 		cut_copy_paste(c, ui, line);
+}
+
+void		move_index(unsigned long *c, char **line, t_interface *ui)
+{
+	if (*c == LEFT && ui->line_index > 0)
+		ui->line_index--;
+	else if (*c == RIGHT && (*line)[ui->line_index])
+		ui->line_index++;
+	else if (*c == CTL_LEFT)
+		move_word_index_left(line, ui);
+	else if (*c == CTL_RIGHT)
+		move_word_index_right(line, ui);
+	else if (*c == CTL_DOWN)
+		move_line_index_down(line, ui);
+	else if (*c == CTL_UP)
+		move_line_index_up(line, ui);
 }

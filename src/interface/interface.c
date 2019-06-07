@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 11:18:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/06 18:46:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void		history(unsigned long c
 	len = 0;
 	next = NULL;
 	clear_all_lines(*line, ui);
+	ft_bzero(line, ui->line_len);
 	if (c == UP && h_list->hst)
 	{
 		next = h_list->hst->content;
@@ -134,20 +135,20 @@ int			interface(char **line, t_interface *ui)
 	unsigned long		next;
 	int					status;
 	size_t				len;
+	int					target;
 
 	status = init_interface(ui, line, tmp, &len);
 	while (OK(status) && !(next = 0))
 	{
 		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
-		movement(&next, line, ui);
 		if (next == INTR)
-		{
 			status = NIL;
-			break ;
-		}
+		else if (OK(status) && !ERR((target = move_index(next, *line, ui))))
+			target != INVALID ? move_cursor(next, *line, ui, target) : 0;
 		else if (OK(status) && (next == RETURN && !escaped(*line, ui->line_len)))
 		{
-			status = write(STDOUT, "\n", 1);
+			// when enter pressed & index != len, need to move past comand
+			status = ERR(write(STDOUT, "\n", 1)) ? ERROR : status;
 			write_to_history(line, ui);
 			status = OK(status) && push_history(&ui->h_list.hst, *line);
 			*line = ft_strnew(ui->line_len);
