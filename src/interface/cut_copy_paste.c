@@ -6,71 +6,67 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/07 15:22:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 16:37:49 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-static void	copy(t_interface *ui, char *buf, char **line)
+static void	copy(t_interface *ui, char *buf, char *line)
 {
 	int		i;
 
-	(void)buf;
-	(void)line;
+	ui->select = FALSE;
+	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
+		return ;
 	i = 0;
-	// turn cursor invisible
-	//save cursor at starting position of the copying area
-	// From the starting index copy the line into the buffer
-	// up to the end index
+	while (buf[i] && i < 4096)
+		buf[i++] = '\0';
+	i = ui->ccp_end - ui->ccp_start;
+	ft_memcpy(buf, &(line[ui->ccp_start]), i);
 	init_select(ui);
-	ui->select = FALSE;
-	write_line(ui, *line);
+	write_line(ui, line);
 }
 
-static void	cut(t_interface *ui, char *buf, char **line)
+static void	cut(t_interface *ui, char *buf, char *line)
 {
-	(void)buf;
-	(void)line;
+	int		i;
+
 	ui->select = FALSE;
+	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
+		return ;
+	i = 0;
+	while (buf[i] && i < 4096)
+		buf[i++] = '\0';
+	i = ui->line_len - ui->ccp_end;
+	ft_memcpy(buf, &(line[ui->ccp_start]), ui->ccp_end - ui->ccp_start);
+	i = ui->line_len - ui->ccp_end;
+	i = i ? i + 1 : i;
+	ft_memmove(&(line[ui->ccp_start]), &(line[ui->ccp_end]), i);
+	i = ui->ccp_end;
+	while (buf[i] && i < 4096)
+		buf[i++] = '\0';
 	init_select(ui);
-	// same as above except you need to b_zero the differene of the start and
-	// end index in line starting from the start index after copying over to the
-	// buffer
-	write_line(ui, *line);
+	write_line(ui, line);
 }
 
-static void	paste(t_interface *ui, char *buf, char **line)
+static void	paste(t_interface *ui, char *buf, char *line)
 {
 	int i;
 
+	if (!buf[0])
+		return ;
 	i = 0;
-	while (buf[i])
-		insert(buf[i], line, ui);
-	ft_bzero(buf, ui->ccp_end - ui->ccp_start);
+	while (buf[i] && i < 4096)
+		i += 1;
+	ft_memmove(&(line[ui->line_index + i]), &(line[ui->line_index]), i);
+	ft_memcpy(&(line[ui->line_index]), buf, i);
+	i = 0;
+	while (buf[i] && i < 4096)
+		buf[i] = '\0';
 	init_select(ui);
 	ui->select = FALSE;
-	write_line(ui, *line);
-
-
-	// the above should work but the below has been slightly modified from the
-	// normal insert and would allow with a few more tweaks the ability to write
-	// the whole buf at once
-	
-	// ft_memmove((void*)(*line + ui->line_index + ui->ccp_end - ui->ccp_start)
-	// 			, (void*)(*line + ui->ccp_start)
-	// 			, ui->ccp_end - ui->ccp_start); // should be the same as calling strlen of buf
-	// // (*line)[ui->line_index] = c;
-	// ui->line_len += ui->ccp_start - ui->ccp_end;
-	// ui->line_index += ui->ccp_start - ui->ccp_end;
-	// tputs(tgetstr("sc", NULL), 1, ft_termprint);
-	// tputs(tgetstr("cd", NULL), 1, ft_termprint);
-	// tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	// ft_printf("%s\n", *line + ui->line_index - 1);
-	// tputs(tgetstr("rc", NULL), 1, ft_termprint);
-	// tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	// tputs(tgetstr("ve", NULL), 1, ft_termprint);
-
+	write_line(ui, line);
 }
 
 unsigned long	swap_key(unsigned long c)
@@ -142,12 +138,12 @@ void		init_select(t_interface *ui)
 	ui->ccp_orig = ERROR;
 }
 
-void		cut_copy_paste(unsigned long c, t_interface *ui, char **line)
+void		cut_copy_paste(unsigned long c, t_interface *ui, char *line)
 {
 	static char	buff[4096];
 
 	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
-		select_ccp(c, ui, *line);
+		select_ccp(c, ui, line);
 	else if (c == COPY)
 		copy(ui, buff, line);
 	else if (c == CUT)
