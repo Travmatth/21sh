@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/06 13:43:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 13:05:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,16 @@
 void				clear_all_lines(char *line, t_interface *ui)
 {
 	int		i;
+	int		col;
 
+	i = ui->line_index;
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	while (line_exists(line, ui->line_index, PREV))
+	while (line_exists(line, i, PREV))
 	{
 		tputs(tgetstr("up", NULL), 1, ft_termprint);
-		i = current_column(line, ui->line_index);
-		ui->line_index -= (i ? i + 2 : i);
+		col = current_column(line, i);
+		i -= col + 1;
+		i = i < 0 ? 0 : i;
 	}
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("cd", NULL), 1, ft_termprint);

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 23:23:12 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 14:50:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,7 @@ typedef struct				s_interface
 	int						select;
 	int						ccp_start;
 	int						ccp_end;
+	int						ccp_orig;
 	int						line_len;
 	int						line_index;
 	struct termios			tty[2];
