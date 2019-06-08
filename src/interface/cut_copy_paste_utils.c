@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 22:35:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 13:29:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,20 @@ void		init_select(t_interface *ui)
 	ui->ccp_start = ERROR;
 	ui->ccp_end = ERROR;
 	ui->ccp_orig = ERROR;
+}
+
+int		same_line(char *line, int current, int target, int step)
+{
+	while (TRUE)
+	{
+		if (current == target && line[current] == '\n' && step > 0)
+			return (TRUE);
+		else if (current == target && line[current] != '\n')
+			return (TRUE);
+		else if (line[current] == '\n')
+			return (FALSE);
+		current += step;
+	}
 }
 
 void		set_cursor(t_interface *ui, char *line, int position)

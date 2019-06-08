@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 12:50:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 21:38:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 13:13:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,4 @@ int		get_cursor_position(int *x, int *y)
 	status = OK(status) && OK(ft_safeatoi(++row, x)) ? status : ERROR;
 	status = OK(status) && OK(ft_safeatoi(++col, y)) ? status : ERROR;
 	return (status);
-}
-
-int		same_line(char *line, int current, int target, int step)
-{
-	while (TRUE)
-	{
-		if (current == target)
-			return (TRUE);
-		else if (line[current] == '\n')
-			return (FALSE);
-		current += step;
-	}
 }

@@ -6,62 +6,44 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 22:38:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 13:45:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void	insert(char c, char **line, t_interface *interface)
+void	insert(char c, char *line, t_interface *ui)
 {
-	ft_memmove((void*)(*line + interface->line_index + 1)
-				, (void*)(*line + interface->line_index)
-				, INPUT_LEN - interface->line_index - 1);
-	(*line)[interface->line_index] = c;
-	interface->line_len++;
-	interface->line_index++;
-	if (interface->line_index != interface->line_len)
-	{
-		tputs(tgetstr("sc", NULL), 1, ft_termprint);
-		tputs(tgetstr("cd", NULL), 1, ft_termprint);
-		tputs(tgetstr("vi", NULL), 1, ft_termprint);
-		ft_printf("%s\n", *line + interface->line_index - 1);
-		tputs(tgetstr("rc", NULL), 1, ft_termprint);
-		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-		tputs(tgetstr("ve", NULL), 1, ft_termprint);
-	}
-	else
-	{
-		write(STDIN, &c, 1);
-		if (c == '\n')
-			write(STDOUT, "> ", 2);
-	}
+	int		next;
+
+	ft_memmove((void*)(line + ui->line_index + 1)
+				, (void*)(line + ui->line_index)
+				, INPUT_LEN - ui->line_index - 1);
+	line[ui->line_index] = c;
+	ui->line_len += 1;
+	write_line(ui, line);
+	next = ui->line_index + 1;
+	set_cursor(ui, line, next);
 }
 
-void	delete(unsigned long c, char **line, t_interface *interface)
+void	delete(unsigned long c, char *line, t_interface *ui)
 {
-	if (c == DEL && line && interface->line_index > 0)
-	{
-		ft_memmove((void*)(*line + interface->line_index - 1), (void*)(*line +
-		interface->line_index), INPUT_LEN - interface->line_index - 1);
-		(*line)[interface->line_len] = '\0';
-		interface->line_index--;
-		interface->line_len--;
-		tputs(tgetstr("le", NULL), 1, ft_termprint);
-		ft_printf("%s%s%s%s%s%s", tgetstr("sc", NULL), tgetstr("vi", NULL),
-		tgetstr("cd", NULL), *line + interface->line_index,
-		tgetstr("rc", NULL), tgetstr("ve", NULL));
-	}
-	else if (c == DEL2 && line && interface->line_index != interface->line_len)
-	{
-		ft_memmove((void*)(*line + interface->line_index), (void*)(*line +
-		interface->line_index + 1), INPUT_LEN - interface->line_index - 1);
-		(*line)[interface->line_len] = '\0';
-		interface->line_len--;
-		ft_printf("%s%s%s%s%s%s", tgetstr("sc", NULL), tgetstr("vi", NULL),
-		tgetstr("cd", NULL), *line + interface->line_index,
-		tgetstr("rc", NULL), tgetstr("ve", NULL));
-	}
+	int		next;
+	int		is_newline;
+
+	if ((c != DEL && c != DEL2) || ui->line_index <= 0)
+		return ;
+	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
+	next = ui->line_index - (is_newline ? 2 : 1);
+	set_cursor(ui, line, next);
+	ft_memmove((void*)(line + next)
+		, (void*)(line + ui->line_index)
+		, INPUT_LEN - next);
+	ui->line_len -= is_newline ? 2 : 1;
+	next = ui->line_len;
+	while (line[next])
+		line[next++] = '\0';
+	write_line(ui, line);
 }
 
 int		init_interface(t_interface *ui
@@ -123,9 +105,9 @@ int		interface(char **line, t_interface *ui)
 			&& ((status = accept(line, ui, tmp, len))))
 			break ;
 		else if (OK(status) && (next == DEL || next == DEL2))
-			delete(next, line, ui);
+			delete(next, *line, ui);
 		else if (OK(status) && (next == '\n' || PRINTABLE_CHAR(next)))
-			insert((char)next, line, ui);
+			insert((char)next, *line, ui);
 	}
 	return (ERR(restore_terminal(&ui->tty[1])) ? ERROR : status);
 }
