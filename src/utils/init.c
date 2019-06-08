@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 14:52:32 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 14:03:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ int		init_shell(t_interface *ui)
 	ft_bzero(ui, sizeof(t_interface));
 	init_select(ui);
 	init_history(&ui->h_list);
-	ioctl(STDERR_FILENO, TIOCGWINSZ, ui->ws);
+	errno = 0;
+	ioctl(STDIN, TIOCGWINSZ, &ui->ws);
 	return (SUCCESS);
 }
 
