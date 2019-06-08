@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:14:11 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 00:11:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 17:54:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,17 +75,17 @@ void	move_line_cursor_down(char *line, t_interface *ui, int target)
 
 int		move_cursor(unsigned long c, char *line, t_interface *ui, int target)
 {
-	if (c == LEFT)
+	if (c == LEFT || c == SHIFT_LEFT)
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
-	else if (c == RIGHT)
+	else if (c == RIGHT || c == SHIFT_RIGHT)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 	else if (c == CTL_LEFT)
 		move_word_cursor_left(ui, target);
 	else if (c == CTL_RIGHT)
 		move_word_cursor_right(ui, target);
-	else if (c == CTL_DOWN)
+	else if (c == CTL_DOWN || c == SHIFT_DOWN)
 		move_line_cursor_down(line, ui, target);
-	else if (c == CTL_UP)
+	else if (c == CTL_UP || c == SHIFT_UP)
 		move_line_cursor_up(line, ui, target);
 	ui->line_index = target;
 	return (target);

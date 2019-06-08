@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:09:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 22:15:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 17:54:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,22 +100,23 @@ int		move_index(unsigned long c, char *line, t_interface *ui)
 	i = ERROR;
 	if (line)
 	{
-		if (c == LEFT && (!ui->line_index || line[ui->line_index - 1] == '\n'))
+		if ((c == LEFT || c == SHIFT_LEFT)
+			&& (!ui->line_index || line[ui->line_index - 1] == '\n'))
 			i = INVALID;
-		else if (c == LEFT)
+		else if (c == LEFT || c == SHIFT_LEFT)
 			i = ui->line_index - 1;
-		else if (c == RIGHT &&
+		else if ((c == RIGHT || c == SHIFT_RIGHT) &&
 			(!line[ui->line_index] || line[ui->line_index] == '\n'))
 			i = INVALID;
-		else if (c == RIGHT)
+		else if (c == RIGHT || c == SHIFT_RIGHT)
 			i = ui->line_index + 1;
 		else if (c == CTL_LEFT)
 			i = move_word_index_left(line, ui);
 		else if (c == CTL_RIGHT)
 			i = move_word_index_right(line, ui);
-		else if (c == CTL_DOWN)
+		else if (c == CTL_DOWN || c == SHIFT_DOWN)
 			i = move_line_index_down(line, ui);
-		else if (c == CTL_UP)
+		else if (c == CTL_UP || c == SHIFT_UP)
 			i = move_line_index_up(line, ui);
 	}
 	return (i);
