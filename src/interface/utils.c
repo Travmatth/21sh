@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 12:50:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 19:18:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 21:38:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ int		same_line(char *line, int current, int target, int step)
 {
 	while (TRUE)
 	{
-		if (line[current] == '\n')
-			return (FALSE);
-		else if (current == target)
+		if (current == target)
 			return (TRUE);
+		else if (line[current] == '\n')
+			return (FALSE);
 		current += step;
 	}
 }

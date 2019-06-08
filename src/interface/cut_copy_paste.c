@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/07 19:31:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:38:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void	cut(t_interface *ui, char *buf, char *line)
 	ui->select = FALSE;
 	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
 		return ;
-	set_cursor(ui, line);
+	set_cursor(ui, line, ui->ccp_start);
 	i = 0;
 	while (buf[i] && i < 4096)
 		buf[i++] = '\0';
@@ -91,7 +91,7 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 	write_line(ui, line);
 }
 
-void		cut_copy_paste(unsigned long c, t_interface *ui, char *line)
+int			modify_cli(unsigned long c, t_interface *ui, char *line)
 {
 	static char	buff[4096];
 
@@ -99,8 +99,19 @@ void		cut_copy_paste(unsigned long c, t_interface *ui, char *line)
 		select_ccp(c, ui, line);
 	else if (c == COPY)
 		copy(ui, buff, line);
-	else if (c == CUT)
+	else if (ui->select && c == CUT)
 		cut(ui, buff, line);
 	else if (buff[0] && c == PASTE)
 		paste(ui, buff, line);
+	else if (!ui->select
+		&& (c == UP || c == DOWN)
+		&& ui->line_index == ui->line_len)
+		history(c, line, &ui->h_list, ui);
+	else if (!ui->select && c == HOME)
+		set_cursor(ui, line, 0);
+	else if (!ui->select && c == END)
+		set_cursor(ui, line, ui->line_len);
+	else if (!ui->select)
+		return (NIL);
+	return (SUCCESS);
 }

@@ -6,12 +6,12 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/03 13:33:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:24:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXECUTION_NODE_H
-# define EXECUTION_NODE_H
+#ifndef EXECUTION_CONSTRUCTS_H
+# define EXECUTION_CONSTRUCTS_H
 
 # define NEW_FILE_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 # define NEGATE(x, y) (x ? !y : y)

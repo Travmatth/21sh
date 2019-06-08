@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/07 13:05:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:17:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void				clear_all_lines(char *line, t_interface *ui)
+void	clear_all_lines(char *line, t_interface *ui)
 {
 	int		i;
 	int		col;
@@ -32,19 +32,7 @@ void				clear_all_lines(char *line, t_interface *ui)
 	write(STDOUT, "$> ", 3);
 }
 
-static t_history	*init_h_node(char *content)
-{
-	t_history	*new;
-
-	if (!(new = (t_history*)ft_memalloc(sizeof(t_history))))
-		return (NULL);
-	new->content = ft_strdup(content);
-	new->next = NULL;
-	new->prev = NULL;
-	return (new);
-}
-
-void				write_to_history(char *line[INPUT_LEN]
+void	write_to_history(char *line[INPUT_LEN]
 									, t_interface *interface)
 {
 	int	i;
@@ -64,7 +52,7 @@ void				write_to_history(char *line[INPUT_LEN]
 	}
 }
 
-int					push_history(t_history **history, char *content)
+int		push_history(t_history **history, char *content)
 {
 	t_history	*new;
 
@@ -82,31 +70,54 @@ int					push_history(t_history **history, char *content)
 	return (SUCCESS);
 }
 
-void				init_history(t_h_list *h_list)
+void	print_history(t_interface *ui, char *line, char *next)
 {
-	int		i;
-	char	buf[2];
-	char	line[INPUT_LEN];
+	size_t	len;
 
-	ft_bzero(line, INPUT_LEN);
-	if ((h_list->fd = open("21sh_history", O_RDWR | O_CREAT | O_APPEND
-					, S_IRWXU)) > 0)
-		while (1)
+	len = 0;
+	while (next && next[len])
+	{
+		if (next[len] == '\n' && !next[len + 1])
+			break ;
+		if (next[len] == '\n'
+			&& !escaped(next, len) && len
+			&& next[len - 1] != ';')
 		{
-			i = 0;
-			ft_bzero(buf, 1);
-			while (i < INPUT_LEN && read(h_list->fd, buf, 1))
-			{
-				buf[1] = '\0';
-				if (buf[0] == ':' && (line[i] || (i > 0 && line[i - 1])))
-					break ;
-				i > 0 && line[i - 1] == '\\' && buf[0] == '\n' ? i-- : 0;
-				if (buf[0] != ':')
-					line[i++] = buf[0];
-				ft_bzero(buf, 1);
-			}
-			if ((push_history(&h_list->hst, line)) == 0)
-				break ;
-			ft_bzero(line, i);
+			line[ui->line_index++] = ';';
+			write(STDOUT, ";", 1);
 		}
+		write(STDOUT, &next[len], 1);
+		if (next[len] == '\n' && next[len + 1])
+			write(STDOUT, "> ", 2);
+		line[ui->line_index++] = next[len++];
+	}
+}
+
+void	history(unsigned long c
+					, char *line
+					, t_h_list *h_list
+					, t_interface *ui)
+{
+	char	*next;
+
+	if (!h_list->hst)
+		return ;
+	next = NULL;
+	clear_all_lines(line, ui);
+	ft_bzero(line, ui->line_len);
+	if (c == UP && h_list->hst)
+	{
+		next = h_list->hst->content;
+		if (h_list->hst->prev)
+			h_list->hst = h_list->hst->prev;
+	}
+	else if (c == DOWN && h_list->hst)
+	{
+		if (h_list->hst->next)
+			h_list->hst = h_list->hst->next;
+		next = h_list->hst->content;
+	}
+	ui->line_index = 0;
+	print_history(ui, line, next);
+	ui->line_len = ui->line_index;
 }

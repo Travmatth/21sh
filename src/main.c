@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/06 18:10:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:40:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int		event_loop(t_interface *ui, char *leaks)
 		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
 		if (OK(status) && OK(interface(&input, ui)))
 		{
-			if (IS_A("exit", input))
+			if (!ft_strncmp("exit", input, 4))
 				end = TRUE;
 			else
 				status = parse_execute_input(input);

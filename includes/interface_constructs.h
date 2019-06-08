@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 14:50:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/07 22:32:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,10 @@
 */
 
 # define CURSOR_POS_REQ "\033[6n"
+
+# define IS_END(next, line, ui) (next == RETURN && !escaped(*line, ui->line_len)
+
+# define ACCEPT_LINE(s, next, line, ui) (OK(s) && IS_END(next, line, ui)))
 
 enum						e_line_exists
 {
