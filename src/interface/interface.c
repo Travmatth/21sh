@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 15:39:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 17:10:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@ void	insert(char c, char *line, t_interface *ui)
 	cur = current_column(line, ui->line_index);
 	rest = next_column(line, ui->line_index);
 	if (offset + cur + rest >= ui->ws.ws_col)
+	{
+		write(STDIN, "\a", 1);
 		return ;
+	}
 	ft_memmove((void*)(line + ui->line_index + 1)
 				, (void*)(line + ui->line_index)
 				, INPUT_LEN - ui->line_index - 1);
