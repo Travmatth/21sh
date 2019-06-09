@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 22:01:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 22:19:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ void	insert(char c, char *line, t_interface *ui)
 {
 	int		next;
 
-	if (violates_line_len(1, line, ui))
+	if (violates_line_len(1, line, ui)
+		|| (c == '\n' && ui->line_index != ui->line_len))
 	{
 		write(STDOUT, "\a", 1);
 		return ;
