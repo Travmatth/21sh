@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/08 17:04:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 18:23:24 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	copy(t_interface *ui, char *buf, char *line)
 	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
 		return ;
 	i = 0;
-	while (buf[i] && i < 4096)
+	while (buf[i] && i < INPUT_LEN)
 		buf[i++] = '\0';
 	i = ui->ccp_end - ui->ccp_start;
 	ft_memcpy(buf, &(line[ui->ccp_start]), i);
@@ -40,7 +40,7 @@ static void	cut(t_interface *ui, char *buf, char *line)
 		return ;
 	set_cursor(ui, line, ui->ccp_start);
 	i = 0;
-	while (buf[i] && i < 4096)
+	while (buf[i] && i < INPUT_LEN)
 		buf[i++] = '\0';
 	cut_len = ui->ccp_end - ui->ccp_start;
 	ft_memcpy(buf, &(line[ui->ccp_start]), cut_len);
@@ -48,7 +48,7 @@ static void	cut(t_interface *ui, char *buf, char *line)
 	ft_memmove(&(line[ui->ccp_start]), &(line[ui->ccp_end]), i);
 	ui->line_len -= cut_len;
 	i = ui->line_len;
-	while (line[i] && i < 4096)
+	while ((line[i] || line[i + 1]) && i < INPUT_LEN - 1)
 		line[i++] = '\0';
 	init_select(ui);
 	write_line(ui, line);
@@ -56,16 +56,18 @@ static void	cut(t_interface *ui, char *buf, char *line)
 
 static void	paste(t_interface *ui, char *buf, char *line)
 {
-	int i;
+	int 	i;
+	int		rest;
 
 	ui->select = FALSE;
 	write(STDOUT, STEADY_CURSOR, 5);
 	if (!buf[0])
 		return ;
 	i = 0;
-	while (buf[i] && i < 4096)
+	while (buf[i] && i < INPUT_LEN)
 		i += 1;
-	ft_memmove(&(line[ui->line_index + i]), &(line[ui->line_index]), i);
+	rest = ui->line_len - ui->line_index;
+	ft_memmove(&(line[ui->line_index + i]), &(line[ui->line_index]), rest);
 	ft_memcpy(&(line[ui->line_index]), buf, i);
 	ui->line_len += i;
 	while (i >= 0)
@@ -98,7 +100,7 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 
 int			modify_cli(unsigned long c, t_interface *ui, char *line)
 {
-	static char	buff[4096];
+	static char	buff[INPUT_LEN];
 
 	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
 		select_ccp(c, ui, line);
