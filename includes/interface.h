@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 20:31:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 10:36:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,14 @@
 ** src/interface/interface.c
 */
 
-int			interface(char **line, t_interface *ui);
-void		insert(char c, char *line, t_interface *ui);
-void		delete(unsigned long c, char *line, t_interface *ui);
+int			interface(char **str, char **tmp, t_interface *ui);
 
 /*
 ** src/interface/utils.c
 */
 
-int			accept_line(char *line, int i);
+int			init_accept(char **line, t_interface *ui, char *tmp, size_t *i);
+int			accept_line(char **str);
 
 /*
 ** src/utils/history.c

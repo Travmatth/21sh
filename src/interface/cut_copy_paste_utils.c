@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 18:49:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 09:31:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,8 @@ void	write_line(t_interface *ui, char *line)
 	clear_all_lines(line, ui);
 	while (++i < ui->line_len)
 	{
-		if (line[i] == '\\' && line[i + 1] == '\n')
-		{
-			write(STDIN, "\\\n> ", 4);
-			i += 1;
-		}
+		if (line[i] == '\n')
+			write(STDIN, "\n> ", 3);
 		else
 		{
 			if (ui->select && i >= ui->ccp_start && i < ui->ccp_end && line[i])

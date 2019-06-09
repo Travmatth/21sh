@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 22:40:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 07:59:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,17 @@ int		event_loop(t_interface *ui, char *leaks)
 	char		*input;
 	int			status;
 	int			end;
+	char		tmp[INPUT_LEN];
+	char		*buf;
 
 	end = FALSE;
+	buf = (char*)tmp;
 	while (!end && !ERR(status))
 	{
 		input = NULL;
 		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
 		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
-		if (OK(status) && OK(interface(&input, ui)))
+		if (OK(status) && OK(interface(&input, &buf, ui)))
 		{
 			if (!ft_strncmp("exit", input, 4))
 				end = TRUE;
@@ -73,7 +76,7 @@ int		main(int argc, char **argv, char **environ)
 	if (ERR(init_parser())
 		|| ERR(init_environ(argc, argv, environ))
 		|| ERR(init_shell(&ui)))
-		return (1);
+		return (ERROR_CHILD_EXIT);
 	leaks = get_env_var("SHELL_LEAKS");
 	status = event_loop(&ui, leaks);
 	free_prods();

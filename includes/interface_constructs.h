@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 22:03:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 07:24:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,4 +221,15 @@ typedef struct				s_interface
 	struct winsize			ws;
 	t_h_list				h_list;
 }							t_interface;
+
+// typedef struct s_uiline		t_uiline;
+
+// struct						s_uiline
+// {
+// 	t_uiline				*prev;
+// 	t_uiline				*next;
+// 	int						start;
+// 	int						end;
+// };
+
 #endif
