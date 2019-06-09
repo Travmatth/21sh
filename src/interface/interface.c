@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 22:19:42 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 22:31:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int		accept(char **line, t_interface *ui, char *tmp, size_t len)
 	int		ignore;
 	int		i;
 
-	set_cursor(ui, *line, ui->line_len);
+	set_cursor(ui, tmp, ui->line_len);
 	write(STDOUT, "\n", 1);
 	write_to_history(tmp, ui);
 	if (ERR(push_history(&ui->h_list.hst, tmp))
