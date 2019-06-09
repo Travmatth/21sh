@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 13:29:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 18:49:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void		write_line(t_interface *ui, char *line)
+void	write_line(t_interface *ui, char *line)
 {
 	int		i;
 
@@ -39,7 +39,7 @@ void		write_line(t_interface *ui, char *line)
 	tputs(tgetstr("rc", NULL), 1, ft_termprint);
 }
 
-void		init_select(t_interface *ui)
+void	init_select(t_interface *ui)
 {
 	ui->ccp_start = ERROR;
 	ui->ccp_end = ERROR;
@@ -60,7 +60,7 @@ int		same_line(char *line, int current, int target, int step)
 	}
 }
 
-void		set_cursor(t_interface *ui, char *line, int position)
+void	set_cursor(t_interface *ui, char *line, int position)
 {
 	int		step;
 	int		next;
@@ -81,4 +81,16 @@ void		set_cursor(t_interface *ui, char *line, int position)
 		ui->line_index += step;
 		tputs(tgetstr(move, NULL), 1, ft_termprint);
 	}
+}
+
+int		violates_line_len(int insert, char *line, t_interface *ui)
+{
+	int		offset;
+	int		cur;
+	int		rest;
+
+	offset = line_exists(line, ui->line_index, PREV) ? 2 : 3;
+	cur = current_column(line, ui->line_index);
+	rest = next_column(line, ui->line_index);
+	return (insert + offset + cur + rest > ui->ws.ws_col ? TRUE : FALSE);
 }

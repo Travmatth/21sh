@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 17:07:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 20:19:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,9 +184,7 @@
 
 # define STEADY_CURSOR "\033[2 q"
 
-# define IS_END(next, line, ui) (next == RETURN && !escaped(*line, ui->line_len)
-
-# define ACCEPT_LINE(s, next, line, ui) (OK(s) && IS_END(next, line, ui)))
+# define NOT_EOL(l, i) (l[i] == '\n' && i && l[i - 1] == '\\')
 
 enum						e_line_exists
 {

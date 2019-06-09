@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/07 22:17:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 19:58:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ void	clear_all_lines(char *line, t_interface *ui)
 	int		col;
 
 	i = ui->line_index;
+	i = line[i] == '\n' ? i - 1 : i;
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	while (line_exists(line, i, PREV))
+	while (i > 0 && line_exists(line, i, PREV))
 	{
 		tputs(tgetstr("up", NULL), 1, ft_termprint);
 		col = current_column(line, i);
 		i -= col + 1;
+		i = line[i] == '\n' ? i - 1 : i;
 		i = i < 0 ? 0 : i;
 	}
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
@@ -32,21 +34,20 @@ void	clear_all_lines(char *line, t_interface *ui)
 	write(STDOUT, "$> ", 3);
 }
 
-void	write_to_history(char *line[INPUT_LEN]
-									, t_interface *interface)
+void	write_to_history(char line[INPUT_LEN], t_interface *ui)
 {
 	int	i;
 
 	i = 0;
-	if (**line && (!interface->h_list.hst
-		|| ft_strcmp(*line, interface->curr_last_history) != 0))
+	if (line[i] && (!ui->h_list.hst
+		|| ft_strcmp(line, ui->curr_last_history) != 0))
 	{
-		write(interface->h_list.fd, ":", 1);
-		while (i < interface->line_len)
+		write(ui->h_list.fd, ":", 1);
+		while (i < ui->line_len)
 		{
-			write(interface->h_list.fd, *line + i, 1);
-			if ((*line)[i] == '\\' || i + 1 == interface->line_len)
-				write(interface->h_list.fd, "\n", 1);
+			write(ui->h_list.fd, line + i, 1);
+			if (line[i] == '\\' || i + 1 == ui->line_len)
+				write(ui->h_list.fd, "\n", 1);
 			i++;
 		}
 	}

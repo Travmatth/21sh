@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/08 18:23:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 19:25:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,19 @@ static void	cut(t_interface *ui, char *buf, char *line)
 
 static void	paste(t_interface *ui, char *buf, char *line)
 {
-	int 	i;
+	int		i;
 	int		rest;
 
 	ui->select = FALSE;
 	write(STDOUT, STEADY_CURSOR, 5);
-	if (!buf[0])
-		return ;
 	i = 0;
 	while (buf[i] && i < INPUT_LEN)
 		i += 1;
+	if (!i || violates_line_len(i, line, ui) || NOT_EOL(line, ui->line_index))
+	{
+		write(STDOUT, "\a", 1);
+		return ;
+	}
 	rest = ui->line_len - ui->line_index;
 	ft_memmove(&(line[ui->line_index + i]), &(line[ui->line_index]), rest);
 	ft_memcpy(&(line[ui->line_index]), buf, i);
@@ -87,8 +90,12 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 	original = ui->line_index;
 	ui->ccp_orig = ERR(ui->ccp_orig) ? original : ui->ccp_orig;
 	target = move_index(c, line, ui);
-	if (target == INVALID)
+	if (target == INVALID || (!escaped(line, original)
+		&& line[original] == '\\' && line[target] == '\n'))
+	{
+		write(STDIN, "\a", 1);
 		return ;
+	}
 	else if (target == INVALID && !original && c == LEFT)
 		target = 0;
 	if (target != INVALID && target != original)
