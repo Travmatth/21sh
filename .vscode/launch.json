@@ -14,7 +14,7 @@
 			"TERM_SESSION_ID": "w0t0p0:4D8E9538-8052-402B-886E-0C8265563C70",
 			"PATH": "/nfs/2017/d/dysotoma/.brew/bin:/nfs/2017/d/dysotoma/nvim-osx64/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki:/nfs/2017/d/dysotoma/.brew/bin:/nfs/2017/d/dysotoma/nvim-osx64/bin/:/nfs/2017/d/dysotoma/gdb/bin:/nfs/2017/d/dysotoma/bin:/nfs/2017/d/dysotoma/gdb/bin:/nfs/2017/d/dysotoma/bin",
 			"OLDPWD": "/nfs/2017/d/dysotoma/21sh",
-			"SHELL_TTY": "/dev/ttys007",
+			"SHELL_TTY": "/dev/ttys008",
 			"HOME": "/nfs/2017/d/dysotoma",
 			"TERM": "xterm-256color",
 			"FOO": "",

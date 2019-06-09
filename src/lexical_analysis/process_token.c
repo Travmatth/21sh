@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 13:27:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 22:44:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int		process_token(t_token *token)
 		|| !OK((status = process_reserved(token))))
 		return (status);
 	i = -1;
-	while (++i <= OP_TOKEN_CONVERSIONS)
+	while (++i <= OP_TOKEN_CONVERSIONS - 1)
 	{
 		if (token->type == g_tok_cnv[i].lex_tok)
 		{
@@ -98,7 +98,7 @@ int		process_token(t_token *token)
 			return (SUCCESS);
 		}
 	}
-	return (ERROR);
+	return (NIL);
 }
 
 /*
