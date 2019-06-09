@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 22:31:20 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 23:05:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,9 @@ void	delete(unsigned long c, char *line, t_interface *ui)
 	int		next;
 	int		is_newline;
 
-	if ((c != DEL && c != DEL2) || ui->line_index <= 0)
+	if ((c != DEL && c != DEL2)
+		|| ui->line_index <= 0
+		|| line[ui->line_index] == '\n')
 		return ;
 	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
 	next = ui->line_index - (is_newline ? 2 : 1);
