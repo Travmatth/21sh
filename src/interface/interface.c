@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 10:40:43 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 11:03:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,15 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 	int		next;
 	int		status;
 
-	if (violates_line_len(1, *line, ui)
+	if (c == '\n' && accept_line(tmp)
+		&& ((status = accept(line, ui, tmp, 0))))
+		return (status);
+	else if (violates_line_len(1, *tmp, ui)
 		|| (c == '\n' && ui->line_index != ui->line_len))
 	{
 		write(STDOUT, "\a", 1);
 		return (NIL);
 	}
-	write_line(ui, *line);
-	if (c == '\n' && accept_line(tmp)
-		&& ((status = accept(line, ui, tmp, 0))))
-		return (status);
 	ft_memmove((void*)(*tmp + ui->line_index + 1)
 				, (void*)(*tmp + ui->line_index)
 				, INPUT_LEN - ui->line_index - 1);
@@ -63,6 +62,7 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 	ui->line_len += 1;
 	next = ui->line_index + 1;
 	set_cursor(ui, *tmp, next);
+	write_line(ui, *tmp);
 	return (NIL);
 }
 
