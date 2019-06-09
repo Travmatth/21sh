@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 22:32:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 17:07:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,16 @@
 */
 
 # define CURSOR_POS_REQ "\033[6n"
+
+/*
+** Ansi escape sequence to enable and disable cursor blinking
+** https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Control-Bytes_-%5C
+** CSI Ps SP q
+*/
+
+# define BLINK_CURSOR "\033[1 q"
+
+# define STEADY_CURSOR "\033[2 q"
 
 # define IS_END(next, line, ui) (next == RETURN && !escaped(*line, ui->line_len)
 

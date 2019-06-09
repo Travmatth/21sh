@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/07 22:38:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 17:04:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static void	copy(t_interface *ui, char *buf, char *line)
 	int		i;
 
 	ui->select = FALSE;
+	write(STDOUT, STEADY_CURSOR, 5);
 	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
 		return ;
 	i = 0;
@@ -34,6 +35,7 @@ static void	cut(t_interface *ui, char *buf, char *line)
 	int		i;
 
 	ui->select = FALSE;
+	write(STDOUT, STEADY_CURSOR, 5);
 	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
 		return ;
 	set_cursor(ui, line, ui->ccp_start);
@@ -57,6 +59,7 @@ static void	paste(t_interface *ui, char *buf, char *line)
 	int i;
 
 	ui->select = FALSE;
+	write(STDOUT, STEADY_CURSOR, 5);
 	if (!buf[0])
 		return ;
 	i = 0;
@@ -76,6 +79,8 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 	int				target;
 	int				original;
 
+	if (!ui->select)
+		write(STDOUT, BLINK_CURSOR, 5);
 	ui->select = TRUE;
 	original = ui->line_index;
 	ui->ccp_orig = ERR(ui->ccp_orig) ? original : ui->ccp_orig;
