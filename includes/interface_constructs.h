@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 20:19:45 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 22:03:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ typedef struct				s_h_list
 
 typedef struct				s_interface
 {
+	int						from_history;
 	int						select;
 	int						ccp_start;
 	int						ccp_end;
@@ -219,6 +220,5 @@ typedef struct				s_interface
 	struct termios			tty[2];
 	struct winsize			ws;
 	t_h_list				h_list;
-	char					*curr_last_history;
 }							t_interface;
 #endif

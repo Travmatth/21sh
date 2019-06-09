@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 21:16:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 22:01:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ void	delete(unsigned long c, char *line, t_interface *ui)
 
 int		init_interface(t_interface *ui, char tmp[INPUT_LEN], size_t *len)
 {
-	if (ui->h_list.hst)
-		ui->curr_last_history = ui->h_list.hst->content;
 	*len = 0;
 	ft_bzero(tmp, INPUT_LEN);
 	ui->line_index = 0;
