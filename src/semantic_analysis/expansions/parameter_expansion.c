@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/28 14:32:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 23:23:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int		join_unexpanded(char **new, char **str, size_t *i)
 		if ((*str)[*i] == '\\')
 			*i += 1;
 		else if ((P_QUOTE(status, str, NULL, (*i), (&end)))
+			|| (P_DQUOTE(status, str, NULL, (*i), (&end)))
 			|| (P_ARITH(status, str, NULL, (*i), (&end)))
 			|| (P_CMD(status, str, NULL, (*i), (&end)))
 			|| (P_BACKTICK(status, str, NULL, (*i), (&end))))

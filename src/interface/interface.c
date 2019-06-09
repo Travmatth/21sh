@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 23:05:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/08 23:21:33 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ int		init_interface(t_interface *ui, char tmp[INPUT_LEN], size_t *len)
 	return (prep_terminal(ui->tty, ~(ICANON | ISIG | ECHO), 1, 0));
 }
 
+// need to run full param exp on accept line
 int		accept(char **line, t_interface *ui, char *tmp, size_t len)
 {
 	int		ignore;
