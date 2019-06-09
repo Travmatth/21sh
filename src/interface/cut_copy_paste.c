@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cut_copy_paste.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/08 19:25:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 02:22:45 by dysotoma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,31 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 	write_line(ui, line);
 }
 
+// possibly could be used for finding the distance to travel for each line
+// needs some fine tuning though
+
+// static int	find_newline(char * line, t_interface *ui, int direction)
+// {
+// 	int i;
+// 	int index;
+
+// 	i = 0;
+// 	index = ui->line_index;
+// 	if (direction == 1)
+// 		while (index && line[index] != '\n')
+// 		{
+// 			index--;
+// 			i++;
+// 		}
+// 	else
+// 		while (index < ui->line_len && line[index] != '\n')
+// 		{
+// 			index++;
+// 			i++;
+// 		}
+// 	return (i);
+// }
+
 int			modify_cli(unsigned long c, t_interface *ui, char *line)
 {
 	static char	buff[INPUT_LEN];
@@ -123,8 +148,10 @@ int			modify_cli(unsigned long c, t_interface *ui, char *line)
 		history(c, line, &ui->h_list, ui);
 	else if (!ui->select && c == HOME)
 		set_cursor(ui, line, 0);
+		// set_cursor(ui, line, ui->line_index - find_newline(line, ui, 1));
 	else if (!ui->select && c == END)
 		set_cursor(ui, line, ui->line_len);
+		// set_cursor(ui, line, find_newline(line, ui, 1) + ui->line_index);
 	else if (!ui->select)
 		return (NIL);
 	return (SUCCESS);
