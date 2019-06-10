@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 23:06:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 23:09:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int		delete(unsigned long c, char *line, t_interface *ui)
 		return (SUCCESS);
 	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
 	next = ui->line_index - (is_newline ? 2 : 1);
-	// tputs(tgetstr("vi", NULL), 1, ft_termprint);
+	tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	ft_memmove((void*)(line + next)
 		, (void*)(line + ui->line_index)
 		, INPUT_LEN - next);
@@ -97,33 +97,9 @@ int		delete(unsigned long c, char *line, t_interface *ui)
 	ui->line_index = 0;
 	write_line(ui, line);
 	set_cursor(ui, next);
-	// tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	return (SUCCESS);
 }
-
-/*
-void	delete(unsigned long c, char *line, t_interface *ui)
-{
-	int		next;
-	int		is_newline;
-
-	if ((c != DEL && c != DEL2)
-		|| ui->line_index <= 0
-		|| line[ui->line_index] == '\n')
-		return ;
-	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
-	next = ui->line_index - (is_newline ? 2 : 1);
-	set_cursor(ui, line, next);
-	ft_memmove((void*)(line + next)
-		, (void*)(line + ui->line_index)
-		, INPUT_LEN - next);
-	ui->line_len -= is_newline ? 2 : 1;
-	next = ui->line_len;
-	while (line[next])
-		line[next++] = '\0';
-	write_line(ui, line);
-}
-*/
 
 int		init_interface(char *tmp, t_interface *ui)
 {
