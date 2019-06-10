@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 22:52:09 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 23:06:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 
 int		delete(unsigned long c, char *line, t_interface *ui)
 {
+	int		i;
 	int		next;
 	int		is_newline;
 
@@ -83,18 +84,20 @@ int		delete(unsigned long c, char *line, t_interface *ui)
 		return (SUCCESS);
 	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
 	next = ui->line_index - (is_newline ? 2 : 1);
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	set_cursor(ui, next);
+	// tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	ft_memmove((void*)(line + next)
 		, (void*)(line + ui->line_index)
 		, INPUT_LEN - next);
-	ui->line_len -= 1;
-	next = ui->line_len;
-	while (line[next])
-		line[next++] = '\0';
+	ui->line_len -= is_newline ? 2 : 1;
+	i = ui->line_len;
+	while (line[i])
+		line[i++] = '\0';
+	clear_all_lines(ui);
 	calculate_uilines(line, ui);
+	ui->line_index = 0;
 	write_line(ui, line);
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	set_cursor(ui, next);
+	// tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	return (SUCCESS);
 }
 
