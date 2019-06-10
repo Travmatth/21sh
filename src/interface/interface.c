@@ -43,8 +43,6 @@ int		accept(char **str, t_interface *ui, char **tmp, size_t len)
 
 int		insert(char c, char **line, t_interface *ui, char **tmp)
 {
-	int		next;
-
 	if (c == '\n' && accept_line(tmp))
 		return (accept(line, ui, tmp, 0));
 	else if (violates_line_len(1, *tmp, ui)
@@ -60,15 +58,10 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 	if ((!ui->line_index && ERR(init_uiline(ui))))
 		return (ERROR);
 	ui->line_len += 1;
-	next = ui->line_index + 1;
+	ui->line_index += 1;
 	if (ERR(calculate_uilines(*tmp, ui)))
 		return (ERROR);
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	clear_all_lines(ui);
-	ui->line_index = 0;
 	write_line(ui, *tmp);
-	set_cursor(ui, next);
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	return (SUCCESS);
 }
 

@@ -17,20 +17,28 @@ void	write_line(t_interface *ui, char *line)
 	int		i;
 
 	i = -1;
-	tputs(tgetstr("sc", NULL), 1, ft_termprint);
-	while (++i < ui->line_len)
+	ft_printf("%s%s%s", tgetstr("sc", NULL), tgetstr("cd", NULL),
+	tgetstr("vi", NULL));
+	while (++i + ui->line_index - 1 < ui->line_len)
 	{
-		if (line[i] == '\n')
+		if (line[i + ui->line_index - 1] == '\n')
 			write(STDIN, "\n> ", 3);
 		else
 		{
-			if (ui->select && i >= ui->ccp_start && i < ui->ccp_end && line[i])
+			if (ui->select && i + ui->line_index - 1 >= ui->ccp_start
+							&& i + ui->line_index - 1 < ui->ccp_end
+							&& line[i + ui->line_index - 1])
 				tputs(tgetstr("so", NULL), 1, ft_termprint);
-			write(STDIN, &line[i], 1);
+			write(STDIN, &line[i + ui->line_index - 1], 1);
 			tputs(tgetstr("se", NULL), 1, ft_termprint);
 		}
 	}
 	tputs(tgetstr("rc", NULL), 1, ft_termprint);
+	if (i > 0 && line[i + ui->line_index - 1] != '\n')
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	if (ui->line_len == ui->line_index && line[ui->line_index - 1] == '\n')
+		move_line_cursor_down(ui, 0);
 }
 
 void	init_select(t_interface *ui)
