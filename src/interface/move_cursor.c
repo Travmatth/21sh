@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:14:11 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 23:46:32 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 14:00:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ void	move_line_cursor_up(t_interface *ui, int target)
 	t_uiline	*cur;
 	int			offset;
 
-	if (!(cur = current_uiline(ui)))
+	if (!(cur = current_uiline(ui, ui->line_index)) || !cur->prev)
 		return ;
-	offset = line_exists(ui, PREV) ? 3 : 2;
+	offset = line_exists(ui, cur->prev->start, PREV) ? 2 : 3;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("up", NULL), 1, ft_termprint);
 	while (offset--)
@@ -55,7 +55,7 @@ void	move_line_cursor_down(t_interface *ui, int target)
 	t_uiline	*cur;
 	int			offset;
 
-	if (!(cur = current_uiline(ui)))
+	if (!(cur = current_uiline(ui, ui->line_index)) || !cur->next)
 		return ;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("do", NULL), 1, ft_termprint);
@@ -69,6 +69,12 @@ void	move_line_cursor_down(t_interface *ui, int target)
 		ui->line_index += 1;
 	}
 }
+
+/*
+** Move cursor to line index target. Used by first calling move_index with
+** desired movement key and verifying that returned index != INVALID,
+** otherwise pass returned index as target parameter to move_cursor
+*/
 
 int		move_cursor(unsigned long c, t_interface *ui, int target)
 {

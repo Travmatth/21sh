@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/04 14:17:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 21:48:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 13:31:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ int			current_column(char *line, int index)
 	return (col);
 }
 
-int			line_exists(t_interface *ui, int direction)
+int			line_exists(t_interface *ui, int target, int direction)
 {
 	t_uiline	*ui_line;
 	int			is;
 
-	ui_line = current_uiline(ui);
+	ui_line = current_uiline(ui, target);
 	if (!ui_line)
 		is = FALSE;
 	else if (direction == PREV)
@@ -57,17 +57,17 @@ int			line_exists(t_interface *ui, int direction)
 	return (is);
 }
 
-t_uiline	*current_uiline(t_interface *ui)
+t_uiline	*current_uiline(t_interface *ui, int target)
 {
 	t_uiline	*cur;
 
 	if (!(cur = ui->ui_line))
 		return (NULL);
-	while (cur->next && cur->end != ERROR && ui->line_index > cur->end)
+	while (cur->next && cur->end != ERROR && target > cur->end)
 		cur = cur->next;
-	if (cur->end == ERROR && cur->start <= ui->line_index)
+	if (cur->end == ERROR && cur->start <= target)
 		return (cur);
-	else if (cur->start <= ui->line_index && cur->end >= ui->line_index)
+	else if (cur->start <= target && cur->end >= target)
 		return (cur);
 	return (NULL);
 }

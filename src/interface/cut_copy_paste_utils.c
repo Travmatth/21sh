@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 22:42:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 13:32:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	set_cursor(t_interface *ui, int position)
 
 	if (ui->line_index == position)
 		return ;
-	cur = current_uiline(ui);
+	cur = current_uiline(ui, ui->line_index);
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	while (position < cur->start || (cur->end != ERROR && position > cur->end))
 	{
@@ -58,7 +58,7 @@ void	set_cursor(t_interface *ui, int position)
 		cur = position < cur->start ? cur->prev : cur->next;
 	}
 	ui->line_index = cur->start;
-	offset = line_exists(ui, PREV) ? 2 : 3;
+	offset = line_exists(ui, ui->line_index, PREV) ? 2 : 3;
 	while (offset--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 	while (ui->line_index != position)
@@ -75,7 +75,7 @@ int		violates_line_len(int insert, char *line, t_interface *ui)
 	int		rest;
 
 	offset = ui->ui_line ? 0 : 3;
-	offset = ui->ui_line && line_exists(ui, PREV) ? 2 : 3;
+	offset = ui->ui_line && line_exists(ui, ui->line_index, PREV) ? 2 : 3;
 	cur = current_column(line, ui->line_index);
 	rest = next_column(line, ui->line_index);
 	return (insert + offset + cur + rest > ui->ws.ws_col ? TRUE : FALSE);

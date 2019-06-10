@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/09 23:22:44 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 14:09:39 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,15 +103,13 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 		write(STDIN, "\a", 1);
 		return ;
 	}
-	else if (target == INVALID && !original && c == LEFT)
-		target = 0;
-	if (target != INVALID && target != original)
-		target = move_cursor(c, ui, target);
 	ui->ccp_start = target < ui->ccp_orig ? target : ui->ccp_orig;
 	ui->ccp_end = target < ui->ccp_orig ? ui->ccp_orig + 1 : target;
 	clear_all_lines(ui);
-	ui->line_index = 0;
 	write_line(ui, line);
+	ui->line_index = 0;
+	if (target != INVALID && target != original)
+		set_cursor(ui, target);
 }
 
 int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont)

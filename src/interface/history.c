@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/10 13:03:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 13:32:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	clear_all_lines(t_interface *ui)
 {
 	t_uiline	*ui_line;
 
-	ui_line = current_uiline(ui);
+	ui_line = current_uiline(ui, ui->line_index);
 	while (ui_line && ui_line->prev)
 	{
 		tputs(tgetstr("up", NULL), 1, ft_termprint);
