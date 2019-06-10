@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:09:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 13:53:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 19:24:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,18 @@ int		move_word_index_right(char *line, t_interface *ui)
 	int		i;
 
 	i = ui->line_index;
-	if (i != ui->line_len && line[i] == '\n')
+	if (i != ui->line_len && line[i] == '\\' && line[i + 1] == '\n')
 		return (INVALID);
 	if (!IS_WHITESPACE(line[i]))
 	{
-		while (i != ui->line_len && line[i] != '\n')
+		while (i != ui->line_len && line[i] != '\\' && line[i + 1] != '\n')
 		{
 			if (IS_WHITESPACE(line[i]))
 				break ;
 			i++;
 		}
 	}
-	while ((i != ui->line_len) && line[i] != '\n')
+	while ((i != ui->line_len) && line[i] != '\\' && line[i + 1] != '\n')
 	{
 		if (!IS_WHITESPACE(line[i]))
 			break ;
@@ -102,20 +102,19 @@ int		move_line_index_up(char *line, t_interface *ui)
 int		move_index(unsigned long c, char *line, t_interface *ui)
 {
 	int		i;
+	int		n;
 
 	i = ERROR;
+	n = ui->line_index;
 	if (line)
 	{
-		if ((c == LEFT || c == SHIFT_LEFT)
-			&& (!ui->line_index || line[ui->line_index - 1] == '\n'))
+		if ((c == LEFT || c == SHIFT_LEFT) && (!n || (line[n - 1] == '\n')))
 			i = INVALID;
 		else if (c == LEFT || c == SHIFT_LEFT)
-			i = ui->line_index - 1;
-		else if ((c == RIGHT || c == SHIFT_RIGHT) &&
-			(!line[ui->line_index] || line[ui->line_index] == '\n'))
-			i = INVALID;
+			i = n - 1;
 		else if (c == RIGHT || c == SHIFT_RIGHT)
-			i = ui->line_index + 1;
+			i = (n == ui->line_len || (n && line[n] == '\\'
+				&& line[n + 1] == '\n')) ? INVALID : n + 1;
 		else if (c == CTL_LEFT)
 			i = move_word_index_left(line, ui);
 		else if (c == CTL_RIGHT)

@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 15:34:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 15:35:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 15:42:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		exit_select(t_interface *ui, char *line)
+void	exit_select(t_interface *ui, char *line)
 {
 	if (ui->select)
 	{

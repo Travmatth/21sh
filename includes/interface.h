@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 15:36:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 17:02:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ int			line_exists(t_interface *ui, int target, int direction);
 t_uiline	*current_uiline(t_interface *ui, int target);
 
 /*
-** src/interface/cut_copy_paste.c
+** src/interface/modify_cli.c
 */
 
 int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont);
@@ -110,7 +110,28 @@ void		set_cursor(t_interface *ui, int position);
 ** src/interface/select.c
 */
 
-int			exit_select(t_interface *ui, char *line);
+void		exit_select(t_interface *ui, char *line);
 void		init_select(t_interface *ui);
 void		select_ccp(unsigned long c, t_interface *ui, char *line);
+
+/*
+** src/interface/cut.c
+*/
+
+int			cut(t_interface *ui, char *buf, char *line);
+int			cut_line(t_interface *ui, char *buf, char *line);
+
+/*
+** src/interface/paste.c
+*/
+
+int			paste(t_interface *ui, char *buf, char *line);
+int			paste_line(t_interface *ui, char *buf, char *line);
+
+/*
+** src/interface/copy.c
+*/
+
+void		copy(t_interface *ui, char *buf, char *line);
+void		copy_line(t_interface *ui, char *buf, char *line);
 #endif

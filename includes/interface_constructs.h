@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 15:16:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 17:06:00 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,23 @@
 */
 
 # define ESC 0x1B
+
+/*
+** Character sent by terminal line discipline in response to OPT + X key
+*/
+
+# define OPT_X 0x8889E2
+
+/*
+** Character sent by terminal line discipline in response to OPT + P key
+*/
+
+# define OPT_P 0x80CF
+/*
+** Character sent by terminal line discipline in response to OPT + C key
+*/
+
+# define OPT_C 0xA7C3
 
 /*
 ** The max Length of input

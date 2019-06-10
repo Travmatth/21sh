@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 23:21:35 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 17:04:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,15 +47,12 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 
 	if (c == '\n' && accept_line(tmp))
 		return (accept(line, ui, tmp, 0));
-	else if (violates_line_len(1, *tmp, ui)
-		|| (c == '\n' && ui->line_index != ui->line_len))
+	else if (violates_line_len(1, *tmp, ui) || (c == '\n' && ui->line_index != ui->line_len))
 	{
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);
 	}
-	ft_memmove((void*)(*tmp + ui->line_index + 1)
-				, (void*)(*tmp + ui->line_index)
-				, INPUT_LEN - ui->line_index - 1);
+	ft_memmove((void*)(*tmp + ui->line_index + 1), (void*)(*tmp + ui->line_index), INPUT_LEN - ui->line_index - 1);
 	(*tmp)[ui->line_index] = c;
 	if ((!ui->line_index && ERR(init_uiline(ui))))
 		return (ERROR);

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 15:35:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 17:25:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ void	set_cursor(t_interface *ui, int position)
 	int			offset;
 	t_uiline	*cur;
 
-	if (ui->line_index == position)
+	if (ui->line_index == position
+		|| !(cur = current_uiline(ui, ui->line_index)))
 		return ;
-	cur = current_uiline(ui, ui->line_index);
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	while (position < cur->start || (cur->end != ERROR && position > cur->end))
 	{
