@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 12:50:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 10:20:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 19:37:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int		accept_line(char **str)
+int			accept_line(char **str)
 {
 	size_t	i;
 	size_t	end;
@@ -35,14 +35,26 @@ int		accept_line(char **str)
 	return (status);
 }
 
-int		init_accept(char **line, t_interface *ui, char *tmp, size_t *i)
+int			init_accept(char **line, t_interface *ui, char *tmp, size_t *i)
 {
 	*i = 0;
-	set_cursor(ui, tmp, ui->line_len);
+	set_cursor(ui, ui->line_len);
 	write(STDOUT, "\n", 1);
 	write_to_history(tmp, ui);
 	if (ERR(push_history(&ui->h_list.hst, tmp))
 		|| !(*line = ft_strnew(ui->line_len)))
 		return (ERROR);
 	return (SUCCESS);
+}
+
+void		free_uiline(t_uiline **ui_line)
+{
+	if (*ui_line)
+	{
+		free_uiline(&(*ui_line)->next);
+		(*ui_line)->prev = NULL;
+		(*ui_line)->next = NULL;
+		free(*ui_line);
+		*ui_line = NULL;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:09:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 17:54:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 19:30:00 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,42 +55,36 @@ int		move_word_index_right(char *line, t_interface *ui)
 
 int		move_line_index_down(char *line, t_interface *ui)
 {
-	int		cur;
-	int		i;
-	int		col;
+	t_uiline	*cur_line;
+	int			target;
+	int			col;
 
-	cur = ui->line_index;
-	if (!line_exists(line, cur, NEXT))
+	cur_line = current_uiline(ui);
+	if (!(cur_line->next))
 		return (INVALID);
-	i = current_column(line, cur);
-	col = i;
-	cur -= i;
-	cur += next_column(line, cur);
-	i = -1;
-	while (++i < col && line[cur] && line[cur] != '\n')
-		cur += 1;
-	return (cur);
+	else
+		target = cur_line->next->start - 1;
+	col = current_column(line, ui->line_index);
+	while (++target < col && line[target] && line[target] != '\n')
+		target += 1;
+	return (target);
 }
 
 int		move_line_index_up(char *line, t_interface *ui)
 {
-	int		i;
-	int		col;
-	int		cur;
+	t_uiline	*cur_line;
+	int			target;
+	int			col;
 
-	cur = ui->line_index;
-	if (!line_exists(line, ui->line_index, PREV))
+	cur_line = current_uiline(ui);
+	if (!(cur_line->prev))
 		return (INVALID);
-	i = current_column(line, cur);
-	col = i;
-	cur -= i + 1;
-	cur = cur < 0 ? 0 : cur;
-	i = -1;
-	cur -= 1;
-	cur -= current_column(line, cur);
-	while (++i < col && line[cur] && line[cur] != '\n')
-		cur += 1;
-	return (cur);
+	else
+		target = cur_line->prev->start - 1;
+	col = current_column(line, ui->line_index);
+	while (++target < col && line[target] && line[target] != '\n')
+		target += 1;
+	return (target);
 }
 
 int		move_index(unsigned long c, char *line, t_interface *ui)

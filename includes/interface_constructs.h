@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 07:24:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 18:04:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,8 @@
 
 # define NOT_EOL(l, i) (l[i] == '\n' && i && l[i - 1] == '\\')
 
+# define MOVE(ui, pos) (ui->line_index > pos ? "le" : "nd")
+
 enum						e_line_exists
 {
 	PREV,
@@ -204,9 +206,18 @@ struct						s_history
 typedef struct				s_h_list
 {
 	int						fd;
-	char					*old;
 	t_history				*hst;
 }							t_h_list;
+
+typedef struct s_uiline		t_uiline;
+
+struct						s_uiline
+{
+	t_uiline				*prev;
+	t_uiline				*next;
+	int						start;
+	int						end;
+};
 
 typedef struct				s_interface
 {
@@ -220,16 +231,6 @@ typedef struct				s_interface
 	struct termios			tty[2];
 	struct winsize			ws;
 	t_h_list				h_list;
+	t_uiline				*ui_line;
 }							t_interface;
-
-// typedef struct s_uiline		t_uiline;
-
-// struct						s_uiline
-// {
-// 	t_uiline				*prev;
-// 	t_uiline				*next;
-// 	int						start;
-// 	int						end;
-// };
-
 #endif

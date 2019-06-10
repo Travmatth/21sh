@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 09:31:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 21:45:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ void	write_line(t_interface *ui, char *line)
 {
 	int		i;
 
+	i = -1;
+	clear_all_lines(ui);
 	tputs(tgetstr("sc", NULL), 1, ft_termprint);
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	i = -1;
-	clear_all_lines(line, ui);
 	while (++i < ui->line_len)
 	{
 		if (line[i] == '\n')
@@ -43,40 +43,31 @@ void	init_select(t_interface *ui)
 	ui->ccp_orig = ERROR;
 }
 
-int		same_line(char *line, int current, int target, int step)
+void	set_cursor(t_interface *ui, int position)
 {
-	while (TRUE)
-	{
-		if (current == target && line[current] == '\n' && step > 0)
-			return (TRUE);
-		else if (current == target && line[current] != '\n')
-			return (TRUE);
-		else if (line[current] == '\n')
-			return (FALSE);
-		current += step;
-	}
-}
-
-void	set_cursor(t_interface *ui, char *line, int position)
-{
-	int		step;
-	int		next;
-	char	*move;
+	int			offset;
+	t_uiline	*cur;
 
 	if (ui->line_index == position)
 		return ;
-	step = ui->line_index > position ? -1 : 1;
-	while (!same_line(line, ui->line_index, position, step))
+	cur = current_uiline(ui);
+	tputs(tgetstr("cr", NULL), 1, ft_termprint);
+	while (position < cur->start || (cur->end != ERROR && position > cur->end))
 	{
-		next = move_index(step > 0 ? SHIFT_DOWN : SHIFT_UP, line, ui);
-		move_cursor(step > 0 ? SHIFT_DOWN : SHIFT_UP, line, ui, next);
-		step = ui->line_index > position ? -1 : 1;
+		if (position < cur->start)
+			tputs(tgetstr("up", NULL), 1, ft_termprint);
+		else if (cur->end != ERROR && position > cur->end)
+			tputs(tgetstr("do", NULL), 1, ft_termprint);
+		cur = position < cur->start ? cur->prev : cur->next;
 	}
-	move = ui->line_index > position ? "le" : "nd";
+	ui->line_index = cur->start;
+	offset = line_exists(ui, PREV) ? 2 : 3;
+	while (offset--)
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 	while (ui->line_index != position)
 	{
-		ui->line_index += step;
-		tputs(tgetstr(move, NULL), 1, ft_termprint);
+		ui->line_index += ui->line_index > position ? -1 : 1;
+		tputs(tgetstr(MOVE(ui, position), NULL), 1, ft_termprint);
 	}
 }
 
@@ -86,7 +77,8 @@ int		violates_line_len(int insert, char *line, t_interface *ui)
 	int		cur;
 	int		rest;
 
-	offset = line_exists(line, ui->line_index, PREV) ? 2 : 3;
+	offset = ui->ui_line ? 0 : 3;
+	offset = ui->ui_line && line_exists(ui, PREV) ? 2 : 3;
 	cur = current_column(line, ui->line_index);
 	rest = next_column(line, ui->line_index);
 	return (insert + offset + cur + rest > ui->ws.ws_col ? TRUE : FALSE);

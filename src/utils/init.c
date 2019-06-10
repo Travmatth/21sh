@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 14:03:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 18:20:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,7 @@ int		init_shell(t_interface *ui)
 			|| ERR(close(fd)))
 			return (ERROR);
 	}
-	if (NONE((type = get_env_var("TERM")))
-		|| ERR(tgetent(buf, type))
+	if (NONE((type = get_env_var("TERM"))) || ERR(tgetent(buf, type))
 		|| ERR(tputs(tgetstr("ti", NULL), 1, ft_termprint))
 		|| ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint))
 		|| ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
@@ -111,7 +110,6 @@ int		init_shell(t_interface *ui)
 	ft_bzero(ui, sizeof(t_interface));
 	init_select(ui);
 	init_history(&ui->h_list);
-	errno = 0;
 	ioctl(STDIN, TIOCGWINSZ, &ui->ws);
 	return (SUCCESS);
 }
@@ -144,7 +142,7 @@ int		init_parser(void)
 ** free environment variables and interface struct, close open files descriptors
 */
 
-int		restore_shell(t_interface *interface)
+int		restore_shell(t_interface *ui)
 {
 	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
 		return (ERROR);
@@ -155,8 +153,9 @@ int		restore_shell(t_interface *interface)
 			|| ERR(close(STDERR)))
 			return (ERROR);
 	}
-	close(interface->h_list.fd);
-	free_history(interface->h_list.hst);
+	close(ui->h_list.fd);
+	free_history(ui->h_list.hst);
+	free_uiline(&ui->ui_line);
 	ft_freearr(g_environ, TRUE);
 	return (SUCCESS);
 }

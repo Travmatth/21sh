@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:14:11 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 17:54:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 19:27:04 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,50 +30,52 @@ void	move_word_cursor_right(t_interface *ui, int target)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 }
 
-void	move_line_cursor_up(char *line, t_interface *ui, int target)
+void	move_line_cursor_up(t_interface *ui, int target)
 {
-	int		i;
-	int		col;
-	int		offset;
+	t_uiline	*prev;
+	int			offset;
+	int			col;
 
-	i = ui->line_index;
-	col = current_column(line, i);
-	i -= col + 1;
-	i = i < 0 ? 0 : i;
-	if (i)
-		i -= current_column(line, i);
-	offset = line_exists(line, i, PREV) ? 2 : 3;
+	if (!(prev = current_uiline(ui)))
+		return ;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("up", NULL), 1, ft_termprint);
+	ui->line_index = prev->start;
+	offset = line_exists(ui, PREV) ? 2 : 3;
 	while (offset--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	while (i < target)
+	col = -1;
+	while (prev->start + ++col <= target)
 	{
-		i += 1;
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+		ui->line_index += 1;
 	}
 }
 
-void	move_line_cursor_down(char *line, t_interface *ui, int target)
+void	move_line_cursor_down(t_interface *ui, int target)
 {
-	int		offset;
-	int		col;
-	int		i;
+	t_uiline	*prev;
+	int			offset;
+	int			col;
 
-	i = ui->line_index;
-	offset = current_column(line, i);
-	col = i - offset;
-	col += next_column(line, col);
-	offset = 2;
+	if (!(prev = current_uiline(ui)))
+		return ;
+	ui->line_index = prev->start;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("do", NULL), 1, ft_termprint);
+	offset = 2;
 	while (offset--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	while (++col <= target)
+	col = -1;
+	while (prev->start + ++col <= target)
+	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+		ui->line_index += 1;
+		col -= 1;
+	}
 }
 
-int		move_cursor(unsigned long c, char *line, t_interface *ui, int target)
+int		move_cursor(unsigned long c, t_interface *ui, int target)
 {
 	if (c == LEFT || c == SHIFT_LEFT)
 		tputs(tgetstr("le", NULL), 1, ft_termprint);
@@ -84,9 +86,9 @@ int		move_cursor(unsigned long c, char *line, t_interface *ui, int target)
 	else if (c == CTL_RIGHT)
 		move_word_cursor_right(ui, target);
 	else if (c == CTL_DOWN || c == SHIFT_DOWN)
-		move_line_cursor_down(line, ui, target);
+		move_line_cursor_down(ui, target);
 	else if (c == CTL_UP || c == SHIFT_UP)
-		move_line_cursor_up(line, ui, target);
+		move_line_cursor_up(ui, target);
 	ui->line_index = target;
 	return (target);
 }

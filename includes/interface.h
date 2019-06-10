@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 10:36:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 19:35:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,28 @@
 int			interface(char **str, char **tmp, t_interface *ui);
 
 /*
+** src/interface/ui_line.c
+*/
+
+t_uiline	*create_uiline(void);
+int			init_uiline(t_interface *ui);
+int			add_uiline(t_interface *ui);
+int			crawl_uilines(char *buf, t_uiline *ui_line, int i);
+int			calculate_uilines(char *buf, t_interface *ui);
+
+/*
 ** src/interface/utils.c
 */
 
-int			init_accept(char **line, t_interface *ui, char *tmp, size_t *i);
 int			accept_line(char **str);
+int			init_accept(char **line, t_interface *ui, char *tmp, size_t *i);
+void		free_uiline(t_uiline **ui_line);
 
 /*
 ** src/utils/history.c
 */
 
-void		clear_all_lines(char *line, t_interface *ui);
+void		clear_all_lines(t_interface *ui);
 void		write_to_history(char line[INPUT_LEN], t_interface *ui);
 int			push_history(t_history **history, char *content);
 void		print_history(t_interface *ui, char *line, char *next);
@@ -68,12 +79,9 @@ int			move_index(unsigned long c, char *line, t_interface *ui);
 
 void		move_word_cursor_left(t_interface *ui, int target);
 void		move_word_cursor_right(t_interface *ui, int target);
-void		move_line_cursor_up(char *line, t_interface *ui, int target);
-void		move_line_cursor_down(char *line, t_interface *ui, int target);
-int			move_cursor(unsigned long c
-						, char *line
-						, t_interface *ui
-						, int target);
+void		move_line_cursor_up(t_interface *ui, int target);
+void		move_line_cursor_down(t_interface *ui, int target);
+int			move_cursor(unsigned long c, t_interface *ui, int target);
 
 /*
 ** src/interface/move_utils.c
@@ -81,7 +89,8 @@ int			move_cursor(unsigned long c
 
 int			next_column(char *line, int index);
 int			current_column(char *line, int index);
-int			line_exists(char *line, int index, int direction);
+int			line_exists(t_interface *ui, int direction);
+t_uiline	*current_uiline(t_interface *ui);
 
 /*
 ** src/interface/cut_copy_paste.c
@@ -96,5 +105,5 @@ int			modify_cli(unsigned long c, t_interface *ui, char *line);
 int			violates_line_len(int insert, char *line, t_interface *ui);
 void		write_line(t_interface *ui, char *line);
 void		init_select(t_interface *ui);
-void		set_cursor(t_interface *ui, char *line, int position);
+void		set_cursor(t_interface *ui, int position);
 #endif
