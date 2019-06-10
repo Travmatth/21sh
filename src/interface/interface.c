@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 23:09:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 23:21:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,12 +120,14 @@ int		interface(char **line, char **tmp, t_interface *ui)
 	unsigned long		next;
 	int					status;
 	int					target;
+	int					cont;
 
 	status = init_interface(*tmp, ui);
 	while (OK(status) && !(next = 0))
 	{
 		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
-		if (!NONE((status = modify_cli(next, ui, *tmp))))
+		if (OK((status = modify_cli(next, ui, *tmp, &cont)))
+			&& OK(cont))
 			continue ;
 		else if (!OK(status) && !ui->select && next == INTR)
 			status = OK(status) ? NIL : status;

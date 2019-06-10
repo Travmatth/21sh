@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 19:35:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 23:19:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ t_uiline	*current_uiline(t_interface *ui);
 ** src/interface/cut_copy_paste.c
 */
 
-int			modify_cli(unsigned long c, t_interface *ui, char *line);
+int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont);
 
 /*
 ** src/interface/cut_copy_paste_utils.c

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/09 19:34:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 23:22:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,15 +109,18 @@ static void	select_ccp(unsigned long c, t_interface *ui, char *line)
 		target = move_cursor(c, ui, target);
 	ui->ccp_start = target < ui->ccp_orig ? target : ui->ccp_orig;
 	ui->ccp_end = target < ui->ccp_orig ? ui->ccp_orig + 1 : target;
+	clear_all_lines(ui);
+	ui->line_index = 0;
 	write_line(ui, line);
 }
 
-int			modify_cli(unsigned long c, t_interface *ui, char *line)
+int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont)
 {
 	int			status;
 	static char	buff[INPUT_LEN];
 
 	status = SUCCESS;
+	*cont = TRUE;
 	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
 		select_ccp(c, ui, line);
 	else if (c == COPY)
@@ -135,6 +138,6 @@ int			modify_cli(unsigned long c, t_interface *ui, char *line)
 	else if (!ui->select && c == END)
 		set_cursor(ui, ui->line_len);
 	else if (!ui->select)
-		return (NIL);
+		*cont = FALSE;
 	return (status);
 }
