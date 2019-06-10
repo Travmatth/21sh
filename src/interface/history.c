@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/09 22:42:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 13:03:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,10 @@ void	print_history(t_interface *ui, char *line, char *next)
 			write(STDOUT, "> ", 2);
 		line[ui->line_index++] = next[len++];
 	}
-	calculate_uilines(next, ui);
+	if (next)
+		calculate_uilines(next, ui);
+	else
+		free_uiline(&ui->ui_line);
 	ui->line_index = next ? ui->line_index : 0;
 }
 
