@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 21:45:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 22:42:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,7 @@ void	write_line(t_interface *ui, char *line)
 	int		i;
 
 	i = -1;
-	clear_all_lines(ui);
 	tputs(tgetstr("sc", NULL), 1, ft_termprint);
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	while (++i < ui->line_len)
 	{
 		if (line[i] == '\n')
@@ -32,7 +30,6 @@ void	write_line(t_interface *ui, char *line)
 			tputs(tgetstr("se", NULL), 1, ft_termprint);
 		}
 	}
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	tputs(tgetstr("rc", NULL), 1, ft_termprint);
 }
 

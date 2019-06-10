@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/09 20:54:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 22:42:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	clear_all_lines(t_interface *ui)
 	t_uiline	*ui_line;
 
 	ui_line = current_uiline(ui);
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	while (ui_line && ui_line->prev)
 	{
 		tputs(tgetstr("up", NULL), 1, ft_termprint);
@@ -25,9 +24,7 @@ void	clear_all_lines(t_interface *ui)
 	}
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("cd", NULL), 1, ft_termprint);
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	write(STDOUT, "$> ", 3);
-	ui->line_index = 0;
 }
 
 void	write_to_history(char line[INPUT_LEN], t_interface *ui)
