@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/09 18:14:34 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 21:49:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 22:12:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,19 +61,14 @@ int		crawl_uilines(char *buf, t_uiline *ui_line, int i)
 			break ;
 		i += 1;
 	}
+	ui_line->end = i;
 	if (buf[i] == '\n')
 	{
-		if (ui_line->prev)
-			ui_line->prev->end = i;
-		else
-			ui_line->end = i;
 		if (!ui_line->next && !(ui_line->next = create_uiline()))
 			return (ERROR);
 		ui_line->next->prev = ui_line;
 		return (crawl_uilines(buf, ui_line->next, i + 1));
 	}
-	else
-		ui_line->end = i;
 	free_uiline(&ui_line->next);
 	return (SUCCESS);
 }
