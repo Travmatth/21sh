@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:14:11 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 19:27:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 23:46:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,18 @@ void	move_word_cursor_right(t_interface *ui, int target)
 
 void	move_line_cursor_up(t_interface *ui, int target)
 {
-	t_uiline	*prev;
+	t_uiline	*cur;
 	int			offset;
-	int			col;
 
-	if (!(prev = current_uiline(ui)))
+	if (!(cur = current_uiline(ui)))
 		return ;
+	offset = line_exists(ui, PREV) ? 3 : 2;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("up", NULL), 1, ft_termprint);
-	ui->line_index = prev->start;
-	offset = line_exists(ui, PREV) ? 2 : 3;
 	while (offset--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	col = -1;
-	while (prev->start + ++col <= target)
+	ui->line_index = cur->prev->start;
+	while (ui->line_index < target)
 	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 		ui->line_index += 1;
@@ -54,24 +52,21 @@ void	move_line_cursor_up(t_interface *ui, int target)
 
 void	move_line_cursor_down(t_interface *ui, int target)
 {
-	t_uiline	*prev;
+	t_uiline	*cur;
 	int			offset;
-	int			col;
 
-	if (!(prev = current_uiline(ui)))
+	if (!(cur = current_uiline(ui)))
 		return ;
-	ui->line_index = prev->start;
 	tputs(tgetstr("cr", NULL), 1, ft_termprint);
 	tputs(tgetstr("do", NULL), 1, ft_termprint);
 	offset = 2;
 	while (offset--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	col = -1;
-	while (prev->start + ++col <= target)
+	ui->line_index = cur->next->start;
+	while (ui->line_index < target)
 	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
 		ui->line_index += 1;
-		col -= 1;
 	}
 }
 

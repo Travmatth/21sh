@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:09:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 19:30:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 00:14:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,35 +56,45 @@ int		move_word_index_right(char *line, t_interface *ui)
 int		move_line_index_down(char *line, t_interface *ui)
 {
 	t_uiline	*cur_line;
-	int			target;
-	int			col;
+	int			cur;
+	int			cur_col;
+	int			target_col;
 
 	cur_line = current_uiline(ui);
 	if (!(cur_line->next))
 		return (INVALID);
-	else
-		target = cur_line->next->start - 1;
-	col = current_column(line, ui->line_index);
-	while (++target < col && line[target] && line[target] != '\n')
-		target += 1;
-	return (target);
+	cur = cur_line->next->start;
+	cur_col = current_column(line, cur);
+	target_col = current_column(line, ui->line_index);
+	target_col += cur_line->prev ? 0 : 1;
+	while (cur_col < target_col && line[cur] && line[cur] != '\n')
+	{
+		cur += 1;
+		cur_col = current_column(line, cur);
+	}
+	return (cur);
 }
 
 int		move_line_index_up(char *line, t_interface *ui)
 {
 	t_uiline	*cur_line;
-	int			target;
-	int			col;
+	int			cur;
+	int			cur_col;
+	int			target_col;
 
 	cur_line = current_uiline(ui);
 	if (!(cur_line->prev))
 		return (INVALID);
-	else
-		target = cur_line->prev->start - 1;
-	col = current_column(line, ui->line_index);
-	while (++target < col && line[target] && line[target] != '\n')
-		target += 1;
-	return (target);
+	cur = cur_line->prev->start;
+	cur_col = current_column(line, cur);
+	target_col = current_column(line, ui->line_index);
+	target_col -= cur_line->prev->prev ? 0 : 1;
+	while (cur_col < target_col && line[cur] && line[cur] != '\n')
+	{
+		cur += 1;
+		cur_col = current_column(line, cur);
+	}
+	return (cur);
 }
 
 int		move_index(unsigned long c, char *line, t_interface *ui)
