@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 13:32:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 15:36:08 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,13 @@ int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont);
 
 int			violates_line_len(int insert, char *line, t_interface *ui);
 void		write_line(t_interface *ui, char *line);
-void		init_select(t_interface *ui);
 void		set_cursor(t_interface *ui, int position);
+
+/*
+** src/interface/select.c
+*/
+
+int			exit_select(t_interface *ui, char *line);
+void		init_select(t_interface *ui);
+void		select_ccp(unsigned long c, t_interface *ui, char *line);
 #endif

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 18:04:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 15:16:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,12 @@
 */
 
 # define END 0x465B1B
+
+/*
+** Character sent by terminal line discipline in response to ESC key
+*/
+
+# define ESC 0x1B
 
 /*
 ** The max Length of input

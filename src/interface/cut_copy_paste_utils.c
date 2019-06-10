@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 13:32:39 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 15:35:02 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,6 @@ void	write_line(t_interface *ui, char *line)
 		}
 	}
 	tputs(tgetstr("rc", NULL), 1, ft_termprint);
-}
-
-void	init_select(t_interface *ui)
-{
-	ui->ccp_start = ERROR;
-	ui->ccp_end = ERROR;
-	ui->ccp_orig = ERROR;
 }
 
 void	set_cursor(t_interface *ui, int position)
