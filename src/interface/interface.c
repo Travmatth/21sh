@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 22:42:04 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 22:52:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,20 +63,27 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 	next = ui->line_index + 1;
 	if (ERR(calculate_uilines(*tmp, ui)))
 		return (ERROR);
+	tputs(tgetstr("vi", NULL), 1, ft_termprint);
+	clear_all_lines(ui);
+	ui->line_index = 0;
 	write_line(ui, *tmp);
 	set_cursor(ui, next);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	return (SUCCESS);
 }
 
-void	delete(unsigned long c, char *line, t_interface *ui)
+int		delete(unsigned long c, char *line, t_interface *ui)
 {
 	int		next;
+	int		is_newline;
 
 	if ((c != DEL && c != DEL2)
 		|| ui->line_index <= 0
 		|| line[ui->line_index] == '\n')
-		return ;
-	next = ui->line_index - 1;
+		return (SUCCESS);
+	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
+	next = ui->line_index - (is_newline ? 2 : 1);
+	tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	set_cursor(ui, next);
 	ft_memmove((void*)(line + next)
 		, (void*)(line + ui->line_index)
@@ -87,7 +94,33 @@ void	delete(unsigned long c, char *line, t_interface *ui)
 		line[next++] = '\0';
 	calculate_uilines(line, ui);
 	write_line(ui, line);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	return (SUCCESS);
 }
+
+/*
+void	delete(unsigned long c, char *line, t_interface *ui)
+{
+	int		next;
+	int		is_newline;
+
+	if ((c != DEL && c != DEL2)
+		|| ui->line_index <= 0
+		|| line[ui->line_index] == '\n')
+		return ;
+	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
+	next = ui->line_index - (is_newline ? 2 : 1);
+	set_cursor(ui, line, next);
+	ft_memmove((void*)(line + next)
+		, (void*)(line + ui->line_index)
+		, INPUT_LEN - next);
+	ui->line_len -= is_newline ? 2 : 1;
+	next = ui->line_len;
+	while (line[next])
+		line[next++] = '\0';
+	write_line(ui, line);
+}
+*/
 
 int		init_interface(char *tmp, t_interface *ui)
 {
@@ -120,7 +153,7 @@ int		interface(char **line, char **tmp, t_interface *ui)
 		else if (!ERR((target = move_index(next, *tmp, ui))))
 			target != INVALID ? move_cursor(next, ui, target) : 0;
 		else if ((next == DEL || next == DEL2))
-			delete(next, *tmp, ui);
+			status = delete(next, *tmp, ui);
 		else if (next == '\n' || PRINTABLE_CHAR(next))
 			status = insert((char)next, line, ui, tmp);
 	}
