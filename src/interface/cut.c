@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:36:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 18:03:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 15:01:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,9 @@ int		cut_line(t_interface *ui, char *buf, char *line)
 	ft_memcpy(buf, &(line[cur->start]), len);
 	start = cur->end;
 	start += line[start] == '\n' ? 1 : 0;
-	ft_memmove(&line[cur->start], &line[start], len);
+	ft_memmove(&line[cur->start], &line[start], ui->line_len - cur->end);
 	ui->line_len -= len;
-	ft_strclr(&line[ui->line_len]);
+	ft_strclr(&line[ui->line_len + 1]);
 	if (ERR(calculate_uilines(line, ui)))
 		return (ERROR);
 	clear_all_lines(ui);
