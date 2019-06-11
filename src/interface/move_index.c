@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/06 14:09:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 19:24:05 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 14:39:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,18 @@ int		move_word_index_right(char *line, t_interface *ui)
 	int		i;
 
 	i = ui->line_index;
-	if (i != ui->line_len && line[i] == '\\' && line[i + 1] == '\n')
+	if (i == ui->line_len || (line[i] == '\\' && line[i + 1] == '\n'))
 		return (INVALID);
 	if (!IS_WHITESPACE(line[i]))
 	{
-		while (i != ui->line_len && line[i] != '\\' && line[i + 1] != '\n')
+		while (i != ui->line_len && !(line[i] == '\\' && line[i + 1] == '\n'))
 		{
 			if (IS_WHITESPACE(line[i]))
 				break ;
 			i++;
 		}
 	}
-	while ((i != ui->line_len) && line[i] != '\\' && line[i + 1] != '\n')
+	while ((i != ui->line_len) && !(line[i] == '\\' && line[i + 1] == '\n'))
 	{
 		if (!IS_WHITESPACE(line[i]))
 			break ;
@@ -65,7 +65,7 @@ int		move_line_index_down(char *line, t_interface *ui)
 	cur_i = ui_line->next->start;
 	cur_col = current_column(line, cur_i);
 	target_col = current_column(line, ui->line_index);
-	while (cur_col < target_col && line[cur_i] && line[cur_i] != '\n')
+	while (cur_col < target_col && line[cur_i] && !(line[cur_i] == '\\' && line[cur_i + 1] == '\n'))
 	{
 		cur_i += 1;
 		cur_col = current_column(line, cur_i);
@@ -85,7 +85,7 @@ int		move_line_index_up(char *line, t_interface *ui)
 	cur_i = ui_line->prev->start;
 	cur_col = current_column(line, cur_i);
 	target_col = current_column(line, ui->line_index);
-	while (cur_col < target_col && line[cur_i] && line[cur_i] != '\n')
+	while (cur_col < target_col && line[cur_i] && !(line[cur_i] == '\\' && line[cur_i + 1] == '\n'))
 	{
 		cur_i += 1;
 		cur_col = current_column(line, cur_i);

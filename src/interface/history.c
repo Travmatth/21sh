@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/10 13:32:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 14:55:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ void	print_history(t_interface *ui, char *line, char *next)
 	{
 		if (next[len] == '\n' && !next[len + 1])
 			break ;
+		// DELETE
 		if (next[len] == '\n'
 			&& !escaped(next, len) && len
 			&& next[len - 1] != ';')

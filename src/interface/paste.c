@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:37:28 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 18:20:58 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 14:52:59 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ int		paste_line(t_interface *ui, char *buf, char *line)
 	ft_memmove(&(line[cur->start + len]), &(line[cur->start]), cur->end - cur->start + 1);
 	ft_memcpy(&(line[cur->start]), buf, len);
 	ui->line_len += len;
-	ft_strclr(buf);
 	ft_strclr(&line[ui->line_len]);
 	set_cursor(ui, 0);
 	if (ERR(calculate_uilines(line, ui)))
