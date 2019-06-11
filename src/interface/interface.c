@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 21:44:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 15:46:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ int		accept(char **str, t_interface *ui, char **tmp, size_t len)
 	status = init_accept(str, ui, *tmp, &i);
 	while (OK(status) && (*tmp)[i] && (end = ERROR))
 	{
-		if ((*tmp)[i] == '\\' && (*tmp)[i + 1] == '\n')
-			i += 2;
+		if ((*tmp)[i] == '\\' && (*tmp)[i + 1] == '\n' && (i += 2))
+			continue ;
 		else if (OK((status = parse_all(tmp, i, (&end), NULL)))
 			&& end != (size_t)ERROR)
 		{
