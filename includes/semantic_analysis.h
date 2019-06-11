@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/30 11:10:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 13:41:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,42 +14,66 @@
 # define SEMANTIC_ANALYSIS_H
 
 # include "syntactic_analysis.h"
+# include "execution_constructs.h"
 
+# define IS_TERMINAL(x) (x >= 1 && x <= 24)
 # define IS_A(type, node) (!ft_strcmp(type, node))
 # define CONTAINS(type, node) (ft_strstr(node, type))
 # define ERR_UNSET_PARAM "Semantic Error: word unset in ${parameter[:]?[word]}"
 # define CMD_SUB_ERR "Semantic Error: Command Substitution not implemented\n"
 
-/*
-** Signature of shell builtin functions
-*/
-
-typedef int		(*t_builtinf)(int argc, char **argv);
-
-# define TOTAL_BUILTINS 6
-
-/*
-** Structs used to match name of builtin to its function pointer
-*/
-
-typedef struct	s_builtin
+enum			e_index
 {
-	char		*cmd;
-	t_builtinf	f;
-}				t_builtin;
+	I,
+	J
+};
 
 /*
-** Global variable holding structs mapping builtin names to function pointers
+** Struct used in managing heredoc's accepting characters to add to line
 */
 
-extern t_builtin	g_builtins[];
+typedef struct	s_heredoc
+{
+	char		*buf;
+	char		*tmp;
+	char		*line;
+	size_t		here_end_len;
+	size_t		buf_len;
+	size_t		line_len;
+	int			fd[2];
+}				t_heredoc;
+
+# define CREATE_LINE(h) (!h.line && (!(h.line = ft_strnew(h.here_end_len))))
+# define H_END(h) (h.here_end_len == h.buf_len)
+# define HERE_END_FOUND(n, h, r) (n == '\n' && H_END(h) && IS_A(r->word, h.buf))
+# define BUF_FULL(f, h, n) (!f && (h.here_end_len == h.buf_len || n == '\n'))
+# define E_CLOSE(h, tty) (ERR(restore_terminal(&tty[1])) || ERR(close(h.fd[1])))
+# define RESTORE_HERE_END(h, tty) ((E_CLOSE(h, tty)))
+
+/*
+** Struct used in managing splitting line into fields used by execve
+*/
+
+typedef struct	s_field_split
+{
+	size_t		skip;
+	int			i;
+	int			start;
+	int			size;
+	char		**arr;
+}				t_field_split;
+
+# define NOT_IFS(p, f) ((*p)[f.i] && (!IS_IFS((*p)[f.i]) || escaped(*p, f.i)))
+# define NEW_STR(p, fs) (ft_strsub(*p, fs.start, fs.i - fs.start))
+# define NEW_SUB(p, fs) ((fs.arr[fs.size++] = NEW_STR(p, fs)))
+# define STORE_SUBSTRING(p, fs) ((fs.i - fs.start > 0) && (!NEW_SUB(p, fs)))
 
 /*
 ** When processing simple command in its 5 possible forms, we use enum symbols
 ** to simplify identifying symbol position in ast
 */
 
-enum	e_simple_positions
+enum			e_simple_positions
 {
 	PREFIX,
 	COMMAND,
@@ -79,10 +103,10 @@ enum	e_simple_positions
 /*
 ** Symbols used in parameter expansion to identify given part of
 ** paramter, as given by the syntax
-** FULL_PARAM = {NAME[TEST][SUBTYPE]WORD} 
+** FULL_PARAM = {NAME[TEST][SUBTYPE]WORD}
 */
 
-enum						e_expansion_symbol
+enum			e_expansion_symbol
 {
 	FULL_PARAM,
 	NAME,
@@ -91,287 +115,189 @@ enum						e_expansion_symbol
 };
 
 /*
-** Types used by execution to differentiate types of redirections specified
-*/
-
-typedef struct	s_redir_cnv
-{
-	int			parse_tok;
-	int			redir_tok;
-}				t_redir_cnv;
-
-enum						e_redir_type
-{
-	REDIR_GT,
-	REDIR_LT,
-	REDIR_DLESS,
-	REDIR_DGREAT,
-	REDIR_LESSAND,
-	REDIR_GREATAND,
-	REDIR_LESSGREAT,
-	REDIR_DLESSDASH,
-	REDIR_CLOBBER
-};
-
-# define TOTAL_REDIRS 9
-
-/*
-** Types used by execution to differentiate types of nodes tree contains 
-*/
-
-enum						e_exec_token_type
-{
-	EXEC_NONE,
-	EXEC_SIMPLE_COMMAND,
-	EXEC_PIPE,
-	EXEC_AND,
-	EXEC_OR,
-	EXEC_OP
-};
-
-/*
-** The output of the semantic tree is the t_program struct, which contains
-** and array of t_exec_nodes. An exec node may be one of three types -
-** logical (representing && || operations), pipes (representing |), 
-** or simple commands (representing simple commands). These represtive structs
-** are stored in a union, and the type member of the t_exec_node specifies
-** which is contained within
-*/
-
-struct						s_operator;
-struct						s_simple_command;
-struct						s_pipe;
-
-typedef struct				s_exec_node
-{
-	union
-	{
-		struct s_operator		*operator;
-		struct s_simple_command	*simple_command;
-		struct s_pipe			*pipe;
-	};
-	int						type;
-}							t_exec_node;
-
-/*
-** Every command may have an associated list of redirections
-*/
-
-struct						s_redir;
-
-typedef struct				s_redir
-{
-	char					*word;
-	struct s_redir			*next;
-	int						type;
-	int						original;
-	int						replacement;
-	int						heredoc_quoted;
-}							t_redir;
-
-/*
-** simple command tokens represent discrete commands
-** which consist of command array & redirection chain
-*/
-
-typedef struct				s_simple_command
-{
-	char					**command;
-	t_redir					*redirs;
-	t_builtinf				builtin;
-	int						bg;
-	int						bang;
-	int						is_exec;
-	int						exit_status;
-	int						argc;
-}							t_simple;
-
-/*
-** pipe tokens represent pipes, where children are pipes or commands
-*/
-
-typedef struct				s_pipe
-{
-	t_exec_node				*left;
-	t_exec_node				*right;
-	int						bg;
-	int						bang;
-	int						exit_status;
-}							t_pipe;
-
-/*
-** operator tokens represent logical operations, where left and right children
-** are other operators, pipes or commands
-*/
-
-typedef struct				s_operator
-{
-	t_exec_node				*left;
-	t_exec_node				*right;
-	int						type;
-	int						bg;
-	int						exit_status;
-}							t_operator;
-
-typedef struct				s_program
-{
-	t_exec_node				**commands;
-}							t_program;
-
-/*
 ** src/semantic_analysis/affixes.c
 */
 
-int		io_file(t_simple *cmd, int io_num, t_ast_node *root);
-int		io_number(int *io_num, t_ast_node *root);
-int		io_here(t_simple *cmd, int io_num, t_ast_node *root);
-int		io_redirect(t_simple *cmd, t_ast_node *root);
-int		prefix(t_simple *cmd, t_ast_node *root);
-int		suffix(t_simple *cmd, t_ast_node *root);
+int				io_here(t_simple *cmd, int io_num, t_ast_node *root);
+int				io_redirect(t_simple *cmd, t_ast_node *root);
+int				prefix(t_simple *cmd, t_ast_node *root);
+int				suffix_word(t_simple *cmd, t_ast_node *root, int position);
+int				suffix(t_simple *cmd, t_ast_node *root);
 
 /*
 ** src/semantic_analysis/command.c
 */
 
-int		cmd_name(t_simple *simple, t_ast_node *root);
-void	simple_positions(char *form, int position[3]);
-int		simple_command(t_simple *simple, t_ast_node *root);
-int		command(t_exec_node *container, t_ast_node *root, int bg, int bang);
+int				cmd_name(t_simple *simple, t_ast_node *root);
+void			simple_positions(char *form, int position[3]);
+int				simple_command(t_simple *simple, t_ast_node *root);
+int				command(t_exec_node *container
+						, t_ast_node *root
+						, int bg
+						, int bang);
 
 /*
-** src/semantic_analysis/parameter_expansion_actions.c
+** src/semantic_analysis/here_end_utils.c
 */
 
-int		substitute_word(char **parameter, char *param[3]);
-int		substitute_parameter(char **parameter, char *env_lookup);
-int		substitute_null(char **parameter);
-int		assign_word(char **parameter, char *param[3]);
-int		error_exit(char **parameter, char *param[3]);
+int				init_heredoc(t_redir *redir
+							, t_heredoc *heredoc
+							, struct termios tty[2]
+							, int *found);
+int				handle_full_buffer(t_heredoc *heredoc);
+int				add_newline_char(t_redir *redir, t_heredoc *heredoc);
+int				remove_last_char(t_heredoc *heredoc);
+void			add_next_char(t_heredoc *heredoc, char *next);
 
 /*
 ** src/semantic_analysis/pipe.c
 */
 
-int		pipe_sequence(t_exec_node *container, t_ast_node *root, int bg, int bang);
-int		pipeline(t_exec_node *container, t_ast_node *root, int bg);
+int				pipe_sequence(t_exec_node *container
+							, t_ast_node *root
+							, int bg
+							, int bang);
+int				pipeline(t_exec_node *container, t_ast_node *root, int bg);
+
+/*
+** src/semantic_analysis/process_here_end.c
+*/
+
+int				here_end_found(void);
+int				process_heredoc(t_redir *redir);
 
 /*
 ** src/semantic_analysis/redir_utils.c
 */
 
-int		push_redir(t_simple *cmd, t_redir *redir);
-int		get_filename(char **filename, t_ast_node *root);
-int		process_redir(t_redir *redir, int io_num, char *filename, int type);
-int		create_redir(t_redir **redir, t_ast_node *root, char **file);
+int				push_redir(t_simple *cmd, t_redir *redir);
+int				get_filename(char **filename, t_ast_node *root);
+void			redir_not_implemented(char **name, int type);
+int				process_redir(t_redir *redir
+							, int io_num
+							, char *filename
+							, int type);
+int				create_redir(t_redir **redir, t_ast_node *root, char **file);
 
 /*
 ** src/semantic_analysis/semantic.c
 */
 
-char	**push_pointer_back(char **pointers, t_ast_node *node);
-void	**push_pointer_front(void **pointers, void *ptr);
-int		and_or(t_exec_node *container, t_ast_node *root, int is_bg);
-int		list(t_program *p, t_ast_node *root, int last_is_bg);
-int		semantic_analysis(t_ast *ast, t_program *program);
+int				and_or(t_exec_node *container, t_ast_node *root, int is_bg);
+int				list(t_program *p, t_ast_node *root, int last_is_bg);
+int				semantic_analysis(t_ast *ast, t_program *p);
+
+/*
+** src/semantic_analysis/semantic_utils.c
+*/
+
+int				io_file(t_simple *cmd, int io_num, t_ast_node *root);
+int				io_number(int *io_num, t_ast_node *root);
+void			free_ast_node(t_ast_node *root);
+void			free_ast(t_ast *ast);
 
 /*
 ** src/semantic_analysis/separator.c
 */
 
-int		separator_op_is_linebreak(int *is_bg, t_ast_node *root);
-int		separator(int *is_bg, t_ast_node *root);
+int				separator_op_is_linebreak(int *is_bg, t_ast_node *root);
+int				separator(int *is_bg, t_ast_node *root);
 
 /*
 ** src/semantic_analysis/verify_command.c
 */
 
-int		find_exec(char *command);
-int		find_command(char **command, char **paths, int i, int found);
-int		load_builtin(t_simple *simple);
-int		verify_command(t_simple *simple);
+int				load_exec(t_simple *simple);
+int				load_builtin(t_simple *simple);
+int				find_exec(char *command);
+int				find_command(char **command, char **paths, int i, int found);
+int				verify_command(t_simple *simple);
 
 /*
 ** src/semantic_analysis/expansions/arithmetic_expansion.c
 */
 
-int		arithmetic_expansion(char **parameter);
+int				arith_exp_err(char **str, int start, int end);
+int				arithmetic_expansion(char **parameter);
 
 /*
 ** src/semantic_analysis/expansions/command_substitution.c
 */
 
-int		process_backtick(char *cmd, int *skip);
-int		process_arithmetic(char *cmd, int *skip);
-int		process_paren(char *cmd, int *skip);
-int		process_backtick(char *cmd, int *skip);
-int		command_substitution(char **parameter);
+int				cmd_sub_err(char **str, int start, int end);
+int				command_substitution(char **parameter);
 
 /*
 ** src/semantic_analysis/expansions/expansion.c
 */
 
-int		full_word_expansion(char ***new, char *old);
-int		param_expansion(char **new, char *old);
-int		heredoc_expansion(t_redir *redir, char **new, char *old);
-int		redir_expansion(char **new, char *old);
-int		heredoc_line_expansion(char **new, char *old);
-
-/*
-** src/semantic_analysis/expansions/field_splitting.c
-*/
-
-int		field_splitting(char ***fields, char **parameter);
-
-/*
-** src/semantic_analysis/expansions/parameter_expansion.c
-*/
-
-int		join_unexpanded(char **new, char **str, size_t *i);
-int		manage_expansions(char **new, char **str, size_t *skip);
-int		parameter_expansion(char **parameter);
+int				full_word_expansion(char ***new, char *old);
+int				param_expansion(char **new, char *old);
+int				heredoc_expansion(t_redir *redir, char **new, char *old);
+int				heredoc_line_expansion(char **new, char *old);
+int				redir_expansion(char **new, char *old);
 
 /*
 ** src/semantic_analysis/expansions/expansion_subtypes.c
 */
 
-int		plain_param_expansion(char **parameter, char *var, size_t *i);
-int		use_defaults_param_expansion(char **parameter, char *var, size_t *i);
-int		assign_defaults_param_expansion(char **parameter, char *var, size_t *i);
-int		error_unset_param_expansion(char **parameter, char *var, size_t *i);
-int		alternative_param_expansion(char **parameter, char *var, size_t *i);
+int				swap_param(char **parameter, char *param[3], int quoted);
+int				positional_param(void);
+int				plain_param_expansion(char **parameter, char *var, size_t *i);
+
+/*
+** src/semantic_analysis/expansions/field_splitting.c
+*/
+
+int				count_fields(char **str, int *count);
+int				init_field_split(t_field_split *fs, char **parameter);
+int				field_splitting(char ***fields, char **parameter);
+
+/*
+** src/semantic_analysis/expansions/parameter_expansion.c
+*/
+
+int				store_unexpanded(char **new
+								, char **str
+								, size_t start
+								, size_t *i);
+int				join_unexpanded(char **new, char **str, size_t *i);
+int				switch_expansion(char *param, char **next, size_t *i);
+int				manage_expansions(char **new, char **str, size_t *skip);
+int				parameter_expansion(char **str);
 
 /*
 ** src/semantic_analysis/expansions/parameter_expansion_utils.c
 */
 
-char	*find_end_brace(char *param);
-int		init_param_state(char *param[3], size_t len[4], char sep, char *str);
-int		create_param_state(char *param[3], size_t len[3]);
-int		enclosed(char *str, char c);
+char			*find_end_brace(char *param);
+void			init_plain_exp(char *param[6], size_t len[4], char *str);
+int				init_param(char *param[6], size_t len[4], char sep, char *str);
+int				create_param(char *param[3], size_t len[3]);
+int				enclosed(char *str, char c);
 
 /*
 ** src/semantic_analysis/expansions/pathname_expansion.c
 */
 
-int		expand_pathname(char **field);
-int		pathname_expansion(char ***fields);
+int				find_pathname_end(char *str, int *skip);
+int				expand_pathname(char **field);
+int				pathname_expansion(char ***fields);
 
 /*
 ** src/semantic_analysis/expansions/quote_removal.c
 */
 
-int		remove_quotes(char **str);
-int		quote_removal(char ***fields);
+int				remove_quotes(char **str);
+int				quote_removal(char ***fields);
+void			remove_quote_switch(char *quote
+								, char **str
+								, char *new
+								, int index[2]);
 
 /*
 ** src/semantic_analysis/expansions/tilde_expansion.c
 */
 
-int		tilde_expansion(char **parameter);
-
-/*
-** src/execution/here_end_utils.c
-*/
-
-int		process_heredoc(t_redir *redir);
+int				tilde_expansion(char **parameter);
 #endif

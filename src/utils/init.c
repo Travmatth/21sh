@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/08 12:19:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/09 18:20:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 	char		**prod_rule;
 
 	i = 0;
-	while (42)
+	while (TRUE)
 	{
 		free(*line);
 		if (ERR((status = get_next_line(fd, line))))
@@ -35,41 +35,48 @@ t_prod	*init_prods(int fd, t_prod *prods, char **line)
 		else if (NONE(status))
 			return (prods);
 		prod = &prods[i++];
-		if (!(prod_rule = ft_strsplit(*line, '#')))
+		if (!(prod_rule = ft_strsplit(*line, '#'))
+			|| !(prod->lhs = ft_strdup(prod_rule[0]))
+			|| (prod_rule[1] && !(prod->rhs = ft_strsplit(prod_rule[1], ' '))))
 			return (NULL);
-		prod->lhs = prod_rule[0];
-		if (prod_rule[1] && !(prod->rhs = ft_strsplit(prod_rule[1], ' ')))
-			return (NULL);
+		ft_freearr(prod_rule, TRUE);
 	}
 }
 
 /*
 ** Process existing environment variables of environment 21sh was launched in
 ** and store internally for use as internal environment, for use in builtins
-** and launching child processes with execve
+** and launching child processes with execve. Increments $SHLVL, which tracks
+** level of shell nesting.
 */
 
 int		init_environ(int argc, char **argv, char **environ)
 {
 	int			i;
-	int			total;
+	int			n;
+	char		*shlvl;
 
 	i = 0;
 	while (environ[i])
 		i += 1;
-	total = i + (argc > 1 ? argc - 1 : 0);
-	if (!(g_environ = (char**)ft_memalloc(sizeof(char*) * (total + 1))))
-		return ERROR;
+	n = i + (argc > 1 ? argc - 1 : 0);
+	if (!(g_environ = (char**)ft_memalloc(sizeof(char*) * (n + 1))))
+		return (ERROR);
 	i = -1;
 	while (environ[++i])
 		if (!(g_environ[i] = ft_strdup(environ[i])))
-			return ERROR;
+			return (ERROR);
 	i = 0;
 	while (--argc)
-		if (!(g_environ[(total ? total - 1 : total) + i++] =
-			ft_strdup(argv[argc])))
-			return ERROR;
-	return SUCCESS;
+		if (!(g_environ[(n ? n - 1 : n) + i++] = ft_strdup(argv[argc])))
+			return (ERROR);
+	if (!(shlvl = get_env_var("SHLVL")))
+		shlvl = "0";
+	i = ft_atoi(shlvl);
+	shlvl = ft_itoa(i + 1);
+	set_env_var("SHLVL", shlvl);
+	free(shlvl);
+	return (SUCCESS);
 }
 
 /*
@@ -79,7 +86,7 @@ int		init_environ(int argc, char **argv, char **environ)
 ** cursor position to the top of the screen
 */
 
-int		init_shell(void)
+int		init_shell(t_interface *ui)
 {
 	int		fd;
 	char	*tty_id;
@@ -95,12 +102,15 @@ int		init_shell(void)
 			|| ERR(close(fd)))
 			return (ERROR);
 	}
-	if (NONE((type = get_env_var("TERM")))
-		|| ERR(tgetent(buf, type))
+	if (NONE((type = get_env_var("TERM"))) || ERR(tgetent(buf, type))
 		|| ERR(tputs(tgetstr("ti", NULL), 1, ft_termprint))
 		|| ERR(tputs(tgoto(tgetstr("cm", NULL), 0, 0), 1, ft_termprint))
 		|| ERR(tputs(tgetstr("cd", NULL), 1, ft_termprint)))
 		return (ERROR);
+	ft_bzero(ui, sizeof(t_interface));
+	init_select(ui);
+	init_history(&ui->h_list);
+	ioctl(STDIN, TIOCGWINSZ, &ui->ws);
 	return (SUCCESS);
 }
 
@@ -119,17 +129,33 @@ int		init_parser(void)
 	line = NULL;
 	if (ERR((fd = open("misc/productions.txt", O_RDONLY)))
 		|| !OK(get_next_line(fd, &line)))
-		return ERROR;
+		return (ERROR);
 	size = ((size_t)ft_atoi(line) + 1) * sizeof(t_prod);
 	if (!(productions = (t_prod*)ft_memalloc(size))
 		|| !(g_prods = init_prods(fd, productions, &line)))
-		return ERROR;
-	return SUCCESS;
+		return (ERROR);
+	return (SUCCESS);
 }
 
-int		restore_shell(void)
+/*
+** Clean shell state on exit
+** free environment variables and interface struct, close open files descriptors
+*/
+
+int		restore_shell(t_interface *ui)
 {
 	if (ERR(tputs(tgetstr("te", NULL), 1, ft_termprint)))
 		return (ERROR);
+	if ((get_env_var("SHELL_TTY")))
+	{
+		if (ERR(close(STDIN))
+			|| ERR(close(STDOUT))
+			|| ERR(close(STDERR)))
+			return (ERROR);
+	}
+	close(ui->h_list.fd);
+	free_history(ui->h_list.hst);
+	free_uiline(&ui->ui_line);
+	ft_freearr(g_environ, TRUE);
 	return (SUCCESS);
 }

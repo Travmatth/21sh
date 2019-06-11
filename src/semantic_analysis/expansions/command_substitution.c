@@ -6,28 +6,25 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/16 14:27:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:32:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../../../includes/shell.h"
 
 /*
 ** 21sh does not support command substitution, so on detection of an command
-** substitution shell should fail gracefully so that next command may be inputted
+** substitution shell should fail gracefully so that
+** next command may be inputted
 */
 
 int		cmd_sub_err(char **str, int start, int end)
 {
-	(void)str;
-	(void)start;
 	(void)end;
-	if (ERR(end))
-		return (NIL);
-	else if (BACKTICK((*str), start) || CMD_SUB((*str), start))
+	if (BACKTICK((*str), start)
+		|| (CMD_SUB((*str), start) && !ARITH_EXP((*str), start)))
 	{
-		ft_printf("Semantic Error: command substitution not implemented\n");
+		ft_putendl("Semantic Error: command substitution not implemented");
 		return (NIL);
 	}
 	return (SUCCESS);
@@ -114,11 +111,9 @@ int		command_substitution(char **parameter)
 	{
 		if (name[i] == '\\')
 			i += 1;
-		else if (BACKTICK(name, i) && OK((state = backtick(&name, i, &end, cmd_sub_err))))
-			i += end;
-		else if (ARITH_EXP(name, i) && OK((state = arith_exp(&name, i, &end, NULL))))
-			i += end;
-		else if (CMD_SUB(name, i) && OK((state = command_sub(&name, i, &end, cmd_sub_err))))
+		else if ((P_BACKTICK(state, (&name), cmd_sub_err, i, (&end)))
+			|| (P_ARITH(state, (&name), cmd_sub_err, i, (&end)))
+			|| (P_CMD(state, (&name), cmd_sub_err, i, (&end))))
 			i += end;
 		i += 1;
 	}

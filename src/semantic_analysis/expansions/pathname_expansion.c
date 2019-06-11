@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:44:02 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/15 18:00:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/28 14:51:41 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ int		pathname_expansion(char ***fields)
 	int		status;
 
 	i = 0;
+	status = SUCCESS;
 	while ((*fields)[i])
 		if (!OK((status = expand_pathname(&(*fields)[i++]))))
 			break ;

@@ -6,24 +6,23 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:49:59 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/26 15:31:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/31 15:36:09 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef RESERVED_WORD_H
 # define RESERVED_WORD_H
 
-#ifndef LIBFT_H
-# include "../libftprintf/srcs/includes/ft_printf.h"
-#endif
+# ifndef LIBFT_H
+#  include "../libftprintf/srcs/includes/ft_printf.h"
+# endif
 
 /*
 ** Reserved word DFA symbols used to match given tokens
 ** to specific reserved words
 */
 
-enum	e_reserved_ops
+enum			e_reserved_ops
 {
 	RESERVED_IF,
 	RESERVED_THEN,
@@ -43,8 +42,8 @@ enum	e_reserved_ops
 	RESERVED_IN
 };
 
-#define RESERVED_WORD_CONVERSIONS 16
-#define RESERVED_LEX_ERR "Lexical Error: Unimplemented reserved word: %s\n"
+# define RESERVED_WORD_CONVERSIONS 16
+# define RESERVED_LEX_ERR "Lexical Error: Unimplemented reserved word: %s\n"
 
 /*
 ** Reserved word struct used to translate given token to
@@ -56,11 +55,4 @@ typedef struct	s_reserved_conversion
 	char	*reserved;
 	int		symbol;
 }				t_reserved_conversion;
-
-/*
-** src/lexical_analysis/reserved_dfa.c
-*/
-
-struct			s_token;
-int				process_reserved(struct s_token *token);
 #endif

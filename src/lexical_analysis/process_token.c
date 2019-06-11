@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 16:38:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:12:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,81 +38,6 @@ t_token_cnv	g_tok_cnv[OP_TOKEN_CONVERSIONS] =
 	{ DLESSDASH, PARSE_DLESSDASH },
 	{ CLOBBER, PARSE_CLOBBER }
 };
-
-/*
-** Since lexical and syntactic analysis use separate and unique enums
-** to identify given tokens, conversion between the two types is necessary
-*/
-
-int		convert_token(t_token *token)
-{
-	int		i;
-
-	i = -1;
-	while (++i <= OP_TOKEN_CONVERSIONS)
-	{
-		if (token->type == g_tok_cnv[i].lex_tok)
-		{
-			token->type = g_tok_cnv[i].parse_tok;
-			return (SUCCESS);
-		}
-	}
-	return (ERROR);
-}
-
-int		next_equals(char **str, size_t *i)
-{
-	size_t	end;
-	int		s;
-
-	s = SUCCESS;
-	while (OK(s) && (*str)[*i])
-	{
-		if ((*str)[*i] == '\\')
-			*i += 1;
-		else if ((SNGL_QUOTE((*str), *i) && OK((s = quote(str, *i, &end, NULL))))
-			|| (DBL_QUOTE((*str), *i) && OK((s = dbl_quote(str, *i, &end, NULL))))
-			|| (ARITH_EXP((*str), *i) && OK((s = arith_exp(str, *i, &end, NULL))))
-			|| (CMD_SUB((*str), *i) && OK((s = command_sub(str, *i, &end, NULL))))
-			|| (BACKTICK((*str), *i) && OK((s = backtick(str, *i, &end, NULL))))
-			|| (((*str)[*i] == '$' && (NEXT_BRACE((*str), (*i)))) && OK((s = param_exp(str, *i, &end, NULL)))))
-			*i += end;
-		else if (OK(s) && (*str)[*i] == '=')
-		{
-			s = NIL;
-			break ;
-		}
-		*i += 1;
-	}
-	return (s);
-}
-
-/*
-** 21sh does not implement variable assignment, so returning NIL
-** gracefully fails current command execution and allows shell
-** to accept next command to execute
-*/
-
-int		process_assignment(t_token *token)
-{
-	size_t	i;
-	int		status;
-	char	*contents;
-
-	if (!(contents = (char*)ft_strdup(token->value->buf)))
-		return (ERROR);
-	i = 0;
-	status = SUCCESS;
-	if (ERR(next_equals(&contents, &i)))
-		return (ERROR);
-	else if (contents[i] == '=')
-	{
-		ft_putendl("Lexical Error: variable assignment not implemented");
-		status = NIL;
-	}
-	free(contents);
-	return (status);
-}
 
 /*
 ** After a token has been delimited, but before applying the grammatical rules
@@ -151,49 +76,58 @@ int		substitute_alias(t_token *token)
 ** type. If neither are true, the given lexical type of the token is converted
 ** to the equivalent syntactical type of the token so as to be able to be used
 ** in later syntactic analysis
+** Since lexical and syntactic analysis use separate and unique enums
+** to identify given tokens, conversion between the two types is necessary
 */
 
-int		process_token(t_token *token)
+int		process_token(t_token *token, t_lctx *ctx)
 {
 	int		status;
+	int		i;
 
 	status = SUCCESS;
 	if (!OK((status = substitute_alias(token)))
-		|| !OK((status = process_reserved(token)))
-		|| !OK((status = process_assignment(token)))
-		|| !OK((status = convert_token(token))))
+		|| !OK((status = process_reserved(token, ctx))))
 		return (status);
-	return (status);
+	i = -1;
+	while (++i <= OP_TOKEN_CONVERSIONS - 1)
+	{
+		if (token->type == g_tok_cnv[i].lex_tok)
+		{
+			token->type = g_tok_cnv[i].parse_tok;
+			return (SUCCESS);
+		}
+	}
+	return (NIL);
 }
 
 /*
 ** Once a token is delimited, it is processed by process_token and then
 ** embedded into an ast_node, which is then ast_node is embedded into a
 ** stack_token. The stack_token is pushed onto the list of stack_tokens
-** which will later be processed in syntactical analysis. 
+** which will later be processed in syntactical analysis.
 */
 
 int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 {
 	t_ast_node	*ast_node;
-	t_stack		*stack_node;
+	t_stack		stack_node;
 	int			status;
 
-	if (!OK((status = process_token(token)))
+	if (!OK((status = process_token(token, ctx)))
 		|| !(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node)))
-		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2))
-		|| !(ast_node->val[0] = ft_strdup((char*)token->value->buf)))
+		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2)))
 		return (OK(status) ? ERROR : status);
+	ast_node->val[0] = token->value->buf;
 	ast_node->type = token->type;
-	if (!(stack_node = (t_stack*)ft_memalloc(sizeof(t_stack))))
-		return (ERROR);
-	stack_node->type = STACK_TOKEN;
-	stack_node->item.token = ast_node;
-	if (!(node = ft_lstnew(stack_node, sizeof(t_stack))))
+	stack_node.type = STACK_TOKEN;
+	stack_node.item.token = ast_node;
+	if (!(node = ft_lstnew(&stack_node, sizeof(t_stack))))
 		return (ERROR);
 	ft_lstpushback(tokens, node);
 	ctx->in_word = FALSE;
 	ctx->op_state = FALSE;
+	free(token->value);
 	token->type = NIL;
 	token->value = NULL;
 	return (SUCCESS);

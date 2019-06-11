@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/30 11:09:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 17:27:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/02 13:05:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,5 @@ int		restore_terminal(struct termios *tty)
 
 int		ft_termprint(int c)
 {
-	return write(1, &c, 1);
+	return (write(1, &c, 1));
 }

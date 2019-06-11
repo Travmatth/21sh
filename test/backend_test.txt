@@ -1,0 +1,130 @@
+# simple tests WORKING
+ls
+ls tmp
+ls -l
+echo $
+
+# simple io WORKING
+cat author > tmp
+cat < tmp
+rm tmp
+
+# env var tests
+echo $0 #positional params not implemented
+echo ${0} #positional params not implemented
+echo $FOO
+echo $HOME
+echo ${HOME}
+echo ${UNSET_ENV_VAR}
+echo ${A-FOO} #default params not implemented
+echo ${A=FOO} #default assign params not implemented
+echo ${A?FOO} #error unset params not implemented
+echo ${A+FOO} #alternative params not implemented
+echo ${} #sh ${}: bad substitution
+echo ${echo foo};
+
+# semicolon separated commands
+echo foo; echo bar; 
+
+# test escaping chars
+echo \$HOME
+echo \2>tmp # write character 2 into file tmp_a 
+cat tmp
+rm tmp
+echo 2\>a # write characters 2>a to STDOUT
+
+# test single quotes
+echo '='
+
+# test double quotes
+	 	echo 	 	 "\nthis should"	 	"work";
+echo	"\"this should"		\"too		;
+echo "asdf"=
+echo "="
+echo "simple";
+echo ""
+
+# test arith expansions
+echo $((asdf"))=as
+echo $((=))
+$((1 + 1));
+
+# test command substitution
+echo `asdf`=as
+echo `=`
+echo $(=)
+echo $(echo bar);
+echo $(echo foo);
+echo `echo $HOME`
+echo $(echo $)
+echo $(echo $HOME)
+
+# test nested arith expansions
+echo $(((1 + 2) + 1))
+
+# test mixed quoting, expansions and substitutions
+echo ${HOME}asdf'echo $HOME'$HOME'ignore$HOME'$HOME
+echo 'foo '"'"'bar'"'"'baz'"'"'bax'"'";
+$($("foo"));
+
+# test subshell & braced groups
+echo \$(i)
+echo \$((i))
+(c)
+{c}
+
+# redir tests
+exec 6>&1           # Link file descriptor #6 with stdout, save stdout
+exec > tmp_out_log     # stdout replaced with file "logfile.txt".
+# All output from commands in this block sent to file $LOGFILE.
+ls -al
+echo; echo
+exec 1>&6 6>&-      # Restore stdout and close file descriptor #6.
+echo tmp_out_log
+cat tmp_out_log
+rm tmp_out_log
+
+# pipe tests
+ls | head -2
+ls | cat | head -3
+echo hello && echo world | tr a-z A-Z
+# then you'll get
+# hello
+# WORLD
+# back: tr a-z A-Z upper-cases its input, and you can see that
+# only echo world was piped into it
+# while echo hello went through on its own.
+ls -l -R | grep "\.txt$";
+
+# logical tests
+cat foo || echo this
+cat author || echo this
+cat foo && echo this
+cat author && echo this
+cat foo || echo not this
+echo this && echo and this
+echo this && echo and this || echo not this
+echo this && cat foo || echo and this
+cat foo || echo this && echo and this
+
+# Testing append, inout & dup in/out
+cat author >> tmp_aid_test.log
+exec 5<> tmp_aid_test.log
+cat <&5
+exec 5>&-
+rm tmp_aid_test.log
+
+echo "finished tests";
+exit
+# test missing quotes, cannot test from file
+#echo 	 	 "\nthis should not;
+#echo 	 	 "\nthis should not" ';
+#echo 	 	 "'\nthis should not';
+#echo `$((${$("'
+#echo "\"l\
+#echo \`i`
+
+# test heredoc, cannot test from input file
+#./test/read_from_fd.py 0 <<EOF
+#./test/read_from_fd.py 0 0<<EOF
+#./test/read_from_fd.py 5 5<<EOF

@@ -6,137 +6,79 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/29 13:21:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 17:27:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/03 12:35:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-/*
-** Returns next closing character sequence needed to correctly close
-** given command
-*/
-
-int		next_missing_symbol(t_list *missing)
+int		prep_missing_terminal(struct termios tty[2]
+							, char **line
+							, char next[2]
+							, int *len)
 {
-	t_list	*node;
-	int		type;
-
-	if (!(node = ft_lstpeekhead(missing)))
-		return (NIL);
-	type = *(short*)node->content;
-	return (type);
-}
-
-/*
-** When given command has elements that are not properly closed, the sequence
-** of quotes or command substitutions are saved so as to allow correct sequence
-** of closing characters needed.
-*/
-
-int		push_missing_symbol(short type, t_list **missing)
-{
-	t_list	*node;
-
-	if (!(node = ft_lstnew(&type, sizeof(short))))
+	ft_putstr("> ");
+	*len = 0;
+	next[1] = '\0';
+	if (!(*line = ft_strnew(0))
+		|| ERR(prep_terminal(tty, ~(ISIG | ICANON | ECHO), 1, 0)))
 		return (ERROR);
-	ft_lstpushfront(missing, node);
 	return (SUCCESS);
 }
 
-/*
-** When needed closing character detected, it's corresponding opening sequence
-** can be popped from the stack. When stack is empty command is correctly
-** closed.
-*/
-
-int		pop_missing_symbol(t_list **missing, short *type)
+int		restore_missing_terminal(t_list **tokens
+							, char *input
+							, char *line
+							, char *tmp)
 {
-	t_list	*node;
-
-	node = ft_lsthead(missing);
-	if (type)
-		*type = *(short*)node->content;
-	free(node->content);
-	free(node);
-	return (SUCCESS);
+	ft_putchar('\n');
+	if (!(tmp = ft_strjoin(input, line)))
+		return (ERROR);
+	free(line);
+	return (lexical_analysis(tmp, tokens));
 }
 
-void	print_missing_sym(t_list *elem)
+void	add_missing_char(char **line, char *tmp, int *len, char c)
 {
-	short	sym;
-
-	sym = *(short*)elem->content;
-	if (sym == QUOTE)
-		ft_putstr("QUOTE ");
-	else if (sym == DQUOTE)
-		ft_putstr("DQUOTE ");
-	else if (sym == BRACE_SUB)
-		ft_putstr("BRACE_SUB ");
-	else if (sym == MATH_SUB)
-		ft_putstr("MATH_SUB ");
-	else if (sym == CMD_SUB)
-		ft_putstr("CMD_SUB ");
-	else if (sym == BQUOTE)
-		ft_putstr("BQUOTE_SUB ");
-	else if (sym == BACKSLASH_ESC)
-		ft_putstr("BACKSLASH ");
+	free(*line);
+	*line = tmp;
+	*len += 1;
+	if (c != '\n')
+		ft_putchar(c);
 }
 
-/*
-**
-*/
+int		manage_backspace(char *line, int *len)
+{
+	*len -= 1;
+	line[*len] = '\0';
+	return (write(STDIN, "\b \b", 3));
+}
 
-int		manage_missing_closures(char *input,t_list **tokens, t_list **missing)
+int		manage_missing_closures(char *input, t_list **tokens, t_list **missing)
 {
 	char			next[2];
 	struct termios	tty[2];
 	int				status;
-	char			*line;
-	char			*tmp;
+	char			*new[2];
 	int				len;
-	
-	ft_lstdel(tokens, del_token);
-	*tokens = NULL;
-	ft_lstiter(*missing, print_missing_sym);
-	ft_lstdel(missing, del_missing);
-	*missing = NULL;
-	ft_putstr("> ");
-	len = 0;
-	next[1] = '\0';
-	if (!(line = ft_strnew(0))
-		|| ERR((status = prep_terminal(tty, ~(ISIG | ICANON | ECHO), 0, 0))))
-		return (ERROR);
+
+	clear_current_tokens(tokens, missing);
+	status = prep_missing_terminal(tty, &new[LINE], next, &len);
 	while (OK(status) && !ERR((status = read(STDIN, &next, 1))))
 	{
 		if (next[0] == INTR || next[0] == EOF)
 			status = NIL;
-		else if (next[0] == '\n')
-		{
-			ft_putchar(next[0]);
-			break ;
-		}
 		else if (next[0] == DEL && len)
-		{
-			line[--len] = '\0';
-			status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
-		}
+			status = ERR(manage_backspace(new[LINE], &len)) ? ERROR : status;
 		else if (next[0] == DEL)
 			continue ;
-		else if (!(tmp = ft_strjoin(line, next)))
+		else if (!(new[TMP] = ft_strjoin(new[LINE], next)))
 			status = ERROR;
 		else
-		{
-			free(line);
-			line = tmp;
-			len += 1;
-			ft_putchar(next[0]);
-		}
+			add_missing_char(&new[LINE], new[TMP], &len, next[0]);
+		if (next[0] == '\n')
+			break ;
 	}
-	if (ERR(restore_terminal(&tty[1])) || ERR(status))
-		return (ERROR);
-	if (!(tmp = ft_strjoin(input, line)))
-		return (ERROR);
-	free(line);
-	return (OK(status) ? lexical_analysis(tmp, tokens) : status);
+	return (ERR(restore_terminal(&tty[1])) ? ERROR
+		: restore_missing_terminal(tokens, input, new[LINE], new[TMP]));
 }

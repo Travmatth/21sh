@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/08 17:28:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/03/12 18:15:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/05/16 12:39:05 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,6 @@
 
 /*
 ** ft_strsum - concatenate a null-delimited array of char pointers
-**
-** DESCRIPTION
-** REWRITE
-** The strcat() and strncat() functions append a copy of the null-terminated
-** string s2 to the end of the null-terminated string s1, then add a termi-
-** nating `\0'.  The string s1 must have sufficient space to hold the
-** result.
-**
-** The source and destination strings should not overlap, as the behavior is
-** undefined.
-**
-** RETURN VALUES
-** The strcat() and strncat() functions return the pointer s1.
-** REWRITE
 */
 
 char	*free_str(char *str)

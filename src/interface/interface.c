@@ -6,316 +6,75 @@
 /*   By: dysotoma <dysotoma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 01:48:53 by dysotoma         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:44:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-// static t_line *init(char c)
-// {
-// 	t_line	*new;
-
-// 	if (!(new = (t_line*)ft_memalloc(sizeof(t_line))))
-// 		return (NULL);
-// 	get_cursor_position(&new->x, &new->y);
-// 	new->c = c;
-// 	new->highlight = 0;
-// 	new->next = NULL;
-// 	new->prev = NULL;
-// 	return (new);
-// }
-
-// static void	move_to(t_interface *ui, )
-// {
-	
-// }
-
-static void insert(char c, char **line, t_interface *interface)
+int		accept(char **str, t_interface *ui, char **tmp, size_t len)
 {
-	interface->written = 1;
-	ft_memmove((void*)(*line + interface->line_index + 1), (void*)(*line +
-	interface->line_index),	INPUT_LEN - interface->line_index - 1);
-	(*line)[interface->line_index] = c;
-	interface->line_len++;
-	interface->line_index++;
-	if (interface->line_index != interface->line_len)
-	{
-		tputs(tgetstr("sc", NULL), 1, ft_termprint);
-		tputs(tgetstr("cd", NULL), 1, ft_termprint);
-		tputs(tgetstr("vi", NULL), 1, ft_termprint);
-		ft_printf("%s\n", *line + interface->line_index - 1);
-		tputs(tgetstr("rc", NULL), 1, ft_termprint);
-		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-		tputs(tgetstr("ve", NULL), 1, ft_termprint);
-	}
-	else
-		write(1, &c, 1);
-}
+	size_t	i;
+	size_t	end;
+	int		status;
 
-static void delete(unsigned long c, char **line, t_interface *ui)
-{
-	if (c == DEL && line && ui->line_index > 0 && (ui->written = 1))
+	status = init_accept(str, ui, *tmp, &i);
+	while (OK(status) && (*tmp)[i] && (end = ERROR))
 	{
-		ft_memmove((void*)(*line + ui->line_index - 1), (void*)(*line +
-		ui->line_index), INPUT_LEN - ui->line_index - 1);
-		(*line)[ui->line_len] = '\0';
-		ui->line_index--;
-		ui->line_len--;
-		// ui->line_row[ui->] % ui->ws.ws_col - 3 == 0 ?  : 0;
-		// ui->line_row[ui->] % ui->ws.ws_col == 0 || (*line)[ui->line_index] = '\n';
-		tputs(tgetstr("le", NULL), 1, ft_termprint);
-		ft_printf("%s%s%s%s%s%s", tgetstr("sc", NULL), tgetstr("vi", NULL),
-		tgetstr("cd", NULL), *line + ui->line_index,
-		tgetstr("rc", NULL), tgetstr("ve", NULL));
-	}
-	else if (c == DEL2 && ui->line_index != ui->line_len && (ui->written = 1))
-	{
-		ft_memmove((void*)(*line + ui->line_index), (void*)(*line +
-		ui->line_index + 1), INPUT_LEN - ui->line_index - 1);
-		(*line)[ui->line_len] = '\0';
-		ui->line_len--;
-		ft_printf("%s%s%s%s%s%s", tgetstr("sc", NULL), tgetstr("vi", NULL),
-		tgetstr("cd", NULL), *line + ui->line_index,
-		tgetstr("rc", NULL), tgetstr("ve", NULL));
-	}
-}
-
-void		history(unsigned long c, char **line, t_h_list *h_list,
-t_interface *interface)
-{
-	//probably better to b_zero and use strcat
-	if (h_list->hst)
-	{
-		if (c == UP && h_list->hst)
-		{	
-			h_list->old = !h_list->old ? *line : h_list->old;
-			*line = h_list->hst->content;
-			if (h_list->hst->prev)
-				h_list->hst = h_list->hst->prev;
-		}
-		else if (c == DOWN && h_list->hst)
+		if ((*tmp)[i] == '\\' && (*tmp)[i + 1] == '\n')
+			i += 2;
+		else if (OK((status = parse_all(tmp, i, (&end), NULL)))
+			&& end != (size_t)ERROR)
 		{
-			h_list->hst = h_list->hst->next;
-			*line = h_list->hst->next ? h_list->hst->content : h_list->old;
+			ft_memcpy(&((*str)[len]), &((*tmp)[i]), end + 1);
+			i += end;
+			len += end;
 		}
-		tputs(tgetstr("vi", NULL), 1, ft_termprint);
-		while (interface->line_index > 0)
-			movement(LEFT, line, interface);
-		tputs(tgetstr("cd", NULL), 1, ft_termprint);
-		ft_printf("%s", *line);
-		tputs(tgetstr("ve", NULL), 1, ft_termprint);
-		interface->line_len = ft_strlen(*line);
-		interface->line_index = interface->line_len;
+		if (OK(status))
+		{
+			(*str)[len++] = (*tmp)[i];
+			i += (*tmp)[i] ? 1 : 0;
+		}
 	}
+	return (!(*tmp)[i] ? SUCCESS : NIL);
 }
 
-/*
-** Read single character from STDIN. Break reading on CTRL-C and delete input
-** on BACKSPACE, otherwise append character to line and echo to STDOUT
-*/
-
-int		interface(char **line)
+int		init_interface(char *tmp, t_interface *ui)
 {
-	static t_interface	interface;
-	static char			tmp[INPUT_LEN];
+	int		i;
+
+	i = 0;
+	while (tmp[i])
+		tmp[i++] = '\0';
+	ui->line_index = 0;
+	ui->line_len = 0;
+	init_select(ui);
+	free_uiline(&ui->ui_line);
+	return (prep_terminal(ui->tty, ~(ICANON | ISIG | ECHO), 1, 0));
+}
+
+int		interface(char **line, char **tmp, t_interface *ui)
+{
 	unsigned long		next;
-	struct termios		tty[2];
 	int					status;
-	size_t				len;
-	int					in_word;
+	int					target;
+	int					cont;
 
-	// interface.h_list.hst = NULL;
-	interface.written = 0;
-	init_history(&interface.h_list); // should be moved to main
-	if (interface.h_list.hst)
-		interface.curr_last_history = interface.h_list.hst->content; //should be in main loop
-	ioctl(STDERR_FILENO, TIOCGWINSZ, &interface.ws);
-	len = 0;
-	*line = tmp;
-	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO), 1, 0);
-	// segments = NULL;
-	in_word = FALSE;
-	while (OK(status))
+	status = init_interface(*tmp, ui);
+	while (OK(status) && !(next = 0))
 	{
-		next = 0;
-		read(STDIN, &next, 6);
-		movement(next, line, &interface);
-		// if (CTL_LEFT == next)
-		// 	ft_printf("next = %#lx\n", next);
-		// if char is newline or CTRL-C, end current line
-		if (next == INTR || next == RETURN)
-		{
-			status = write(STDOUT, "\n", 1);
-			ft_printf("%s\n", *line);
-			write_to_history(line, &interface);
-			close(interface.h_list.fd);
-			push_history(&interface.h_list.hst, *line);
-			restore_terminal(&tty[1]);
-			restore_shell();
-			exit(0) ;
-		}
-		else if (next == DEL || next == DEL2)
-			delete(next, line, &interface);
-		if (PRINTABLE_CHAR(next))
-			insert((char)next, line, &interface);
-		// else add char to line and STDOUT
-		// else if ((tmp = ft_strjoin(*line, next)))
-		// {
-		// 	// if char is start of new word, add new segment to chain
-		// 	if (!in_word && PRINTABLE_CHAR(next) && !IS_WHITESPACE(next))
-		// 	{
-		// 		if (current)
-		// 			current->end = len - 1; 
-		// 		current = new_segment();
-		// 		add_segment(segments, current);
-		// 		current->start = len;
-		// 		in_word = TRUE;
-		// 		if (ERR((status = get_cursor_position(&current->x, &current->y))))
-		// 			break ;
-		// 	}
-		// 	// if char is whitespace and not in word, add blank segment to chain
-		// 	if (!in_word && PRINTABLE_CHAR(next) && !IS_WHITESPACE(next))
-		// 	{
-		// 		if (current)
-		// 			current->end = (int)len - 1; 
-		// 		current = new_segment();
-		// 		add_segment(segments, current);
-		// 		current->start = (int)len;
-		// 		if (ERR((status = get_cursor_position(&current->x, &current->y))))
-		// 			break ;
-		// 	}
-			// if in word and char is not whitespace, continue current word
-			// if (in_word && PRINTABLE_CHAR(next) && !IS_WHITESPACE(next))
-			// {
-			// }
-			// if in word and char is whitespace, end current word
-			// if (in_word && PRINTABLE_CHAR(next) && IS_WHITESPACE(next))
-			// {
-			// 	current->word_end = len - current->start;
-			// 	in_word = FALSE;
-			// }
-
-			// if char is escaped newline, write prompt 
-			// if (next == RETURN && len && (*line)[len - 1] == '\\')
-			// {
-			// 	status = ERR(write(STDOUT, "\n> ", 3)) ? ERROR : status;
-			// 	len = 0;
-			// }
-			// else
-			// 	free(*line);
-			// *line = tmp;
-			// len += 1;
-			
-		// }
-		// else
-		// 	status = ERROR;
+		status = ERR(read(STDIN, &next, 6)) ? ERROR : status;
+		if (OK((status = modify_cli(next, ui, *tmp, &cont)))
+			&& OK(cont))
+			continue ;
+		else if (!OK(status) && !ui->select && next == INTR)
+			status = OK(status) ? NIL : status;
+		else if (!ERR((target = move_index(next, *tmp, ui))))
+			target != INVALID ? move_cursor(next, ui, target) : 0;
+		else if ((next == DEL || next == DEL2))
+			status = delete(next, *tmp, ui);
+		else if (next == '\n' || PRINTABLE_CHAR(next))
+			status = insert((char)next, line, ui, tmp);
 	}
-	return (ERR(restore_terminal(&tty[1])) ? ERROR : status);
+	return (ERR(restore_terminal(&ui->tty[1])) ? ERROR : status);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// int		interface(char **line)
-// {
-// 	char			*tmp;
-// 	char			next[2];
-// 	struct termios	tty[2];
-// 	int				status;
-// 	size_t			len;
-// 	t_uisegment		**segments;
-// 	t_uisegment		*current;
-// 	int				in_word;
-
-// 	len = 0;
-// 	next[1] = '\0';
-// 	if (!*line && !(*line = ft_strnew(0)))
-// 		return (ERROR);
-// 	status = prep_terminal(tty, ~(ICANON | ISIG | ECHO));
-// 	segments = NULL;
-// 	in_word = FALSE;
-// 	while (OK(status) && !ERR((status = read(STDIN, &next, 1))))
-// 	{
-// 		// if char is newline or CTRL-C, end current line
-// 		if (next[0] == INTR || next[0] == RETURN)
-// 		{
-// 			status = write(STDOUT, "\n", 1);
-// 			break ;
-// 		}
-// 		// if char is delete, remove last char from line and STDOUT
-// 		else if (next[0] == DEL && len)
-// 		{
-// 			(*line)[--len] = '\0';
-// 			status = ERR(write(STDIN, "\b \b", 3)) ? ERROR : status;
-// 		}
-// 		else if (next[0] == DEL && !len)
-// 			continue ;
-// 		// else add char to line and STDOUT
-// 		else if ((tmp = ft_strjoin(*line, next)))
-// 		{
-// 			// if char is start of new word, add new segment to chain
-// 			if (!in_word && PRINTABLE_CHAR(next[0]) && !IS_WHITESPACE(next[0]))
-// 			{
-// 				if (current)
-// 					current->end = len - 1; 
-// 				current = new_segment();
-// 				add_segment(segments, current);
-// 				current->start = len;
-// 				in_word = TRUE;
-// 				if (ERR((status = get_cursor_position(&current->x, &current->y))))
-// 					break ;
-// 			}
-// 			// if char is whitespace and not in word, add blank segment to chain
-// 			if (!in_word && PRINTABLE_CHAR(next[0]) && !IS_WHITESPACE(next[0]))
-// 			{
-// 				if (current)
-// 					current->end = (int)len - 1; 
-// 				current = new_segment();
-// 				add_segment(segments, current);
-// 				current->start = (int)len;
-// 				if (ERR((status = get_cursor_position(&current->x, &current->y))))
-// 					break ;
-// 			}
-// 			// if in word and char is not whitespace, continue current word
-// 			// if (in_word && PRINTABLE_CHAR(next[0]) && !IS_WHITESPACE(next[0]))
-// 			// {
-// 			// }
-// 			// if in word and char is whitespace, end current word
-// 			if (in_word && PRINTABLE_CHAR(next[0]) && IS_WHITESPACE(next[0]))
-// 			{
-// 				current->word_end = len - current->start;
-// 				in_word = FALSE;
-// 			}
-
-// 			// if char is escaped newline, write prompt 
-// 			if (next[0] == RETURN && len && (*line)[len - 1] == '\\')
-// 			{
-// 				status = ERR(write(STDOUT, "\n> ", 3)) ? ERROR : status;
-// 				len = 0;
-// 			}
-// 			else
-// 				status = ERR(write(STDOUT, next, 1)) ? ERROR : status;
-// 			free(*line);
-// 			*line = tmp;
-// 			len += 1;
-			
-// 		}
-// 		else
-// 			status = ERROR;
-// 	}
-// 	return (ERR(restore_terminal(&tty[1])) ? ERROR : status);
-// }
