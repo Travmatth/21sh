@@ -16,7 +16,7 @@ CORE = main
 BUILTINS = cd echo env setenv unsetenv exec
 INTERFACE = interface utils history history_utils move_cursor move_index 
 INTERFACE += move_utils modify_cli cut_copy_paste_utils ui_line select
-INTERFACE += cut paste copy
+INTERFACE += cut paste copy insert_delete
 LEXICAL = lexer lexer_rules_1_4 lexer_rules_5_8 lexer_rules_9_11 lexer_utils 
 LEXICAL += missing missing_utils operator_dfa process_token reserved_word
 SYNTACTIC = parse parse_stack_utils parse_table parse_utils
@@ -28,7 +28,8 @@ EXPANSIONS += parameter_expansion_utils pathname_expansion quote_removal tilde_e
 EXECUTION =  dup_redirs execute execute_nodes execute_utils
 EXECUTION +=  heredoc_redirs orig_redirs redirs
 UTILS = compound_quoting init quoting_utils signal simple_quoting
-UTILS += terminal_modes utils
+UTILS += terminal_modes utils cmd_quoting
+
 FILES = $(addprefix src/, $(CORE)) \
 		$(addprefix src/builtins/, $(BUILTINS)) \
 		$(addprefix src/interface/, $(INTERFACE)) \

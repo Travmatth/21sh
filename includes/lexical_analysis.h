@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 13:28:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 20:54:00 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ int				next_op_state(char c, int current);
 */
 
 int				substitute_alias(t_token *token);
-int				process_token(t_token *token);
+int				process_token(t_token *token, t_lctx *ctx);
 int				push_token(t_token *token
 							, t_list *node
 							, t_list **tokens
@@ -165,6 +165,6 @@ int				push_token(t_token *token
 ** src/lexical_analysis/reserved_word.c
 */
 
-int				process_reserved(t_token *token);
+int				process_reserved(t_token *token, t_lctx *ctx);
 int				lex_quote(char **str, int start, int end);
 #endif

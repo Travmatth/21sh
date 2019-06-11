@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 16:18:58 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 22:44:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:12:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,14 +80,14 @@ int		substitute_alias(t_token *token)
 ** to identify given tokens, conversion between the two types is necessary
 */
 
-int		process_token(t_token *token)
+int		process_token(t_token *token, t_lctx *ctx)
 {
 	int		status;
 	int		i;
 
 	status = SUCCESS;
 	if (!OK((status = substitute_alias(token)))
-		|| !OK((status = process_reserved(token))))
+		|| !OK((status = process_reserved(token, ctx))))
 		return (status);
 	i = -1;
 	while (++i <= OP_TOKEN_CONVERSIONS - 1)
@@ -114,7 +114,7 @@ int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx)
 	t_stack		stack_node;
 	int			status;
 
-	if (!OK((status = process_token(token)))
+	if (!OK((status = process_token(token, ctx)))
 		|| !(ast_node = (t_ast_node*)ft_memalloc(sizeof(t_ast_node)))
 		|| !(ast_node->val = (void**)ft_memalloc(sizeof(void*) * 2)))
 		return (OK(status) ? ERROR : status);

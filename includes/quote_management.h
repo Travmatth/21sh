@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 15:36:41 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:10:11 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,15 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define P_UPARAM(s, in, f, i, j) (UPARAM_EXP((*in), i) && UPE(s, in, f, i, j))
 # define P_EPARAM(s, in, f, i, j) (EPARAM_EXP((*in), i) && EPE(s, in, f, i, j))
 
+# define IS_SUB(s, i) ((s[i] == '(' && first_word(s, i)))
+# define SUB(s, in, f, i, j) (OK((s = subshell(in, i, j, f))))
+# define P_SUBSHELL(s, in, f, i, j) (IS_SUB((*in), i) && SUB(s, in, f, i, j))
+
+# define IS_SPACE(s, i) (s[i + 1] ? s[i + 1] == ' ' : 1)
+# define IS_CURSH(s, i) ((s[i] == '{' && first_word(s, i) && IS_SPACE(s, i)))
+# define CUR(s, in, f, i, j) (OK((s = subshell(in, i, j, f))))
+# define P_CURSHELL(s, in, f, i, j) (IS_CURSH((*in), i) && CUR(s, in, f, i, j))
+
 /*
 ** Used within lexer to track types of quotes/substitutions
 ** in given command and whether all are properly closed
@@ -81,6 +90,11 @@ typedef struct	s_keyval
 	int			type;
 	char		*value;
 }				t_keyval;
+
+int				first_word(char *str, int i);
+int				parse_all(char **str, size_t start, size_t *end, t_quote f);
+int				subshell(char **str, size_t start, size_t *end, t_quote f);
+int				cur_shell(char **str, size_t start, size_t *end, t_quote f);
 
 /*
 ** src/utils/compund_quoting.c

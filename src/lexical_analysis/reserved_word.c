@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/22 15:30:49 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 11:50:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:12:36 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_reserved_conversion	g_reserved_conversion[RESERVED_WORD_CONVERSIONS] =
 ** Determine whether a given token constitutes a reserved word
 */
 
-int						process_reserved(t_token *token)
+int						process_reserved(t_token *token, t_lctx *ctx)
 {
 	int		i;
 	int		status;
@@ -53,6 +53,10 @@ int						process_reserved(t_token *token)
 	{
 		if (IS_A(g_reserved_conversion[i].reserved, contents))
 		{
+			if ((g_reserved_conversion[i].symbol == RESERVED_LBRACE
+				|| g_reserved_conversion[i].symbol == RESERVED_RBRACE)
+				&& !first_word(ctx->input, ctx->i - 1))
+				break ;
 			token->type = g_reserved_conversion[i].symbol;
 			ft_printf(RESERVED_LEX_ERR, contents);
 			status = NIL;

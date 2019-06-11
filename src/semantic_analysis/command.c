@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/13 15:15:29 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 16:40:35 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:32:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ int		command(t_exec_node *container, t_ast_node *root, int bg, int bang)
 
 	if (!IS_A("simple_command", root->rhs))
 	{
-		ft_printf("Error: %s not implemented", root->rhs);
+		ft_printf("Error: %s not implemented\n", root->rhs);
 		return (NIL);
 	}
 	if (!(simple = ft_memalloc(sizeof(t_simple))))

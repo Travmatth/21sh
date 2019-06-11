@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:38:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 18:20:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/10 21:32:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		cmd_sub_err(char **str, int start, int end)
 	if (BACKTICK((*str), start)
 		|| (CMD_SUB((*str), start) && !ARITH_EXP((*str), start)))
 	{
-		ft_printf("Semantic Error: command substitution not implemented\n");
+		ft_putendl("Semantic Error: command substitution not implemented");
 		return (NIL);
 	}
 	return (SUCCESS);
