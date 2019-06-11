@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 17:06:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 15:17:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,10 @@
 # define EOT 0x04
 
 /*
-** Character sent by terminal line discipline in response to ctrl-v key
+** Character sent by terminal line discipline in response to ctrl-p key
 */
 
-# define PASTE 0x16
+# define PASTE 0x10
 
 /*
 ** Character sent by terminal line discipline in response to ctrl-x key
