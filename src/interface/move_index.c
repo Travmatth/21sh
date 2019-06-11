@@ -65,7 +65,8 @@ int		move_line_index_down(char *line, t_interface *ui)
 	cur_i = ui_line->next->start;
 	cur_col = current_column(line, cur_i);
 	target_col = current_column(line, ui->line_index);
-	while (cur_col < target_col && line[cur_i] && line[cur_i] != '\n')
+	while (cur_col < target_col && line[cur_i] && (line[cur_i] != '\\' &&
+													line[cur_i + 1 ] != '\n'))
 	{
 		cur_i += 1;
 		cur_col = current_column(line, cur_i);
@@ -85,7 +86,8 @@ int		move_line_index_up(char *line, t_interface *ui)
 	cur_i = ui_line->prev->start;
 	cur_col = current_column(line, cur_i);
 	target_col = current_column(line, ui->line_index);
-	while (cur_col < target_col && line[cur_i] && line[cur_i] != '\n')
+	while (cur_col < target_col && line[cur_i] && (line[cur_i] != '\\' &&
+													line[cur_i + 1 ] != '\n'))
 	{
 		cur_i += 1;
 		cur_col = current_column(line, cur_i);

@@ -43,29 +43,24 @@ int		accept(char **str, t_interface *ui, char **tmp, size_t len)
 
 int		insert(char c, char **line, t_interface *ui, char **tmp)
 {
-	int		next;
-
 	if (c == '\n' && accept_line(tmp))
 		return (accept(line, ui, tmp, 0));
-	else if (violates_line_len(1, *tmp, ui) || (c == '\n' && ui->line_index != ui->line_len))
+	else if (violates_line_len(1, *tmp, ui) ||
+			(c == '\n' && ui->line_index != ui->line_len))
 	{
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);
 	}
-	ft_memmove((void*)(*tmp + ui->line_index + 1), (void*)(*tmp + ui->line_index), INPUT_LEN - ui->line_index - 1);
+	ft_memmove((void*)(*tmp + ui->line_index + 1),
+				(void*)(*tmp + ui->line_index), INPUT_LEN - ui->line_index - 1);
 	(*tmp)[ui->line_index] = c;
 	if ((!ui->line_index && ERR(init_uiline(ui))))
 		return (ERROR);
 	ui->line_len += 1;
-	next = ui->line_index + 1;
+	ui->line_index += 1;
 	if (ERR(calculate_uilines(*tmp, ui)))
 		return (ERROR);
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	clear_all_lines(ui);
-	ui->line_index = 0;
 	write_line(ui, *tmp);
-	set_cursor(ui, next);
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
 	return (SUCCESS);
 }
 
@@ -81,20 +76,20 @@ int		delete(unsigned long c, char *line, t_interface *ui)
 		return (SUCCESS);
 	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
 	next = ui->line_index - (is_newline ? 2 : 1);
-	tputs(tgetstr("vi", NULL), 1, ft_termprint);
 	ft_memmove((void*)(line + next)
 		, (void*)(line + ui->line_index)
 		, INPUT_LEN - next);
+	ui->line_index = ui->line_index > ui->line_len ? ui->line_len :
+													ui->line_index;
 	ui->line_len -= is_newline ? 2 : 1;
 	i = ui->line_len;
-	while (line[i])
-		line[i++] = '\0';
-	clear_all_lines(ui);
-	calculate_uilines(line, ui);
-	ui->line_index = 0;
+	if (is_newline)
+		move_cursor(CTL_UP, ui, current_uiline(ui, ui->line_index)->prev->end);
+	tputs(tgetstr("le", NULL), 1, ft_termprint);
 	write_line(ui, line);
-	set_cursor(ui, next);
-	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	if (ui->line_index <= ui->line_len)
+		tputs(tgetstr("le", NULL), 1, ft_termprint);
+	ui->line_index--;
 	return (SUCCESS);
 }
 

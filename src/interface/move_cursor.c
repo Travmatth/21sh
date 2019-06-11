@@ -62,7 +62,7 @@ void	move_line_cursor_down(t_interface *ui, int target)
 	offset = 2;
 	while (offset--)
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);
-	ui->line_index = cur->next->start;
+	ui->line_index != ui->line_len ? ui->line_index = cur->next->start : 1;
 	while (ui->line_index < target)
 	{
 		tputs(tgetstr("nd", NULL), 1, ft_termprint);

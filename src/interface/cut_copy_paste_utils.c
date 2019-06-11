@@ -11,26 +11,35 @@
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
+#define LINE_INDEX_OFFSET i + ui->line_index - 1
 
 void	write_line(t_interface *ui, char *line)
 {
 	int		i;
 
 	i = -1;
-	tputs(tgetstr("sc", NULL), 1, ft_termprint);
-	while (++i < ui->line_len)
+	ft_printf("%s%s%s", tgetstr("sc", NULL), tgetstr("cd", NULL),
+	tgetstr("vi", NULL));
+	while (ui->line_index && ++i + ui->line_index - 1 < ui->line_len)
 	{
-		if (line[i] == '\n')
+		if (line[LINE_INDEX_OFFSET] == '\n')
 			write(STDIN, "\n> ", 3);
 		else
 		{
-			if (ui->select && i >= ui->ccp_start && i < ui->ccp_end && line[i])
+			if (ui->select && LINE_INDEX_OFFSET >= ui->ccp_start
+							&& LINE_INDEX_OFFSET < ui->ccp_end
+							&& line[LINE_INDEX_OFFSET])
 				tputs(tgetstr("so", NULL), 1, ft_termprint);
-			write(STDIN, &line[i], 1);
-			tputs(tgetstr("se", NULL), 1, ft_termprint);
+			ft_printf("%c%s", line[LINE_INDEX_OFFSET], tgetstr("se", NULL));
 		}
 	}
 	tputs(tgetstr("rc", NULL), 1, ft_termprint);
+	if (i > 0 && line[LINE_INDEX_OFFSET] != '\n')
+		tputs(tgetstr("nd", NULL), 1, ft_termprint);
+	tputs(tgetstr("ve", NULL), 1, ft_termprint);
+	if (ui->line_len == ui->line_index && ui->line_index &&
+		line[ui->line_index - 1] == '\n' && ui->line_index--)
+		move_line_cursor_down(ui, 0);
 }
 
 void	set_cursor(t_interface *ui, int position)
