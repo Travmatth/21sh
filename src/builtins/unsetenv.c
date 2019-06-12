@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:11:24 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:00:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:11:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,17 @@ int		unset_env(char *var)
 			found = 1;
 	}
 	if (found)
-		remove_var(var, i, len);
-	return (ERROR_CHILD_EXIT);
+		return (remove_var(var, i, len));
+	return (NORMAL_CHILD_EXIT);
 }
 
 int		builtin_unsetenv(int argc, char **argv)
 {
 	(void)argc;
 	if (!argv[1] || argv[2] || ft_strchr(argv[1], '='))
+	{
 		ft_putstr("unsetenv usage: `unsetenv NAME`");
+		return (ERROR_CHILD_EXIT);
+	}
 	return (unset_env(argv[1]));
 }
