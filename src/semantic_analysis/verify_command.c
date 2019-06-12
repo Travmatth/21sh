@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 17:38:58 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 19:15:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int		load_exec(t_simple *simple)
 		ft_memcpy(new, &simple->command[1], sizeof(char*) * simple->argc);
 	free(simple->command);
 	simple->command = new;
-	return (SUCCESS);
+	return (NIL);
 }
 
 /*
@@ -142,10 +142,10 @@ int		verify_command(t_simple *simple)
 	char	**paths;
 	int		status;
 
-	found = 0;
+	found = FALSE;
 	status = load_builtin(simple);
 	if (!NONE(status) || !simple->argc)
-		return (OK(SUCCESS) ? SUCCESS : ERROR);
+		return (OK(status) ? SUCCESS : ERROR);
 	if (!(paths = ft_strsplit(get_env_var("PATH"), ':')))
 		return (ERROR);
 	j = 0;
