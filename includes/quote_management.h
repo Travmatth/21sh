@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/15 14:37:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:52:37 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 23:02:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@
 
 # include "quote_constructs.h"
 
+/*
+** src/utils/cmd_quoting.c
+*/
+
 int		first_word(char *str, int i);
 int		parse_all(char **str, size_t start, size_t *end, t_quote f);
 int		subshell(char **str, size_t start, size_t *end, t_quote f);
 int		cur_shell(char **str, size_t start, size_t *end, t_quote f);
 
 /*
-** src/utils/compund_quoting.c
+** src/utils/compound_quoting.c
 */
 
 int		dbl_quote(char **str, size_t start, size_t *end, t_quote f);
