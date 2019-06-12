@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 19:31:49 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 23:19:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,13 @@
 ** src/semantic_analysis/affixes.c
 */
 
-int		io_here(t_simple *cmd, int io_num, t_ast_node *root);
-int		io_redirect(t_simple *cmd, t_ast_node *root);
 int		prefix(t_simple *cmd, t_ast_node *root);
-int		suffix_word(t_simple *cmd, t_ast_node *root, int position);
 int		suffix(t_simple *cmd, t_ast_node *root);
 
 /*
 ** src/semantic_analysis/command.c
 */
 
-int		cmd_name(t_simple *simple, t_ast_node *root);
-void	simple_positions(char *form, int position[3]);
-int		simple_command(t_simple *simple, t_ast_node *root);
 int		command(t_exec_node *container, t_ast_node *root, int bg, int bang);
 
 /*
@@ -53,17 +47,12 @@ void	add_next_char(t_heredoc *heredoc, char *next);
 ** src/semantic_analysis/pipe.c
 */
 
-int		pipe_sequence(t_exec_node *container
-					, t_ast_node *root
-					, int bg
-					, int bang);
 int		pipeline(t_exec_node *container, t_ast_node *root, int bg);
 
 /*
 ** src/semantic_analysis/process_here_end.c
 */
 
-int		here_end_found(void);
 int		process_heredoc(t_redir *redir);
 
 /*
@@ -71,8 +60,6 @@ int		process_heredoc(t_redir *redir);
 */
 
 int		push_redir(t_simple *cmd, t_redir *redir);
-int		get_filename(char **filename, t_ast_node *root);
-void	redir_not_implemented(char **name, int type);
 int		process_redir(t_redir *redir, int io_num, char *filename, int type);
 int		create_redir(t_redir **redir, t_ast_node *root, char **file);
 
@@ -80,8 +67,6 @@ int		create_redir(t_redir **redir, t_ast_node *root, char **file);
 ** src/semantic_analysis/semantic.c
 */
 
-int		and_or(t_exec_node *container, t_ast_node *root, int is_bg);
-int		list(t_program *p, t_ast_node *root, int last_is_bg);
 int		semantic_analysis(t_ast *ast, t_program *p);
 
 /*
@@ -90,7 +75,6 @@ int		semantic_analysis(t_ast *ast, t_program *p);
 
 int		io_file(t_simple *cmd, int io_num, t_ast_node *root);
 int		io_number(int *io_num, t_ast_node *root);
-void	free_ast_node(t_ast_node *root);
 void	free_ast(t_ast *ast);
 
 /*
@@ -104,24 +88,18 @@ int		separator(int *is_bg, t_ast_node *root);
 ** src/semantic_analysis/verify_command.c
 */
 
-int		load_exec(t_simple *simple);
-int		load_builtin(t_simple *simple);
-int		find_exec(char *command);
-int		find_command(char **command, char **paths, int i, int found);
 int		verify_command(t_simple *simple);
 
 /*
 ** src/semantic_analysis/expansions/arithmetic_expansion.c
 */
 
-int		arith_exp_err(char **str, int start, int end);
 int		arithmetic_expansion(char **parameter);
 
 /*
 ** src/semantic_analysis/expansions/command_substitution.c
 */
 
-int		cmd_sub_err(char **str, int start, int end);
 int		command_substitution(char **parameter);
 
 /*
@@ -129,7 +107,6 @@ int		command_substitution(char **parameter);
 */
 
 int		full_word_expansion(char ***new, char *old);
-int		param_expansion(char **new, char *old);
 int		heredoc_expansion(t_redir *redir, char **new, char *old);
 int		heredoc_line_expansion(char **new, char *old);
 int		redir_expansion(char **new, char *old);
@@ -138,34 +115,24 @@ int		redir_expansion(char **new, char *old);
 ** src/semantic_analysis/expansions/expansion_subtypes.c
 */
 
-int		swap_param(char **parameter, char *param[3], int quoted);
-int		positional_param(void);
 int		plain_param_expansion(char **parameter, char *var, size_t *i);
 
 /*
 ** src/semantic_analysis/expansions/field_splitting.c
 */
 
-int		count_fields(char **str, int *count);
-int		init_field_split(t_field_split *fs, char **parameter);
 int		field_splitting(char ***fields, char **parameter);
 
 /*
 ** src/semantic_analysis/expansions/parameter_expansion.c
 */
 
-int		store_unexpanded(char **new, char **str, size_t start, size_t *i);
-int		join_unexpanded(char **new, char **str, size_t *i);
-int		switch_expansion(char *param, char **next, size_t *i);
-int		manage_expansions(char **new, char **str, size_t *skip);
 int		parameter_expansion(char **str);
 
 /*
 ** src/semantic_analysis/expansions/parameter_expansion_utils.c
 */
 
-char	*find_end_brace(char *param);
-void	init_plain_exp(char *param[6], size_t len[4], char *str);
 int		init_param(char *param[6], size_t len[4], char sep, char *str);
 int		create_param(char *param[3], size_t len[3]);
 int		enclosed(char *str, char c);
@@ -174,7 +141,6 @@ int		enclosed(char *str, char c);
 ** src/semantic_analysis/expansions/pathname_expansion.c
 */
 
-int		find_pathname_end(char *str, int *skip);
 int		expand_pathname(char **field);
 int		pathname_expansion(char ***fields);
 
@@ -184,7 +150,6 @@ int		pathname_expansion(char ***fields);
 
 int		remove_quotes(char **str);
 int		quote_removal(char ***fields);
-void	remove_quote_switch(char *quote, char **str, char *new, int index[2]);
 
 /*
 ** src/semantic_analysis/expansions/tilde_expansion.c
