@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/22 15:30:49 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 21:12:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 16:31:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ int						process_reserved(t_token *token, t_lctx *ctx)
 			token->type = g_reserved_conversion[i].symbol;
 			ft_printf(RESERVED_LEX_ERR, contents);
 			status = NIL;
+			break ;
 		}
 	}
 	return (status);

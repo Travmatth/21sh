@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 21:06:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 16:56:53 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@
 ** src/interface/interface.c
 */
 
-int			interface(char **str, char **tmp, t_interface *ui);
+int			accept_line(char **str);
 int			accept(char **str, t_interface *ui, char **tmp, size_t len);
+int			interface(char **str, char **tmp, t_interface *ui);
 
 /*
 ** src/interface/ui_line.c
@@ -40,8 +41,6 @@ int			calculate_uilines(char *buf, t_interface *ui);
 ** src/interface/utils.c
 */
 
-int			accept_line(char **str);
-int			init_accept(char **line, t_interface *ui, char *tmp, size_t *i);
 void		free_uiline(t_uiline **ui_line);
 
 /*

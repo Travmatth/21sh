@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 19:30:01 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 21:25:59 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 16:45:58 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@ int		first_word(char *str, int i)
 	{
 		if (i && str[i - 1] == '\\')
 			i -= 1;
-		else if (str[i] == ';' || str[i] == '&')
+		else if (str[i] == ';' || str[i] == '&' || str[i] == '\n')
 			return (TRUE);
-		else if (IS_WHITESPACE(str[i]))
+		else if (str[i] == '(' || str[i] == '{' || IS_WHITESPACE(str[i]))
 			continue ;
-		return (FALSE);
+		else
+			return (FALSE);
 	}
 	return (is);
 }
@@ -79,14 +80,9 @@ int		cur_shell(char **str, size_t start, size_t *end, t_quote f)
 	int		found;
 
 	status = init_exp(&i, start, &found);
-	if (!(*str)[start + 1])
-	{
-		*end += 1;
-		return (f ? f(str, start, *end) : status);
-	}
 	while (OK(status) && (*str)[++i])
 	{
-		if (OK(status) && (*str)[i] == '}')
+		if (OK(status) && (*str)[i] == '}' && first_word(*str, i))
 			status = dbl_quote_switch(end, &found, i - start);
 		else if (OK(status)
 			&& OK((status = parse_all(str, i, end, f)))

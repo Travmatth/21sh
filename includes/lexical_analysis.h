@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 20:54:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 17:24:58 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@
 ** Used in lex_switch to determine current character in given input
 */
 
-# define IS_QUOTED(c) ((c == '$' || c == '`'))
-# define IS_QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
+# define IS_QUOTED(c, ctx) ((c == '$' || c == '`') || PARENS(ctx->input, ctx->i))
+# define QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
 
 /*
 ** Central state struct of lexical analysis, state of lexer when

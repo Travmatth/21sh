@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 11:57:02 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 16:29:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ void	rule_6(char c, t_token *token, t_list **tokens, t_lctx *ctx)
 	node = NULL;
 	if (token->type && (c == '<' || c == '>'))
 		detect_io_number(token);
-	if (token->type && ERR(push_token(token, node, tokens, ctx)))
-		ctx->status = ERROR;
+	if (token->type)
+		ctx->status = push_token(token, node, tokens, ctx);
 	ctx->op_state = next_op_state(c, START);
 	if (ERR(create_new_tok(token, ctx, ctx->op_state))
 		|| ERR(append_to_tok(c, token)))
@@ -102,7 +102,6 @@ void	rule_8(t_token *token, t_list **tokens, t_lctx *ctx)
 
 	ctx->i += 1;
 	node = NULL;
-	if (token->type && ERR(push_token(token, node, tokens, ctx)))
-		ctx->status = ERROR;
-	ctx->status = SUCCESS;
+	if (token->type)
+		ctx->status = push_token(token, node, tokens, ctx);
 }
