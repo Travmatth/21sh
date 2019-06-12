@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:40:36 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 13:49:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 19:37:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int		init_heredoc(t_redir *redir
 		*found = FALSE;
 		heredoc->tmp = NULL;
 		heredoc->line = NULL;
-		status = ERR(prep_terminal(tty, ~(ICANON | ISIG | ECHO), 0, 0))
+		status = ERR(prep_terminal(tty, ~(ICANON | ISIG | ECHO), 1, 0))
 			|| ERR(pipe(heredoc->fd)) ? ERROR : SUCCESS;
 		redir->replacement = ERR(status) ? ERROR : heredoc->fd[0];
 		ft_putstr("heredoc > ");

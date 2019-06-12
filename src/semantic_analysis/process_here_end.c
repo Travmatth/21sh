@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/21 13:07:55 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/21 13:20:11 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 19:36:29 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		process_heredoc(t_redir *redir)
 	t_heredoc		heredoc;
 
 	status = init_heredoc(redir, &heredoc, tty, &found);
-	while (OK(status) && !found)
+	while (OK(status) && !found && !(next = 0))
 	{
 		status = ERR(read(STDIN, &next, 1)) ? ERROR : status;
 		status = next == INTR || next == EOT ? NIL : status;
