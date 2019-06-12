@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 16:55:59 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 14:24:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int		interface(char **line, char **tmp, t_interface *ui)
 		else if (!ERR((target = move_index(next, *tmp, ui))))
 			target != INVALID ? move_cursor(next, ui, target) : 0;
 		else if ((next == DEL || next == DEL2))
-			status = delete(next, *tmp, ui);
+			status = delete(*tmp, ui);
 		else if (next == '\n' || PRINTABLE_CHAR(next))
 			status = insert((char)next, line, ui, tmp);
 	}

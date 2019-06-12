@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:36:17 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 14:24:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,5 +128,5 @@ void		copy_line(t_interface *ui, char *buf, char *line);
 */
 
 int			insert(char c, char **line, t_interface *ui, char **tmp);
-int			delete(unsigned long c, char *line, t_interface *ui);
+int			delete(char *line, t_interface *ui);
 #endif

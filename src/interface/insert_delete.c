@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 19:48:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 18:07:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 14:34:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,26 +41,22 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 	return (SUCCESS);
 }
 
-int		delete(unsigned long c, char *line, t_interface *ui)
+int		delete(char *line, t_interface *ui)
 {
-	int		i;
 	int		next;
 	int		is_newline;
 
-	if ((c != DEL && c != DEL2)
-		|| ui->line_index <= 0
-		|| line[ui->line_index] == '\n')
-		return (SUCCESS);
 	is_newline = ui->line_index && line[ui->line_index - 1] == '\n' ? 1 : 0;
 	next = ui->line_index - (is_newline ? 2 : 1);
+	if (!ui->line_index || line[ui->line_index] == '\n' || next < 0)
+	{
+		write(STDOUT, "\a", 1);
+		return (SUCCESS);
+	}
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	ft_memmove((void*)(line + next)
-		, (void*)(line + ui->line_index)
-		, INPUT_LEN - next);
+	ft_memmove(&line[next], &line[ui->line_index], ui->line_len - next);
 	ui->line_len -= is_newline ? 2 : 1;
-	i = ui->line_len;
-	while (line[i])
-		line[i++] = '\0';
+	ft_strclr(&line[ui->line_len + 1]);
 	clear_all_lines(ui);
 	calculate_uilines(line, ui);
 	ui->line_index = 0;
