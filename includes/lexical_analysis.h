@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:41:22 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:45:16 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,32 +57,6 @@ int		create_new_tok(t_token *token, t_lctx *ctx, int type);
 int		append_to_tok(char c, t_token *token);
 void	del_token(void *content, size_t len);
 void	detect_io_number(t_token *token);
-
-/*
-** src/lexical_analysis/missing.c
-*/
-
-int		prep_missing_terminal(struct termios tty[2]
-						, char **line
-						, char next[2]
-						, int *len);
-int		restore_missing_terminal(t_list **tokens
-						, char *input
-						, char *line
-						, char *tmp);
-void	add_missing_char(char **line, char *tmp, int *len, char c);
-int		manage_backspace(char *line, int *len);
-int		manage_missing_closures(char *input, t_list **tokens, t_list **missing);
-
-/*
-** src/lexical_analysis/missing_utils.c
-*/
-
-int		next_missing_symbol(t_list *missing);
-int		push_missing_symbol(short type, t_list **missing);
-int		pop_missing_symbol(t_list **missing, short *type);
-void	print_missing_sym(t_list *elem);
-void	del_missing(void *content, size_t len);
 
 /*
 ** src/lexical_analysis/operator_dfa.c

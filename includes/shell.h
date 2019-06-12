@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/31 16:02:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 21:57:19 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:45:41 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,6 @@
 
 # include "execution.h"
 # include "interface.h"
-
-/*
-** Used in lexical analysis to when unclosed quoted
-** strings, command substitutions detected
-*/
-
-t_list	*g_missing;
 
 /*
 ** Global array variable to store shell environment variables

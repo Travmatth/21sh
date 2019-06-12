@@ -6,13 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:44:27 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 16:38:56 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:49:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-extern t_list	*g_missing;
 
 /*
 ** 1. If the end of input is recognized the current token shall be delimited.
@@ -90,20 +88,15 @@ void	rule_4(char *input, t_token *token, t_lctx *ctx)
 	if (NONE(token->type) && ERR(create_new_tok(token, ctx, LEXER_WORD)))
 		ctx->status = ERROR;
 	if (OK(ctx->status) && BACKSLASH(ctx->input, ctx->i))
-		ctx->status = backslash(&ctx->input, ctx->i, &skip, lex_quote);
+		ctx->status = backslash(&ctx->input, ctx->i, &skip, NULL);
 	else if (OK(ctx->status) && DBL_QUOTE(ctx->input, ctx->i))
-		ctx->status = dbl_quote(&ctx->input, ctx->i, &skip, lex_quote);
+		ctx->status = dbl_quote(&ctx->input, ctx->i, &skip, NULL);
 	else if (OK(ctx->status) && SNGL_QUOTE(ctx->input, ctx->i))
-		ctx->status = quote(&ctx->input, ctx->i, &skip, lex_quote);
+		ctx->status = quote(&ctx->input, ctx->i, &skip, NULL);
 	if (OK(ctx->status))
 	{
 		ft_bufappend(token->value, &input[ctx->i], skip + 1);
 		ctx->i += skip + 1;
 		ctx->status = SUCCESS;
-	}
-	else if (NONE(ctx->status))
-	{
-		ft_lstmerge(&ctx->missing, g_missing);
-		g_missing = NULL;
 	}
 }

@@ -6,21 +6,11 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/01 14:37:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 19:05:40 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:46:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
-
-void	clear_current_tokens(t_list **tokens, t_list **missing)
-{
-	ft_lstdel(tokens, del_token);
-	*tokens = NULL;
-	ft_lstiter(*missing, print_missing_sym);
-	ft_lstdel(missing, del_missing);
-	*missing = NULL;
-	g_missing = NULL;
-}
 
 /*
 ** Create a new blank to which lexical parsing can alter to store next

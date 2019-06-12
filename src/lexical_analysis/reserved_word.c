@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/22 15:30:49 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 16:31:34 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:47:32 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,41 +62,6 @@ int						process_reserved(t_token *token, t_lctx *ctx)
 			status = NIL;
 			break ;
 		}
-	}
-	return (status);
-}
-
-/*
-** When rule 4 of lex_switch determines that a given command is not properly
-** closed the opening sequence should be saved so that it may the necessary
-** closing characters can be later determined
-*/
-
-int						lex_quote(char **str, int start, int end)
-{
-	int		status;
-	short	type;
-
-	if (NONE((status = ERR(end) ? NIL : SUCCESS)))
-	{
-		if (SNGL_QUOTE((*str), start))
-			type = QUOTE;
-		else if (DBL_QUOTE((*str), start))
-			type = DQUOTE;
-		else if (EPARAM_EXP((*str), start))
-			type = BRACE_SUB;
-		else if (ARITH_EXP((*str), start))
-			type = MATH_SUB;
-		else if (CMD_SUB((*str), start))
-			type = CMD_SUB;
-		else if (BACKTICK((*str), start))
-			type = BQUOTE;
-		else if (BACKSLASH((*str), start))
-			type = BACKSLASH_ESC;
-		else if (!(type = NIL))
-			ft_printf(ERR_UNCLOSED_STR, *str);
-		if (ERR(push_missing_symbol(type, &g_missing)))
-			status = ERROR;
 	}
 	return (status);
 }

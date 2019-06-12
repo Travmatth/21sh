@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/27 12:45:22 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 16:29:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:48:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 	skip = ERROR;
 	i = ctx->i;
 	s = &ctx->input;
-	if ((OK(ctx->status) && P_BACKTICK(ctx->status, s, lex_quote, i, (&skip)))
-		|| (OK(ctx->status) && P_ARITH(ctx->status, s, lex_quote, i, (&skip)))
-		|| (OK(ctx->status) && P_CMD(ctx->status, s, lex_quote, i, (&skip)))
-		|| (OK(ctx->status) && P_UPARAM(ctx->status, s, lex_quote, i, (&skip)))
-		|| (OK(ctx->status) && P_EPARAM(ctx->status, s, lex_quote, i, (&skip))))
+	if ((OK(ctx->status) && P_BACKTICK(ctx->status, s, NULL, i, (&skip)))
+		|| (OK(ctx->status) && P_ARITH(ctx->status, s, NULL, i, (&skip)))
+		|| (OK(ctx->status) && P_CMD(ctx->status, s, NULL, i, (&skip)))
+		|| (OK(ctx->status) && P_UPARAM(ctx->status, s, NULL, i, (&skip)))
+		|| (OK(ctx->status) && P_EPARAM(ctx->status, s, NULL, i, (&skip))))
 		skip += 1;
 	else if (c == '$')
 		skip = 1;
@@ -52,8 +52,6 @@ void	rule_5(char c, t_token *token, t_lctx *ctx)
 	if (OK(ctx->status)
 		&& !ft_bufappend(token->value, &(*s)[ctx->i + 1], skip - 1))
 		ctx->status = ERROR;
-	if (NONE(ctx->status) && g_missing != NULL)
-		ft_lstmerge(&ctx->missing, g_missing);
 	ctx->i += OK(ctx->status) ? skip : 0;
 }
 
