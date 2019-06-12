@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:09:37 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:10:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 14:57:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int		change_dir(char *target_dir, int i)
 	old = save_cwd(target_dir, &path, &dirs);
 	while ((dir = dirs[i++]))
 	{
-		if ((status = change_next_dir(dir, dirs, path, i)))
+		if (!(status = change_next_dir(dir, dirs, path, i)))
 			continue ;
 		else
 			break ;

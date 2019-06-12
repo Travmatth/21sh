@@ -12,10 +12,11 @@
 		"args": [],
 		"env": {
 			"TERM_SESSION_ID": "w0t0p0:4D8E9538-8052-402B-886E-0C8265563C70",
-			"PATH": "/nfs/2018/t/tmatthew/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki:/nfs/2018/t/tmatthew/.cargo/bin",
-			"OLDPWD": "/nfs/2017/d/dysotoma/21sh",
+			// "PATH": "/nfs/2018/t/tmatthew/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki:/nfs/2018/t/tmatthew/.cargo/bin",
+			"PATH": "/Users/Trav/.rbenv/shims:/Users/Trav/.rbenv/shims:/Users/Trav/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+			"OLDPWD": "/Users/Trav/42/21sh",
 			"SHELL_TTY": "/dev/ttys003",
-			"HOME": "/nfs/2017/t/tmatthew",
+			"HOME": "/Users/Trav",
 			"TERM": "xterm-256color",
 			"SHLVL": 1
 		},
