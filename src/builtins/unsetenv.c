@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:11:24 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:00:57 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void	remove_var(char *var, int env_size, size_t len)
+int		remove_var(char *var, int env_size, size_t len)
 {
 	int		j;
 	int		i;
@@ -20,7 +20,8 @@ void	remove_var(char *var, int env_size, size_t len)
 
 	i = 0;
 	j = 0;
-	tmp = (char**)ft_memalloc(sizeof(char*) * env_size);
+	if (!(tmp = (char**)ft_memalloc(sizeof(char*) * env_size)))
+		return (ERROR_CHILD_EXIT);
 	while (g_environ[i])
 	{
 		if (ft_strnequ(g_environ[i], var, len))
@@ -34,9 +35,10 @@ void	remove_var(char *var, int env_size, size_t len)
 	}
 	free(g_environ);
 	g_environ = tmp;
+	return (NORMAL_CHILD_EXIT);
 }
 
-void	unset_env(char *var)
+int		unset_env(char *var)
 {
 	int		i;
 	int		found;
@@ -52,6 +54,7 @@ void	unset_env(char *var)
 	}
 	if (found)
 		remove_var(var, i, len);
+	return (ERROR_CHILD_EXIT);
 }
 
 int		builtin_unsetenv(int argc, char **argv)
@@ -59,6 +62,5 @@ int		builtin_unsetenv(int argc, char **argv)
 	(void)argc;
 	if (!argv[1] || argv[2] || ft_strchr(argv[1], '='))
 		ft_putstr("unsetenv usage: `unsetenv NAME`");
-	unset_env(argv[1]);
-	return (1);
+	return (unset_env(argv[1]));
 }

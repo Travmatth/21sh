@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:10:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 21:43:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,5 @@ int		builtin_echo(int argc, char **argv)
 	}
 	if (!skip)
 		write(STDOUT, "\n", 1);
-	return (1);
+	return (NORMAL_CHILD_EXIT);
 }

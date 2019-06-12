@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/31 16:02:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/02 16:11:54 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 21:57:19 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int		builtin_setenv(int argc, char **argv);
 int		builtin_unsetenv(int argc, char **argv);
 int		builtin_exec(int argc, char **argv);
 int		builtin_env(int argc, char **argv);
-void	set_env_var(char *name, char *val);
+int		set_env_var(char *name, char *val);
 char	*get_env_var(char *var);
 
 /*

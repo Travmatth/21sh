@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:57:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/28 11:48:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 21:41:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int		builtin_exec(int argc, char **argv)
 	if (argc)
 	{
 		execve(argv[0], argv, g_environ);
-		return (ERROR);
+		return (ERROR_CHILD_EXIT);
 	}
-	return (SUCCESS);
+	return (NORMAL_CHILD_EXIT);
 }

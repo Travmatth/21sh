@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 14:43:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/08 12:51:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 21:42:18 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,5 @@ int		builtin_env(int argc, char **argv)
 	i = 0;
 	while (g_environ[i])
 		ft_printf("%s\n", g_environ[i++]);
-	return (1);
+	return (NORMAL_CHILD_EXIT);
 }

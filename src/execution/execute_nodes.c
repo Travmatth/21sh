@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 14:57:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 18:57:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:03:31 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ int		exec_command(t_simple *simple, int should_exit)
 		{
 			simple->exit_status = simple->builtin(simple->argc
 												, simple->command);
-			simple->exit_status = OK(simple->exit_status) ? 0 : 1;
 			if (should_exit)
 				_exit(simple->exit_status);
 		}

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:11:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2018/11/30 12:25:10 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 21:59:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 int		env_usage(void)
 {
 	ft_putstr("setenv usage: `setenv NAME=VALUE` or `setenv NAME VALUE`");
-	return (1);
+	return (ERROR_CHILD_EXIT);
 }
 
-void	add_env_var(char *name, char *val)
+int		add_env_var(char *name, char *val)
 {
 	int		i;
 	char	**tmp;
@@ -27,23 +27,25 @@ void	add_env_var(char *name, char *val)
 	i = 0;
 	while (g_environ[i])
 		i += 1;
-	tmp = (char**)ft_memalloc(sizeof(char*) * (i + 2));
+	if (!(tmp = (char**)ft_memalloc(sizeof(char*) * (i + 2))))
+		return (ERROR_CHILD_EXIT);
 	new = ft_strnew(LEN(name, 0) + LEN(val, 0) + 1);
 	tmp[i] = ft_strcat(ft_strcat(ft_strcat(new, name), "="), val);
 	while (--i >= 0)
 		tmp[i] = g_environ[i];
 	free(g_environ);
 	g_environ = tmp;
+	return (NORMAL_CHILD_EXIT);
 }
 
-void	set_env_var(char *name, char *val)
+int		set_env_var(char *name, char *val)
 {
 	int		i;
 	char	*tmp;
 	char	*old_val;
 
 	if (((!name || !name[0]) || (!val || !val[0])) && env_usage())
-		return ;
+		return (ERROR_CHILD_EXIT);
 	i = 0;
 	while (g_environ[i])
 	{
@@ -53,18 +55,16 @@ void	set_env_var(char *name, char *val)
 			tmp = ft_swap(g_environ[i], old_val, val);
 			free(g_environ[i]);
 			g_environ[i] = tmp;
-			break ;
+			return (NORMAL_CHILD_EXIT);
 		}
 		else if (!g_environ[i + 1])
-		{
-			add_env_var(name, val);
-			break ;
-		}
+			return (add_env_var(name, val));
 		i += 1;
 	}
+	return (ERROR_CHILD_EXIT);
 }
 
-void	set_env(char **argv)
+int		set_env(char **argv)
 {
 	char	*name;
 	char	*value;
@@ -81,23 +81,19 @@ void	set_env(char **argv)
 		value += 1;
 	}
 	else
-	{
-		env_usage();
-		return ;
-	}
-	set_env_var(name, value);
+		return (env_usage());
+	return (set_env_var(name, value));
 }
 
 int		builtin_setenv(int argc, char **argv)
 {
-	int		i;
+	int		status;
 
 	if (!argv[1])
-		builtin_env(argc, argv);
+		status = builtin_env(argc, argv);
 	if (argv[2] && argv[3])
-		env_usage();
+		status = env_usage();
 	else if (argv[1])
-		set_env(argv);
-	i = 0;
-	return (1);
+		status = set_env(argv);
+	return (status);
 }
