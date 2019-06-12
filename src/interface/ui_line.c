@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/09 18:14:34 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 22:12:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 18:03:56 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int			add_uiline(t_interface *ui)
 	return (SUCCESS);
 }
 
-int		crawl_uilines(char *buf, t_uiline *ui_line, int i)
+int			crawl_uilines(char *buf, t_uiline *ui_line, int i)
 {
 	ui_line->start = i;
 	while (buf[i])
@@ -73,7 +73,7 @@ int		crawl_uilines(char *buf, t_uiline *ui_line, int i)
 	return (SUCCESS);
 }
 
-int		calculate_uilines(char *buf, t_interface *ui)
+int			calculate_uilines(char *buf, t_interface *ui)
 {
 	t_uiline	*cur;
 

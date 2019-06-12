@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 19:48:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 15:38:00 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 18:07:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,22 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 
 	if (c == '\n' && accept_line(tmp) && OK(accept(line, ui, tmp, 0)))
 		return (NIL);
-	else if (violates_line_len(1, *tmp, ui) || (c == '\n' && ui->line_index != ui->line_len))
+	else if (violates_line_len(1, *tmp, ui) || (c == '\n' && NOT_END(ui)))
 	{
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);
 	}
 	tputs(tgetstr("vi", NULL), 1, ft_termprint);
-	ft_memmove((void*)(*tmp + ui->line_index + 1), (void*)(*tmp + ui->line_index), INPUT_LEN - ui->line_index - 1);
+	ft_memmove((void*)(*tmp + ui->line_index + 1)
+				, (void*)(*tmp + ui->line_index)
+				, INPUT_LEN - ui->line_index - 1);
 	(*tmp)[ui->line_index] = c;
 	next = ui->line_index + 1;
 	set_cursor(ui, 0);
 	clear_all_lines(ui);
-	if ((!ui->line_index && ERR(init_uiline(ui))))
-		return (ERROR);
 	ui->line_len += 1;
-	if (ERR(calculate_uilines(*tmp, ui)))
+	if ((!ui->line_index && ERR(init_uiline(ui)))
+		|| ERR(calculate_uilines(*tmp, ui)))
 		return (ERROR);
 	write_line(ui, *tmp);
 	set_cursor(ui, next);

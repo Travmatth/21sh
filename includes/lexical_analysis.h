@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 17:24:58 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 17:55:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@
 ** Used in lex_switch to determine current character in given input
 */
 
-# define IS_QUOTED(c, ctx) ((c == '$' || c == '`') || PARENS(ctx->input, ctx->i))
+# define IS_EXP(c) ((c == '$' || c == '`'))
+# define IS_QUOTED(c, ctx) (IS_EXP(c) || PARENS(ctx->input, ctx->i))
 # define QUOTE_CHAR(c) (c == '\\' || c == '\'' || c == '"')
 
 /*

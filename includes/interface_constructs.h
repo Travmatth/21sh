@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 15:17:38 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 18:07:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,7 @@
 */
 
 # define OPT_P 0x80CF
+
 /*
 ** Character sent by terminal line discipline in response to OPT + C key
 */
@@ -210,6 +211,8 @@
 # define NOT_EOL(l, i) (l[i] == '\n' && i && l[i - 1] == '\\')
 
 # define MOVE(ui, pos) (ui->line_index > pos ? "le" : "nd")
+
+# define NOT_END(ui) (ui->line_index != ui->line_len)
 
 enum						e_line_exists
 {

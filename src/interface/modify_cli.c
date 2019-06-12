@@ -6,34 +6,64 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 16:12:47 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/10 17:09:36 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 18:26:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont)
+int		is_cut_copy_paste(unsigned long c, t_interface *ui, char *buf)
 {
-	int			status;
-	static char	buff[INPUT_LEN];
+	if (c == SHIFT_LEFT
+		|| c == SHIFT_RIGHT
+		|| c == SHIFT_UP
+		|| c == SHIFT_DOWN
+		|| (ui->select && c == COPY)
+		|| c == OPT_C
+		|| (ui->select && c == CUT)
+		|| c == OPT_X
+		|| (buf[0] && c == PASTE)
+		|| (buf[0] && c == OPT_P))
+		return (TRUE);
+	return (FALSE);
+}
+
+int		cut_copy_paste(unsigned long c
+					, t_interface *ui
+					, char *line
+					, char *buf)
+{
+	int		status;
 
 	status = SUCCESS;
-	*cont = TRUE;
 	if (c == SHIFT_LEFT || c == SHIFT_RIGHT || c == SHIFT_UP || c == SHIFT_DOWN)
 		select_ccp(c, ui, line);
 	else if (ui->select && c == COPY)
-		copy(ui, buff, line);
+		copy(ui, buf, line);
 	else if (c == OPT_C)
-		copy_line(ui, buff, line);
+		copy_line(ui, buf, line);
 	else if (ui->select && c == CUT)
-		status = cut(ui, buff, line);
+		status = cut(ui, buf, line);
 	else if (c == OPT_X)
-		status = cut_line(ui, buff, line);
-	else if (buff[0] && c == PASTE)
-		status = paste(ui, buff, line);
-	else if (buff[0] && c == OPT_P)
-		status = paste_line(ui, buff, line);
-	else if (!ui->select && (c == UP || c == DOWN) && ui->line_index == ui->line_len)
+		status = cut_line(ui, buf, line);
+	else if (buf[0] && c == PASTE)
+		status = paste(ui, buf, line);
+	else if (buf[0] && c == OPT_P)
+		status = paste_line(ui, buf, line);
+	return (status);
+}
+
+int		modify_cli(unsigned long c, t_interface *ui, char *line, int *cont)
+{
+	int			status;
+	static char	buf[INPUT_LEN];
+
+	status = SUCCESS;
+	*cont = TRUE;
+	if (is_cut_copy_paste(c, ui, buf))
+		status = cut_copy_paste(c, ui, line, buf);
+	else if (!ui->select && (c == UP || c == DOWN)
+		&& ui->line_index == ui->line_len)
 		history(c, line, &ui->h_list, ui);
 	else if (!ui->select && c == HOME)
 		set_cursor(ui, 0);
