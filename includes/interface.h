@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 16:56:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 22:36:17 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,7 @@ int			interface(char **str, char **tmp, t_interface *ui);
 ** src/interface/ui_line.c
 */
 
-t_uiline	*create_uiline(void);
 int			init_uiline(t_interface *ui);
-int			add_uiline(t_interface *ui);
-int			crawl_uilines(char *buf, t_uiline *ui_line, int i);
 int			calculate_uilines(char *buf, t_interface *ui);
 
 /*
@@ -50,7 +47,6 @@ void		free_uiline(t_uiline **ui_line);
 void		clear_all_lines(t_interface *ui);
 void		write_to_history(char line[INPUT_LEN], t_interface *ui);
 int			push_history(t_history **history, char *content);
-void		print_history(t_interface *ui, char *line, char *next);
 void		history(unsigned long c
 				, char *line
 				, t_h_list *h_list
@@ -67,20 +63,12 @@ t_history	*init_h_node(char *content);
 ** src/interface/move_index.c
 */
 
-int			move_word_index_left(char *line, t_interface *ui);
-int			move_word_index_right(char *line, t_interface *ui);
-int			move_line_index_up(char *line, t_interface *ui);
-int			move_line_index_down(char *line, t_interface *ui);
 int			move_index(unsigned long c, char *line, t_interface *ui);
 
 /*
 ** src/interface/move_utils.c
 */
 
-void		move_word_cursor_left(t_interface *ui, int target);
-void		move_word_cursor_right(t_interface *ui, int target);
-void		move_line_cursor_up(t_interface *ui, int target);
-void		move_line_cursor_down(t_interface *ui, int target);
 int			move_cursor(unsigned long c, t_interface *ui, int target);
 
 /*
