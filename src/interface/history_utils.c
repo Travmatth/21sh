@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 22:02:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/08 19:27:06 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 17:32:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ void		init_history(t_h_list *h_list)
 				buf[1] = '\0';
 				if (buf[0] == ':' && (line[i] || (i > 0 && line[i - 1])))
 					break ;
-				i > 0 && line[i - 1] == '\\' && buf[0] == '\n' ? i-- : 0;
 				if (buf[0] != ':')
 					line[i++] = buf[0];
 				ft_bzero(buf, 1);

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/11 14:55:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/11 17:34:22 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	write_to_history(char line[INPUT_LEN], t_interface *ui)
 		while (i < ui->line_len)
 		{
 			write(ui->h_list.fd, line + i, 1);
-			if (line[i] == '\\' || i + 1 == ui->line_len)
+			if (i + 1 == ui->line_len)
 				write(ui->h_list.fd, "\n", 1);
 			i++;
 		}
@@ -80,14 +80,6 @@ void	print_history(t_interface *ui, char *line, char *next)
 	{
 		if (next[len] == '\n' && !next[len + 1])
 			break ;
-		// DELETE
-		if (next[len] == '\n'
-			&& !escaped(next, len) && len
-			&& next[len - 1] != ';')
-		{
-			line[ui->line_index++] = ';';
-			write(STDOUT, ";", 1);
-		}
 		write(STDOUT, &next[len], 1);
 		if (next[len] == '\n' && next[len + 1])
 			write(STDOUT, "> ", 2);
