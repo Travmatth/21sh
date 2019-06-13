@@ -6,11 +6,28 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/04 12:55:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/25 16:08:01 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 18:13:30 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/shell.h"
+
+void	handle_rest(char **str, char *new, int index[2])
+{
+	if ((*str)[index[I]] == '\\')
+	{
+		index[I] += 1;
+		new[index[J]] = (*str)[index[I]];
+		index[I] += 1;
+		index[J] += 1;
+	}
+	else
+	{
+		new[index[J]] = (*str)[index[I]];
+		index[I] += 1;
+		index[J] += 1;
+	}
+}
 
 void	remove_quote_switch(char *quote, char **str, char *new, int index[2])
 {
@@ -24,19 +41,20 @@ void	remove_quote_switch(char *quote, char **str, char *new, int index[2])
 		index[I] += 1;
 		*quote = 0;
 	}
-	else if (*quote != '\'' && (*str)[index[I]] == '\\')
+	else if (*quote && (*str)[index[I]] == '\\' && (*str)[index[I] + 1] == 'n')
 	{
-		index[I] += 1;
-		new[index[J]] = (*str)[index[I]];
-		index[I] += 1;
+		new[index[J]] = '\n';
+		index[I] += 2;
+		index[J] += 1;
+	}
+	else if (*quote && (*str)[index[I]] == '\\' && (*str)[index[I] + 1] == 't')
+	{
+		new[index[J]] = '\t';
+		index[I] += 2;
 		index[J] += 1;
 	}
 	else
-	{
-		new[index[J]] = (*str)[index[I]];
-		index[I] += 1;
-		index[J] += 1;
-	}
+		handle_rest(str, new, index);
 }
 
 /*
