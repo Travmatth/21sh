@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/11 22:50:37 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:53:53 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 15:49:20 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef	int	(*t_quote)(char **str, int start, int end);
 # define IS_SPACE(s, i) ((!s[i + 1] || IS_WHITESPACE(s[i + 1])))
 # define IS_CURSH(s, i) ((s[i] == '{' && first_word(s, i) && IS_SPACE(s, i)))
 # define IS_SUB(s, i) ((s[i] == '(' && first_word(s, i)))
+# define END_P(str, i) ((*str)[i++] == '}')
 
 # define SNGL_QUOTE(s, i) ((s[i] == '\''))
 # define DBL_QUOTE(s, i) ((s[i] == '"'))
@@ -68,4 +69,3 @@ typedef struct	s_keyval
 	char		*value;
 }				t_keyval;
 #endif
-

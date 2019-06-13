@@ -6,13 +6,13 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/08 12:50:52 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 15:44:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 15:49:06 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/shell.h"
 
-void		free_uiline(t_uiline **ui_line)
+void	free_uiline(t_uiline **ui_line)
 {
 	if (*ui_line)
 	{
@@ -39,7 +39,6 @@ int		get_cursor_position(int *x, int *y)
 	char	buf[64];
 	char	*col;
 	char	*row;
-	// int		len;
 
 	ft_bzero(buf, 64);
 	if (OK((status = ERR(write(STDOUT, CURSOR_POS_REQ, 4)) ? ERROR : SUCCESS)))
@@ -50,9 +49,6 @@ int		get_cursor_position(int *x, int *y)
 		return (ERROR);
 	status = OK(status) && OK(ft_safeatoi(++row, x)) ? status : ERROR;
 	status = OK(status) && OK(ft_safeatoi(++col, y)) ? status : ERROR;
-	// len = ft_strlen(buf) + 1;
-	// while (len--)
-	// 	write(STDOUT, "\b \b", 3);
 	return (status);
 }
 
