@@ -6,13 +6,14 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/31 14:38:57 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/07 22:24:13 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 17:42:44 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXECUTION_CONSTRUCTS_H
 # define EXECUTION_CONSTRUCTS_H
 
+# define NOT_FORKING(f) (f && (f != builtin_echo))
 # define NEW_FILE_PERMS (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 # define NEGATE(x, y) (x ? !y : y)
 # define WAITPID_ERR "Runtime Error: forked process %d exited with signal: %s\n"

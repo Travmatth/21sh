@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 14:57:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:03:31 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 17:41:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int		exec_simple_command(t_simple *simple)
 
 	if (IS_NORMAL_CHILD_EXIT((simple->exit_status = open_redirs(simple))))
 	{
-		if (simple->builtin)
+		if (NOT_FORKING(simple->builtin))
 			simple->exit_status = exec_command(simple, FALSE);
 		else if (ERR((pid = fork())))
 			simple->exit_status = ERROR_CHILD_EXIT;
