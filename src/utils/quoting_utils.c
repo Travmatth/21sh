@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/24 15:31:44 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/29 13:38:32 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 16:49:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,9 @@ int		dbl_quote_switch(size_t *end, int *found, size_t len)
 	return (NIL);
 }
 
-int		param_exp_end(size_t *end, size_t len)
+int		param_end(size_t *end, size_t len, int *found)
 {
+	*found = TRUE;
 	*end = len;
 	return (SUCCESS);
 }

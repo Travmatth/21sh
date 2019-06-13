@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/24 15:10:24 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/30 10:43:48 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 16:50:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ int		uparam_exp(char **str, size_t start, size_t *end, t_quote f)
 ** expansion not properly closed
 */
 
+# define END_P(str, i) ((*str)[i++] == '}')
 int		eparam_exp(char **str, size_t start, size_t *end, t_quote f)
 {
 	size_t	i;
@@ -87,7 +88,7 @@ int		eparam_exp(char **str, size_t start, size_t *end, t_quote f)
 			i += *end;
 			*end = ERROR;
 		}
-		else if (OK(s) && (*str)[i++] == '}' && param_exp_end(end, --i - start))
+		else if (OK(s) && END_P(str, i) && param_end(end, --i - start, &found))
 			break ;
 	}
 	status = ERR(s) ? ERROR : found;

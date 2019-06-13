@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:11:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 21:59:55 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 17:04:23 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int		env_usage(void)
 {
-	ft_putstr("setenv usage: `setenv NAME=VALUE` or `setenv NAME VALUE`");
+	ft_putendl("setenv usage: `setenv NAME=VALUE` or `setenv NAME VALUE`");
 	return (ERROR_CHILD_EXIT);
 }
 
@@ -44,7 +44,7 @@ int		set_env_var(char *name, char *val)
 	char	*tmp;
 	char	*old_val;
 
-	if (((!name || !name[0]) || (!val || !val[0])) && env_usage())
+	if ((!name || !name[0] || !val) && env_usage())
 		return (ERROR_CHILD_EXIT);
 	i = 0;
 	while (g_environ[i])
@@ -81,7 +81,10 @@ int		set_env(char **argv)
 		value += 1;
 	}
 	else
-		return (env_usage());
+	{
+		name = argv[1];
+		value = "";
+	}
 	return (set_env_var(name, value));
 }
 
