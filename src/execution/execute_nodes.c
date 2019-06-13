@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/19 14:57:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/12 17:41:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 22:25:46 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,11 @@ int		exec_command(t_simple *simple, int should_exit)
 		}
 		else
 		{
+			// ft_dprintf(STDERR, "register child_sig_handler\n");
+			// errno = 0;
+			// signal(SIGINT, SIG_IGN);
+			// signal(SIGINT, child_sig_handler);
+			// ft_dprintf(STDERR, "child_sig_handler err: %d\n", errno);
 			execve(simple->command[0], simple->command, g_environ);
 			simple->exit_status = ERROR_CHILD_EXIT;
 			if (should_exit)
@@ -46,21 +51,23 @@ int		exec_command(t_simple *simple, int should_exit)
 ** Int returned is exit status of forked process.
 */
 
+extern pid_t	g_pid;
 int		exec_simple_command(t_simple *simple)
 {
-	pid_t	pid;
 
+	g_processes += 1;
 	if (IS_NORMAL_CHILD_EXIT((simple->exit_status = open_redirs(simple))))
 	{
 		if (NOT_FORKING(simple->builtin))
 			simple->exit_status = exec_command(simple, FALSE);
-		else if (ERR((pid = fork())))
+		else if (ERR((g_pid = fork())))
 			simple->exit_status = ERROR_CHILD_EXIT;
-		else if (pid == 0)
+		else if (g_pid == 0)
 			exec_command(simple, TRUE);
-		else if (pid > 0)
-			wait_loop(pid, &simple->exit_status);
+		else if (g_pid > 0)
+			wait_loop(g_pid, &simple->exit_status);
 	}
+	g_processes -= 1;
 	return (simple->exit_status);
 }
 

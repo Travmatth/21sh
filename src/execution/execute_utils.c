@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 15:20:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 22:54:28 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int		wait_loop(int pid, int *return_val)
 	int		sig;
 
 	errno = 0;
+	// sleep(10);
+	// kill(pid, SIGINT);
 	while ((id = waitpid(pid, return_val, WNOHANG)) != pid)
 	{
 		if (ERR(id))
@@ -80,11 +82,15 @@ int		wait_loop(int pid, int *return_val)
 	if (WIFSIGNALED(*return_val))
 	{
 		sig = WTERMSIG(*return_val);
-		ft_printf(WAITPID_ERR, pid, g_sig_table[sig]);
-		*return_val = ERROR;
+		ft_dprintf(STDERR, WAITPID_ERR, pid, g_sig_table[sig]);
+		if (sig == SIGINT)
+			*return_val = NORMAL_CHILD_EXIT;
+		else
+			*return_val = ERROR;
 	}
 	else if (WIFEXITED(*return_val))
 		*return_val = WEXITSTATUS(*return_val);
+	pid = 0;
 	return (*return_val);
 }
 

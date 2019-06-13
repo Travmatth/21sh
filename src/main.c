@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/09 20:42:57 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 21:13:25 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,20 @@ int		event_loop(t_interface *ui, char *leaks)
 	char		*input;
 	int			status;
 	int			end;
-	char		tmp[INPUT_LEN];
-	char		*buf;
+	// char		tmp[INPUT_LEN];
+	// char		*buf;
 
 	end = FALSE;
-	buf = (char*)tmp;
+	(void)ui;
+	// buf = (char*)tmp;
 	while (!end && !ERR(status))
 	{
 		input = NULL;
 		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
+		// status = signal(SIGINT, SIG_IGN) != SIG_ERR ? SUCCESS : ERROR;
 		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
-		if (OK(status) && NONE(interface(&input, &buf, ui)))
+		// if (OK(status) && NONE(interface(&input, &buf, ui)))
+		if (OK(status) && OK(get_next_line(STDIN, &input)))
 		{
 			if (!ft_strncmp("exit", input, 4))
 				end = TRUE;

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/31 16:02:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:45:41 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/12 21:30:34 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@
 */
 
 char	**g_environ;
+
+pid_t	g_pid;
 
 /*
 ** Track # of current processes, used by signal handlers to determine whether
