@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/12 21:13:25 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 15:31:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,33 +34,26 @@ void	hang_for_leaks(void)
 ** Exit on ERROR, NIL will fail gracefully and accept next line of input
 */
 
-int		event_loop(t_interface *ui, char *leaks)
+int		event_loop(t_interface *ui, char *leaks, char **buf)
 {
 	char		*input;
 	int			status;
 	int			end;
-	// char		tmp[INPUT_LEN];
-	// char		*buf;
 
-	end = FALSE;
-	(void)ui;
-	// buf = (char*)tmp;
-	while (!end && !ERR(status))
+	status = SUCCESS;
+	while (!ERR(status))
 	{
 		input = NULL;
-		status = signal(SIGINT, sig_handler) != SIG_ERR ? SUCCESS : ERROR;
-		// status = signal(SIGINT, SIG_IGN) != SIG_ERR ? SUCCESS : ERROR;
-		status = OK(status) && ERR(write(STDOUT, "$> ", 3)) ? ERROR : status;
-		// if (OK(status) && NONE(interface(&input, &buf, ui)))
-		if (OK(status) && OK(get_next_line(STDIN, &input)))
+		end = FALSE;
+		signal(SIGINT, sig_handler);
+		print_newline();
+		write(STDOUT, "$> ", 3);
+		if (NONE((status = interface(&input, buf, ui, &end))) && !end)
 		{
-			if (!ft_strncmp("exit", input, 4))
-				end = TRUE;
-			else
-				status = parse_execute_input(input);
+			end = !ft_strncmp("exit", input, 4) ? TRUE : FALSE;
+			status = end ? ERROR : parse_execute_input(input);
+			status = leaks ? ERROR : status;
 			free(input);
-			if (leaks)
-				break ;
 		}
 	}
 	return (status);
@@ -74,6 +67,8 @@ int		main(int argc, char **argv, char **environ)
 {
 	int			status;
 	char		*leaks;
+	char		tmp[INPUT_LEN];
+	char		*buf;
 	t_interface	ui;
 
 	if (ERR(init_parser())
@@ -81,7 +76,8 @@ int		main(int argc, char **argv, char **environ)
 		|| ERR(init_shell(&ui)))
 		return (ERROR_CHILD_EXIT);
 	leaks = get_env_var("SHELL_LEAKS");
-	status = event_loop(&ui, leaks);
+	buf = (char*)tmp;
+	status = event_loop(&ui, leaks, &buf);
 	free_prods();
 	status = ERR(restore_shell(&ui)) || ERR(status) ? 1 : 0;
 	if (leaks)

@@ -15,7 +15,7 @@
 			// "PATH": "/nfs/2018/t/tmatthew/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/munki:/nfs/2018/t/tmatthew/.cargo/bin",
 			"PATH": "/Users/Trav/.rbenv/shims:/Users/Trav/.rbenv/shims:/Users/Trav/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
 			"OLDPWD": "/Users/Trav/42/21sh",
-			"SHELL_TTY": "/dev/ttys003",
+			"SHELL_TTY": "/dev/ttys002",
 			"HOME": "/Users/Trav",
 			"TERM": "xterm-256color",
 			"SHLVL": 1

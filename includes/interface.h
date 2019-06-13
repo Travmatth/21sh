@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/12 14:24:32 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 15:29:50 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 int			accept_line(char **str);
 int			accept(char **str, t_interface *ui, char **tmp, size_t len);
-int			interface(char **str, char **tmp, t_interface *ui);
+int			interface(char **str, char **tmp, t_interface *ui, int *end);
 
 /*
 ** src/interface/ui_line.c
@@ -39,6 +39,8 @@ int			calculate_uilines(char *buf, t_interface *ui);
 */
 
 void		free_uiline(t_uiline **ui_line);
+int			get_cursor_position(int *x, int *y);
+void		print_newline(void);
 
 /*
 ** src/utils/history.c

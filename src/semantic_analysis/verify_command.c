@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/06 14:21:56 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 19:15:16 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 11:54:35 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,9 +152,9 @@ int		verify_command(t_simple *simple)
 	while (paths && paths[j])
 		j += 1;
 	if (ERR((status = find_command(simple->command, paths, j, found))))
-		ft_printf("sh: permission denied: %s\n", simple->command[0]);
+		ft_dprintf(STDERR, "sh: permission denied: %s\n", simple->command[0]);
 	else if (NONE(status))
-		ft_printf("sh: command not found: %s\n", simple->command[0]);
+		ft_dprintf(STDERR, "sh: command not found: %s\n", simple->command[0]);
 	ft_freearr(paths, TRUE);
 	return (status);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 19:33:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/12 22:39:08 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 13:51:21 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,6 @@ void	sigtrap_handler(int sig)
 {
 	if (sig != SIGTRAP)
 		return ;
-	ft_dprintf(STDERR, "sigtrap_handler: %d, g_processes %d\n", sig, g_processes);
-	ft_printf("SIGTRAP signal caught");
-}
-
-/*
-** Intercept ctrl-c signals and exit processes
-*/
-
-void	child_sig_handler(int sig)
-{
-	(void)sig;
-	sleep(10);
-	ft_dprintf(STDERR, "child_sig_handler: %d\n", sig);
-	// if (sig != SIGCHLD)
-	// 	return ;
-	// g_processes -= 1;
-	// _exit(1);
-	return ;
 }
 
 /*
@@ -47,16 +29,8 @@ void	child_sig_handler(int sig)
 void	sig_handler(int sig)
 {
 	(void)sig;
-	ft_dprintf(STDERR, "sig_handler: %d, pid: %d\n", sig, g_pid);
 	if (sig != SIGINT)
 		return ;
-	if (g_pid)
-		kill(g_pid, SIGINT);
-		// _exit(1);
-	g_pid = 0;
-	// g_processes -= 1;
-	// if (g_processes <= 0)
-		write(STDOUT, "\n$> ", 4);
-	signal(SIGINT, sig_handler);
+	g_in_process = TRUE;
 	return ;
 }
