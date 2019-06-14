@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/07 17:51:17 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 17:25:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:32:58 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,15 @@ void	set_cursor(t_interface *ui, int position)
 	}
 }
 
-int		violates_line_len(int insert, char *line, t_interface *ui)
+int		violates_line_len(int insert, t_interface *ui)
 {
-	int		offset;
-	int		cur;
-	int		rest;
+	int			offset;
+	t_uiline	*cur;
+	int			line;
 
-	offset = ui->ui_line ? 0 : 3;
-	offset = ui->ui_line && line_exists(ui, ui->line_index, PREV) ? 2 : 3;
-	cur = current_column(line, ui->line_index);
-	rest = next_column(line, ui->line_index);
-	return (insert + offset + cur + rest > ui->ws.ws_col ? TRUE : FALSE);
+	if (!(cur = current_uiline(ui, ui->line_index)))
+		return (FALSE);
+	line = cur->end - cur->start;
+	offset = line_exists(ui, ui->line_index, PREV) ? 2 : 3;
+	return (insert + offset + line > ui->ws.ws_col ? TRUE : FALSE);
 }

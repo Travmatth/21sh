@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 19:48:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 16:08:24 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:31:07 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int		insert(char c, char **line, t_interface *ui, char **tmp)
 
 	if (c == '\n' && accept_line(tmp) && OK(accept(line, ui, tmp, 0)))
 		return (NIL);
-	else if (violates_line_len(1, *tmp, ui) || (c == '\n' && NOT_END(ui)))
+	else if (violates_line_len(1, ui) || (c == '\n' && NOT_END(ui)))
 	{
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);

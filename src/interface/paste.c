@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:37:28 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 19:18:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:34:47 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,13 @@ int		should_paste(char *line, t_interface *ui, char *buf)
 {
 	int		i;
 
-	if (!(i = ft_strlen(buf)) || violates_line_len(i, line, ui)
+	if (!(i = ft_strlen(buf)) || violates_line_len(i, ui)
 		|| NOT_EOL(line, ui->line_index) || ft_strchr(buf, '\n')
 		|| ui->buf_origin != SELECT)
 	{
 		write(STDOUT, "\a", 1);
-		return (SUCCESS);
+		return (ERROR);
 	}
-	ui->buf_origin = BLANK;
 	return (SUCCESS);
 }
 
@@ -73,7 +72,6 @@ int		should_paste_line(t_interface *ui, char *buf, t_uiline **cur)
 		write(STDOUT, "\a", 1);
 		return (ERROR);
 	}
-	ui->buf_origin = BLANK;
 	return (SUCCESS);
 }
 

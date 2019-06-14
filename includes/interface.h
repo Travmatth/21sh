@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:40:47 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 15:29:50 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:30:37 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int			modify_cli(unsigned long c, t_interface *ui, char *line, int *cont);
 ** src/interface/cut_copy_paste_utils.c
 */
 
-int			violates_line_len(int insert, char *line, t_interface *ui);
+int			violates_line_len(int insert, t_interface *ui);
 void		write_line(t_interface *ui, char *line);
 void		set_cursor(t_interface *ui, int position);
 
