@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:37:28 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 19:09:29 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:18:51 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int		paste_line(t_interface *ui, char *buf, char *line)
 	cursor = cur->start;
 	start = cur->start;
 	len = strlen(buf);
-	if (cur->end != ui->line_len && buf[len - 1] != '\n')
+	if ((!cur->start || cur->end != ui->line_len) && buf[len - 1] != '\n')
 	{
 		buf[len++] = '\\';
 		buf[len++] = '\n';
