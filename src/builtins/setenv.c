@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/19 21:11:08 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/12 17:04:23 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:37:12 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,10 @@ int		builtin_setenv(int argc, char **argv)
 {
 	int		status;
 
+	status = NORMAL_CHILD_EXIT;
 	if (!argv[1])
 		status = builtin_env(argc, argv);
-	if (argv[2] && argv[3])
+	else if (argv[2] && argv[3])
 		status = env_usage();
 	else if (argv[1])
 		status = set_env(argv);
