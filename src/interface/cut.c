@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:36:06 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 18:02:51 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:01:48 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int		cut(t_interface *ui, char *buf, char *line)
 
 	if (!ui->select || ERR(ui->ccp_start) || ERR(ui->ccp_end))
 		return (SUCCESS);
+	ui->buf_origin = SELECT;
 	ui->select = FALSE;
 	write(STDOUT, STEADY_CURSOR, 5);
 	set_cursor(ui, 0);
@@ -57,6 +58,7 @@ int		cut_line(t_interface *ui, char *buf, char *line)
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);
 	}
+	ui->buf_origin = FULL_LINE;
 	cursor = cur->start;
 	ft_strclr(buf);
 	set_cursor(ui, 0);

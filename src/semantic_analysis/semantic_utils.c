@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/16 16:04:05 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/23 18:02:28 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:54:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void	free_ast_node(t_ast_node *root)
 {
 	int		i;
 
+	if (!root)
+		return ;
 	if (IS_TERMINAL(root->type))
 		free(root->val[0]);
 	else
@@ -79,7 +81,10 @@ void	free_ast_node(t_ast_node *root)
 
 void	free_ast(t_ast *ast)
 {
-	free_ast_node((t_ast_node*)ast->root->val[0]);
-	free(ast->root->val);
-	free(ast->root);
+	if (ast && ast->root)
+	{
+		free_ast_node((t_ast_node*)ast->root->val[0]);
+		free(ast->root->val);
+		free(ast->root);
+	}
 }

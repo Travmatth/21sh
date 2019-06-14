@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 17:01:40 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 17:51:46 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:00:42 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	copy(t_interface *ui, char *buf, char *line)
 	write(STDOUT, STEADY_CURSOR, 5);
 	if (ERR(ui->ccp_start) || ERR(ui->ccp_end))
 		return ;
+	ui->buf_origin = SELECT;
 	ft_strclr(buf);
 	i = ui->ccp_end - ui->ccp_start;
 	ft_memcpy(buf, &(line[ui->ccp_start]), i);
@@ -43,6 +44,7 @@ void	copy_line(t_interface *ui, char *buf, char *line)
 		write(STDOUT, "\a", 1);
 		return ;
 	}
+	ui->buf_origin = FULL_LINE;
 	ft_strclr(buf);
 	set_cursor(ui, 0);
 	len = cur->end - cur->start;

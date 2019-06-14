@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:37:28 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 18:18:03 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 19:02:45 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int		paste(t_interface *ui, char *buf, char *line)
 	ui->select = FALSE;
 	write(STDOUT, STEADY_CURSOR, 5);
 	if (!(i = ft_strlen(buf)) || violates_line_len(i, line, ui)
-		|| NOT_EOL(line, ui->line_index) || ft_strchr(buf, '\n'))
+		|| NOT_EOL(line, ui->line_index) || ft_strchr(buf, '\n')
+		|| ui->buf_origin != SELECT)
 	{
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);
@@ -55,7 +56,8 @@ int		accept_paste_line(t_interface *ui, char *line, int cursor)
 
 int		should_paste(t_interface *ui, char *buf, t_uiline **cur)
 {
-	if (ui->select || !buf[0] || !(*cur = current_uiline(ui, ui->line_index)))
+	if (ui->select || !buf[0] || !(*cur = current_uiline(ui, ui->line_index))
+		|| ui->buf_origin != FULL_LINE)
 	{
 		write(STDOUT, "\a", 1);
 		return (ERROR);

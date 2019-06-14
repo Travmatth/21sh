@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 17:43:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:59:43 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,6 +222,13 @@ enum						e_line_exists
 	NEXT
 };
 
+enum						e_buf_origin
+{
+	BLANK,
+	FULL_LINE,
+	SELECT
+};
+
 typedef struct s_history	t_history;
 
 struct						s_history
@@ -249,6 +256,7 @@ struct						s_uiline
 
 typedef struct				s_interface
 {
+	int						buf_origin;
 	int						select;
 	int						ccp_start;
 	int						ccp_end;

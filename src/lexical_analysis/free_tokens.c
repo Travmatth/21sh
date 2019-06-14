@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 16:16:55 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 16:34:07 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:57:27 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	free_tokens(t_list **tokens)
 	t_ast_node	*ast_node;
 	t_stack		*stack_node;
 
-	if (*tokens)
+	if (tokens && *tokens)
 	{
 		next = (*tokens)->next;
 		stack_node = (t_stack*)(*tokens)->content;

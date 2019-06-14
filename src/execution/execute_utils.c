@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 12:05:13 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 14:47:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:56:55 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,8 @@ void	free_program(t_program *program)
 {
 	int		i;
 
+	if (!program || !program->commands)
+		return ;
 	i = -1;
 	while (program->commands[++i])
 		free_exec_node(program->commands[i]);

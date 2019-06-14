@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 15:34:39 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/10 15:42:15 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:49:13 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,17 @@
 
 void	exit_select(t_interface *ui, char *line)
 {
+	int		next;
+
 	if (ui->select)
 	{
 		ui->select = FALSE;
 		clear_all_lines(ui);
+		next = ui->line_index;
+		ui->line_index = 0;
 		init_select(ui);
 		write_line(ui, line);
-		set_cursor(ui, ui->line_index);
+		set_cursor(ui, next);
 	}
 }
 
@@ -51,6 +55,7 @@ void	select_ccp(unsigned long c, t_interface *ui, char *line)
 	}
 	ui->ccp_start = target < ui->ccp_orig ? target : ui->ccp_orig;
 	ui->ccp_end = target < ui->ccp_orig ? ui->ccp_orig + 1 : target;
+	ui->ccp_end = ui->ccp_end > ui->line_len ? ui->line_len : ui->ccp_end;
 	clear_all_lines(ui);
 	write_line(ui, line);
 	ui->line_index = 0;
