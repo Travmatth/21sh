@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/18 17:59:38 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/05/31 15:23:26 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 16:37:26 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int		execute(t_program *program)
 	status = SUCCESS;
 	while (!ERR(status) && program->commands[++i])
 		status = execute_switch(program->commands[i]);
-	free_program(program);
 	return (ERR(status) ? ERROR : SUCCESS);
 }
 
@@ -62,10 +61,15 @@ int		parse_execute_input(char *complete_cmd)
 	tokens = NULL;
 	ft_bzero(&ast, sizeof(t_ast));
 	ft_bzero(&program, sizeof(t_program));
-	if (!OK((status = lexical_analysis(complete_cmd, &tokens)))
-		|| (!OK((status = syntactic_analysis(&tokens, &ast))))
-		|| (!OK((status = semantic_analysis(&ast, &program))))
-		|| (!OK((status = execute(&program)))))
-		return (status);
+	status = lexical_analysis(complete_cmd, &tokens);
+	if (OK(status))
+		status = syntactic_analysis(&tokens, &ast);
+	if (OK(status))
+		status = semantic_analysis(&ast, &program);
+	if (OK(status))
+		status = execute(&program);
+	free_tokens(&tokens);
+	free_ast(&ast);
+	free_program(&program);
 	return (status);
 }

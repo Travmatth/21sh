@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/10 16:37:28 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 18:28:30 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:18:03 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,10 @@ int		paste(t_interface *ui, char *buf, char *line)
 		write(STDOUT, "\a", 1);
 		return (SUCCESS);
 	}
-	rest = ui->line_len - ui->line_index;
+	rest = ui->line_len - ui->line_index + 1;
 	ft_memmove(&(line[ui->line_index + i]), &(line[ui->line_index]), rest);
 	ft_memcpy(&(line[ui->line_index]), buf, i);
 	ui->line_len += i;
-	ft_strclr(buf);
 	if (ERR(calculate_uilines(line, ui)))
 		return (ERROR);
 	clear_all_lines(ui);
@@ -87,7 +86,7 @@ int		paste_line(t_interface *ui, char *buf, char *line)
 		}
 	}
 	ft_memmove(&(line[cur->start + len]), &(line[cur->start])
-		, cur->end - cur->start + 1);
+		, ui->line_len - cur->start + 1);
 	ft_memcpy(&(line[cur->start]), buf, len);
 	ui->line_len += len;
 	return (accept_paste_line(ui, line, cursor));

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/03 14:32:20 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/12 22:47:33 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 15:58:14 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,8 @@ int		restore_shell(t_interface *ui)
 			return (ERROR);
 	}
 	close(ui->h_list.fd);
+	while (ui->h_list.hst && ui->h_list.hst->prev)
+		ui->h_list.hst = ui->h_list.hst->prev;
 	free_history(ui->h_list.hst);
 	free_uiline(&ui->ui_line);
 	ft_freearr(g_environ, TRUE);

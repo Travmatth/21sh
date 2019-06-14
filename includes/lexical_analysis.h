@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/11 14:08:15 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/11 22:58:27 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 16:26:15 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,10 @@ int		push_token(t_token *token, t_list *node, t_list **tokens, t_lctx *ctx);
 */
 
 int		process_reserved(t_token *token, t_lctx *ctx);
+
+/*
+** src/lexical_analysis/free_tokens.c
+*/
+
+void	free_tokens(t_list **tokens);
 #endif

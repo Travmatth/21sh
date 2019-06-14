@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/02 17:03:30 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/04/24 18:01:52 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 16:54:01 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,12 @@ int		full_word_expansion(char ***new, char *old)
 		&& OK((status = pathname_expansion(&fields)))
 		&& OK((status = quote_removal(&fields))))
 		*new = fields;
+	if (!OK(status))
+	{
+		free(parameter);
+		free(fields);
+		*new = NULL;
+	}
 	return (status);
 }
 

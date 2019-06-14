@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/23 20:06:46 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 15:31:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 15:53:58 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	hang_for_leaks(void)
 ** Exit on ERROR, NIL will fail gracefully and accept next line of input
 */
 
-int		event_loop(t_interface *ui, char *leaks, char **buf)
+int		event_loop(t_interface *ui, char **buf)
 {
 	char		*input;
 	int			status;
@@ -52,7 +52,6 @@ int		event_loop(t_interface *ui, char *leaks, char **buf)
 		{
 			end = !ft_strncmp("exit", input, 4) ? TRUE : FALSE;
 			status = end ? ERROR : parse_execute_input(input);
-			status = leaks ? ERROR : status;
 			free(input);
 		}
 	}
@@ -77,7 +76,7 @@ int		main(int argc, char **argv, char **environ)
 		return (ERROR_CHILD_EXIT);
 	leaks = get_env_var("SHELL_LEAKS");
 	buf = (char*)tmp;
-	status = event_loop(&ui, leaks, &buf);
+	status = event_loop(&ui, &buf);
 	free_prods();
 	status = ERR(restore_shell(&ui)) || ERR(status) ? 1 : 0;
 	if (leaks)

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/06 15:42:31 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 13:51:21 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 18:27:38 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int		init_accept(char **line, t_interface *ui, char *tmp, size_t *i)
 	write(STDOUT, "\n", 1);
 	write_to_history(tmp, ui);
 	if (ERR(push_history(&ui->h_list.hst, tmp))
-		|| !(*line = ft_strnew(ui->line_len)))
+		|| !(*line = ft_strnew(ui->line_len + 1)))
 		return (ERROR);
 	return (SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/25 13:15:28 by dysotoma          #+#    #+#             */
-/*   Updated: 2019/06/11 17:34:22 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 17:47:54 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,12 @@ void	write_to_history(char line[INPUT_LEN], t_interface *ui)
 	cur = ui->h_list.hst;
 	while (cur && cur->next)
 		cur = cur->next;
-	if (line[i] && !ui->from_history && cur &&
-		(!ui->h_list.hst || ft_strcmp(line, cur->content) != 0))
+	if (line[i] && (!cur || (ft_strcmp(line, cur->content) != 0)))
 	{
 		write(ui->h_list.fd, ":", 1);
-		while (i < ui->line_len)
-		{
-			write(ui->h_list.fd, line + i, 1);
-			if (i + 1 == ui->line_len)
-				write(ui->h_list.fd, "\n", 1);
-			i++;
-		}
-		ui->from_history = FALSE;
+		while (line[i])
+			write(ui->h_list.fd, line + i++, 1);
+		write(ui->h_list.fd, "\n", 1);
 	}
 }
 
@@ -75,7 +69,6 @@ void	print_history(t_interface *ui, char *line, char *next)
 	size_t	len;
 
 	len = 0;
-	ui->from_history = next ? TRUE : FALSE;
 	while (next && next[len])
 	{
 		if (next[len] == '\n' && !next[len + 1])

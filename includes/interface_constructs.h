@@ -6,7 +6,7 @@
 /*   By: tmatthew <tmatthew@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 15:43:03 by tmatthew          #+#    #+#             */
-/*   Updated: 2019/06/13 14:36:18 by tmatthew         ###   ########.fr       */
+/*   Updated: 2019/06/13 17:43:52 by tmatthew         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,7 +249,6 @@ struct						s_uiline
 
 typedef struct				s_interface
 {
-	int						from_history;
 	int						select;
 	int						ccp_start;
 	int						ccp_end;
