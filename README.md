@@ -54,7 +54,7 @@
 
 ### Prerequisites
 
-The only dependency required for local compilation is a C compiler (developed with `gcc`)
+The only dependency required for local compilation is a C compiler (developed with `gcc`), along with Make.
 
 ### Installation
 
